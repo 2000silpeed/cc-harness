@@ -1,0 +1,24 @@
+{
+  "issue": "PM-05",
+  "stage": "verification",
+  "status": "passed",
+  "base": "master",
+  "revision": "1a7d465 plus PM-03 through PM-05 worktree changes",
+  "attempt": 1,
+  "ac_passed": true,
+  "unit_tests": 152,
+  "browser_tests": 76,
+  "audit_vulnerabilities": 0,
+  "evidence": [
+    "PM-05-scenarios.md",
+    "../../../../../tmp/pm-05-red-unit.json",
+    "../../../../../tmp/pm-05-red-browser.json",
+    "../../../../../tmp/pm-05-green-browser.log",
+    "../../../../../tmp/pm-05-check.log",
+    "../../../../../tmp/pm-05-desktop.png",
+    "../../../../../tmp/pm-05-mobile.png"
+  ],
+  "stop_reason": null,
+  "external_actions_performed": [],
+  "notes": "57 target unit and 8 target browser tests pass; full check exit 0; Green test hashes unchanged. Independent AC and Refactor/security passed. Whole backup ignores filters. Invalid inputs and aborted replacement preserve originals. Extremely large local JSON can affect responsiveness; no measured size guarantee. Real user data never replaced during verification."
+}

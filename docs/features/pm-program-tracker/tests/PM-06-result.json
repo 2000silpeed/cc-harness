@@ -1,0 +1,22 @@
+{
+  "issue": "PM-06",
+  "stage": "verification",
+  "status": "passed",
+  "base": "master",
+  "revision": "1a7d465 plus PM-03 through PM-06 worktree changes",
+  "attempt": 1,
+  "ac_passed": true,
+  "unit_tests": 157,
+  "browser_tests": 80,
+  "evidence": [
+    "PM-06-scenarios.md",
+    "../../../../../tmp/pm-06-red-unit.json",
+    "../../../../../tmp/pm-06-red-browser.json",
+    "../../../../../tmp/pm-06-green-browser.log",
+    "../../../../../tmp/pm-06-check.log",
+    "../../../../../tmp/pm-06-delete-controls.png"
+  ],
+  "stop_reason": null,
+  "external_actions_performed": [],
+  "notes": "5 target unit and 4 target browser pass, whole check exit 0, hashes unchanged. Independent AC and Refactor/security pass. Main visually reviewed visible deletion controls. Only isolated test data deleted; actual browser data untouched. No new dependencies; PM-05 audit remains applicable."
+}

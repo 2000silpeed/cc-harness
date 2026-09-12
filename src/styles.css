@@ -139,6 +139,93 @@ th:nth-child(n + 6) {
   font-variant-numeric: tabular-nums;
   font-size: var(--ds-text-sm);
 }
+.backup-controls,
+.filter-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--ds-space-px-12);
+  margin-bottom: var(--ds-space-px-16);
+}
+.backup-controls .field {
+  min-width: 0;
+  max-width: 100%;
+}
+.backup-controls button {
+  background: var(--ds-color-surface-muted);
+  color: var(--ds-color-ink);
+}
+.filter-controls .field {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+.schedule-controls,
+.schedule-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-px-8);
+}
+.schedule-controls {
+  flex-wrap: wrap;
+  margin-bottom: var(--ds-space-px-16);
+}
+.schedule-toggle {
+  min-height: 44px;
+}
+.schedule-toggle input:focus-visible {
+  outline: 2px solid var(--ds-color-primary);
+  outline-offset: 2px;
+}
+.with-schedule {
+  min-width: 2080px;
+}
+.with-schedule th:nth-child(-n + 9) {
+  width: 140px;
+}
+.with-schedule th:nth-child(2),
+.with-schedule th:nth-child(4) {
+  width: 200px;
+}
+.with-schedule th.schedule-column {
+  width: 700px;
+}
+.schedule-days {
+  display: flex;
+  margin-top: var(--ds-space-px-8);
+  font-variant-numeric: tabular-nums;
+}
+.schedule-days span {
+  flex: 1;
+  text-align: center;
+  border-left: 1px solid var(--ds-color-border);
+}
+.schedule-cell {
+  position: relative;
+}
+.schedule-chart {
+  display: block;
+  width: 100%;
+  height: 32px;
+}
+.schedule-grid {
+  stroke: var(--ds-color-border);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+.schedule-bar {
+  fill: var(--ds-color-accent);
+}
+.schedule-marker {
+  fill: var(--ds-color-primary);
+}
+.schedule-unscheduled {
+  position: absolute;
+  left: var(--ds-space-px-12);
+  top: 0;
+  color: var(--ds-color-ink-muted);
+  background: var(--ds-color-surface);
+  font-size: var(--ds-text-xs);
+}
 .cell-value {
   display: block;
   width: 100%;

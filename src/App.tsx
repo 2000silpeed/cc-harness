@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { createProgramRepository } from "./data/program-repository";
+import { createProgramBackup, parseProgramBackup } from "./domain/program-backup";
+import { filterPrograms, type ProgramFilter } from "./domain/program-filter";
+import { getMonth, getScheduleGeometry, shiftMonth } from "./domain/schedule";
 import {
   createProgramDraft,
   createProgramEditDraft,
@@ -22,8 +25,18 @@ const fields: [keyof ProgramDraft, string][] = [
 ];
 
 export function App() {
+  const [showGantt, setShowGantt] = useState(false);
+  const [month, setMonth] = useState(() => getMonth(new Date()));
+  const monthDays = getScheduleGeometry(
+    { plannedStartDate: null, plannedEndDate: null, transferDate: null },
+    month,
+  ).days;
   const [notice, setNotice] = useState("");
   const [records, setRecords] = useState<ProgramRecord[]>([]);
+  const [conditions, setConditions] = useState<ProgramFilter>({});
+  const visibleRecords = filterPrograms(records, conditions);
+  const modules = [...new Set(records.map((record) => record.module))];
+  const owners = [...new Set(records.map((record) => record.owner))];
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [open, setOpen] = useState(false);
@@ -34,6 +47,9 @@ export function App() {
   const [errors, setErrors] = useState<Partial<Record<keyof ProgramDraft, string>>>({});
   const [saveError, setSaveError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [backupBusy, setBackupBusy] = useState(false);
+  const [backupError, setBackupError] = useState("");
   const pending = useRef(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const register = useRef<HTMLButtonElement>(null);
@@ -69,8 +85,12 @@ export function App() {
   function close() {
     dialog.current?.close();
     setOpen(false);
-    (returnFocus.current ?? register.current)?.focus();
+    (returnFocus.current?.isConnected ? returnFocus.current : register.current)?.focus();
   }
+  useEffect(() => {
+    if (!open && !saving && returnFocus.current && !returnFocus.current.isConnected)
+      register.current?.focus();
+  }, [open, saving]);
   function discardAllowed() {
     const baseline = editing ? createProgramEditDraft(editing) : createProgramDraft();
     return (
@@ -113,7 +133,9 @@ export function App() {
       setRecords((previous) =>
         editing
           ? previous.map((item) => (item.id === record.id ? record : item))
-          : [...previous, record],
+          : [...previous, record].sort((left, right) =>
+              left.id < right.id ? -1 : left.id > right.id ? 1 : 0,
+            ),
       );
       setNotice("프로그램을 저장했습니다.");
       close();
@@ -132,6 +154,99 @@ export function App() {
       setSaving(false);
     }
   }
+  async function remove() {
+    if (pending.current || !editing) return;
+    const target = editing;
+    if (
+      !window.confirm(
+        `모듈 ${target.module} / 프로그램명 ${target.programName}을 삭제할까요? 백업 없이는 복구할 수 없습니다. 미저장 변경도 폐기됩니다.`,
+      )
+    )
+      return;
+    pending.current = true;
+    setSaving(true);
+    setDeleting(true);
+    setSaveError("");
+    setNotice("");
+    try {
+      await repository.delete(target.id);
+      setRecords((previous) => previous.filter((record) => record.id !== target.id));
+      setNotice("프로그램 삭제 완료");
+      close();
+    } catch {
+      setSaveError(
+        "삭제하지 못했습니다. 입력과 기존 목록은 유지됩니다. 삭제 버튼으로 재시도하세요.",
+      );
+    } finally {
+      pending.current = false;
+      setSaving(false);
+      setDeleting(false);
+    }
+  }
+  async function backup() {
+    if (pending.current || loading || open) return;
+    pending.current = true;
+    setBackupBusy(true);
+    setBackupError("");
+    setNotice("");
+    try {
+      const allRecords = await repository.list();
+      const text = createProgramBackup(allRecords, new Date().toISOString());
+      const url = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+      const link = document.createElement("a");
+      try {
+        link.href = url;
+        link.download = "program-backup.json";
+        document.body.append(link);
+        link.click();
+        setNotice("전체 백업 파일 다운로드를 요청했습니다.");
+      } finally {
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+    } catch {
+      setBackupError("전체 백업에 실패했습니다. 저장소를 확인하고 다시 시도하세요.");
+    } finally {
+      pending.current = false;
+      setBackupBusy(false);
+    }
+  }
+  async function restore(input: HTMLInputElement) {
+    const file = input.files?.[0];
+    input.value = "";
+    if (!file || pending.current || loading || open) return;
+    pending.current = true;
+    setBackupBusy(true);
+    setBackupError("");
+    setNotice("");
+    let replaced = false;
+    try {
+      const replacement = parseProgramBackup(await file.text());
+      if (
+        !window.confirm(
+          `현재 목록 전체를 백업의 ${replacement.length}건으로 교체합니다. 기존 데이터는 덮어쓰며, 0건이면 모두 삭제됩니다. 계속할까요?`,
+        )
+      )
+        return;
+      await repository.replaceAll(replacement);
+      replaced = true;
+      const restored = await repository.list();
+      setRecords(restored);
+      setConditions({});
+      setLoadError(false);
+      setNotice(`백업 복원 완료: ${restored.length}건`);
+    } catch {
+      if (replaced) setLoadError(true);
+      setBackupError(
+        replaced
+          ? "복원 저장 후 목록을 불러오지 못했습니다. 목록 재시도로 저장 결과를 확인하세요."
+          : "백업 복원에 실패했습니다. 기존 데이터는 유지됩니다. 파일과 저장소를 확인하고 다시 선택하세요.",
+      );
+    } finally {
+      pending.current = false;
+      setBackupBusy(false);
+    }
+  }
   return (
     <main className="workspace">
       <header className="masthead">
@@ -147,8 +262,9 @@ export function App() {
         <button
           className="primary"
           ref={register}
-          disabled={loading || loadError}
+          disabled={loading || loadError || saving || backupBusy}
           onClick={() => {
+            if (pending.current) return;
             setEditing(null);
             setMissing(false);
             returnFocus.current = register.current;
@@ -162,6 +278,27 @@ export function App() {
           프로그램 등록
         </button>
       </section>
+      <div className="backup-controls" aria-busy={backupBusy}>
+        <button disabled={loading || saving || backupBusy || open} onClick={() => void backup()}>
+          전체 백업
+        </button>
+        <div className="field">
+          <label htmlFor="backup-file">백업 복원</label>
+          <input
+            id="backup-file"
+            type="file"
+            accept=".json,application/json"
+            disabled={loading || saving || backupBusy || open}
+            onChange={(event) => void restore(event.currentTarget)}
+          />
+        </div>
+        {backupBusy && <span className="muted">백업·복원 처리 중…</span>}
+      </div>
+      {backupError && (
+        <p role="alert" className="feedback">
+          {backupError}
+        </p>
+      )}
       <section className="ledger" aria-labelledby="ledger-title">
         <div className="section-heading">
           <h2 id="ledger-title">프로그램 장부</h2>
@@ -173,8 +310,108 @@ export function App() {
                 : `${records.length}개 프로그램`}
           </span>
         </div>
+        <div className="filter-controls">
+          <div className="field">
+            <label htmlFor="program-query">프로그램 검색</label>
+            <input
+              id="program-query"
+              value={conditions.query ?? ""}
+              onChange={(event) => setConditions({ ...conditions, query: event.target.value })}
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="module-filter">모듈 필터</label>
+            <select
+              id="module-filter"
+              value={conditions.module === undefined ? "" : JSON.stringify(conditions.module)}
+              onChange={(event) =>
+                setConditions({
+                  ...conditions,
+                  module: event.target.value === "" ? undefined : JSON.parse(event.target.value),
+                })
+              }
+            >
+              <option value="">전체</option>
+              {modules.map((module) => (
+                <option key={module} value={JSON.stringify(module)}>
+                  {module}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="owner-filter">담당자 필터</label>
+            <select
+              id="owner-filter"
+              value={conditions.owner === undefined ? "" : JSON.stringify(conditions.owner)}
+              onChange={(event) =>
+                setConditions({
+                  ...conditions,
+                  owner: event.target.value === "" ? undefined : JSON.parse(event.target.value),
+                })
+              }
+            >
+              <option value="">전체</option>
+              {owners.map((owner) => (
+                <option key={owner} value={JSON.stringify(owner)}>
+                  {owner || "미지정"}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="status-filter">진행 상태 필터</label>
+            <select
+              id="status-filter"
+              value={conditions.status ?? ""}
+              onChange={(event) =>
+                setConditions({
+                  ...conditions,
+                  status: programStatuses.find((status) => status === event.target.value),
+                })
+              }
+            >
+              <option value="">전체</option>
+              {programStatuses.map((status) => (
+                <option key={status}>{status}</option>
+              ))}
+            </select>
+          </div>
+          <button onClick={() => setConditions({})}>조건 초기화</button>
+          {!loading && !loadError && (
+            <span className="muted" aria-live="polite">
+              결과 {visibleRecords.length}건
+            </span>
+          )}
+        </div>
+        <div className="schedule-controls">
+          <label className="schedule-toggle">
+            <input
+              type="checkbox"
+              checked={showGantt}
+              onChange={(event) => setShowGantt(event.target.checked)}
+            />
+            간트 보기
+          </label>
+          {showGantt && (
+            <>
+              <button
+                disabled={month === "0001-01"}
+                onClick={() => setMonth(shiftMonth(month, -1))}
+              >
+                이전달
+              </button>
+              <span aria-live="polite">{month}</span>
+              <button disabled={month === "9999-12"} onClick={() => setMonth(shiftMonth(month, 1))}>
+                다음달
+              </button>
+              <button onClick={() => setMonth(getMonth(new Date()))}>오늘</button>
+              <span className="muted">막대: 개발 예정 · ◆: 이관 예정</span>
+            </>
+          )}
+        </div>
         <div className="table-scroll">
-          <table>
+          <table className={showGantt ? "with-schedule" : undefined}>
             <caption className="sr-only">프로그램 목록</caption>
             <thead>
               <tr>
@@ -187,10 +424,20 @@ export function App() {
                 <th scope="col">완료 예정</th>
                 <th scope="col">실제 완료</th>
                 <th scope="col">이관 예정</th>
+                {showGantt && (
+                  <th scope="col" className="schedule-column">
+                    <span>월별 일정 (일)</span>
+                    <div className="schedule-days">
+                      {Array.from({ length: monthDays }, (_, index) => (
+                        <span key={index}>{index + 1}</span>
+                      ))}
+                    </div>
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody>
-              {records.map((record) => (
+              {visibleRecords.map((record) => (
                 <tr key={record.id}>
                   {(
                     [
@@ -242,11 +489,18 @@ export function App() {
                   >
                     {record.transferDate || "—"}
                   </td>
+                  {showGantt && <ScheduleCell record={record} month={month} />}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        {!!records.length && !visibleRecords.length && !loading && !loadError && (
+          <div className="empty-state">
+            <h3>조건에 맞는 프로그램이 없습니다.</h3>
+            <p>검색 조건을 변경하거나 조건 초기화로 전체 목록을 확인하세요.</p>
+          </div>
+        )}
         {!records.length && !loadError && (
           <div className="empty-state" aria-busy={loading}>
             <span className="empty-mark" aria-hidden="true">
@@ -260,7 +514,7 @@ export function App() {
         {loadError && (
           <div role="alert" className="feedback">
             <p>프로그램을 불러오지 못했습니다. 저장소 접근을 확인하고 재시도하세요.</p>
-            <button onClick={() => void load()} disabled={loading}>
+            <button onClick={() => void load()} disabled={loading || backupBusy}>
               재시도
             </button>
           </div>
@@ -270,7 +524,7 @@ export function App() {
         {notice}
       </p>
       <footer className="muted">
-        등록한 내용은 현재 브라우저에만 저장됩니다. 간트·검색·백업·오프라인 실행은 후속 단계입니다.
+        등록한 내용은 현재 브라우저에만 저장됩니다. 전체 백업 파일을 별도로 보관하세요.
       </footer>
       {fullValue && (
         <dialog
@@ -392,6 +646,11 @@ export function App() {
               </p>
             )}
             <div className="editor-actions">
+              {editing && (
+                <button type="button" disabled={saving} onClick={() => void remove()}>
+                  프로그램 삭제
+                </button>
+              )}
               {missing && (
                 <button
                   type="button"
@@ -412,10 +671,43 @@ export function App() {
                 저장
               </button>
             </div>
-            {saving && <p role="status">저장 중…</p>}
+            {saving && <p role="status">{deleting ? "삭제 중…" : "저장 중…"}</p>}
           </form>
         </dialog>
       )}
     </main>
+  );
+}
+
+function ScheduleCell({ record, month }: { record: ProgramRecord; month: string }) {
+  const { days, bar, marker, unscheduled } = getScheduleGeometry(record, month);
+  return (
+    <td className="schedule-cell">
+      <svg
+        className="schedule-chart"
+        viewBox={`0 0 ${days} 2`}
+        preserveAspectRatio="none"
+        role="group"
+        aria-label={`${record.programName}, 상태 ${record.status}, 개발 시작 예정 ${record.plannedStartDate || "미정"}, 개발 완료 예정 ${record.plannedEndDate || "미정"}, 이관 예정 ${record.transferDate || "미정"}`}
+      >
+        {Array.from({ length: days + 1 }, (_, index) => (
+          <line className="schedule-grid" key={index} x1={index} x2={index} y1="0" y2="2" />
+        ))}
+        {bar && (
+          <rect className="schedule-bar" x={bar.x} width={bar.width} y="0.65" height="0.7">
+            <title>{`개발 예정 ${record.plannedStartDate} ~ ${record.plannedEndDate}`}</title>
+          </rect>
+        )}
+        {marker && (
+          <polygon
+            className="schedule-marker"
+            points={`${marker.x},0.35 ${marker.x + 0.4},1 ${marker.x},1.65 ${marker.x - 0.4},1`}
+            role="img"
+            aria-label={`이관 예정일 ${record.transferDate}`}
+          />
+        )}
+      </svg>
+      {unscheduled && <span className="schedule-unscheduled">일정 미정</span>}
+    </td>
   );
 }

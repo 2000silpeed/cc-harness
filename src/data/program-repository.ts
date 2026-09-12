@@ -1,9 +1,12 @@
 import type { ProgramInput, ProgramRecord } from "../domain/program";
+import { validateBackupRecords } from "../domain/program-backup";
 
 export interface ProgramRepository {
   list(): Promise<ProgramRecord[]>;
+  replaceAll(records: readonly ProgramRecord[]): Promise<void>;
   create(input: ProgramInput): Promise<ProgramRecord>;
   update(id: string, input: ProgramInput): Promise<ProgramRecord>;
+  delete(id: string): Promise<void>;
   close(): Promise<void>;
 }
 export interface ProgramStoreError extends Error {
@@ -160,6 +163,77 @@ export function createProgramRepository(options?: {
   }
 
   return {
+    async delete(id: string) {
+      return enqueue(async () => {
+        const connection = await open();
+        return new Promise<void>((resolve, reject) => {
+          let transaction: IDBTransaction | undefined;
+          let failure = storeError();
+          const abort = () => {
+            try {
+              transaction!.abort();
+            } catch {
+              reject(failure);
+            }
+          };
+          try {
+            transaction = connection.transaction("programs", "readwrite");
+            transaction.oncomplete = () => resolve();
+            transaction.onabort = () => reject(failure);
+            const programs = transaction.objectStore("programs");
+            const existing = programs.get(id);
+            existing.onsuccess = () => {
+              if (existing.result === undefined) {
+                failure = storeError("not-found");
+                abort();
+                return;
+              }
+              try {
+                programs.delete(id);
+              } catch {
+                abort();
+              }
+            };
+          } catch {
+            if (transaction) abort();
+            else {
+              connection.close();
+              if (database === connection) database = undefined;
+              reject(failure);
+            }
+          }
+        });
+      });
+    },
+    async replaceAll(records) {
+      const snapshot = validateBackupRecords(records);
+      return enqueue(async () => {
+        const connection = await open();
+        return new Promise<void>((resolve, reject) => {
+          let transaction: IDBTransaction | undefined;
+          try {
+            transaction = connection.transaction("programs", "readwrite");
+            transaction.oncomplete = () => resolve();
+            transaction.onabort = () => reject(storeError());
+            const programs = transaction.objectStore("programs");
+            programs.clear();
+            for (const record of snapshot) programs.add(record);
+          } catch {
+            if (transaction) {
+              try {
+                transaction.abort();
+              } catch {
+                reject(storeError());
+              }
+            } else {
+              connection.close();
+              if (database === connection) database = undefined;
+              reject(storeError());
+            }
+          }
+        });
+      });
+    },
     update(id, input) {
       const snapshot = { ...input };
       return enqueue(async () => (await transact(snapshot, id))[0]);

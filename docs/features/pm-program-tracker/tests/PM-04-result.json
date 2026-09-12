@@ -1,0 +1,25 @@
+{
+  "issue": "PM-04",
+  "stage": "verification",
+  "status": "passed",
+  "base": "master",
+  "revision": "1a7d465 plus PM-03 and PM-04 worktree changes",
+  "attempt": 2,
+  "ac_passed": true,
+  "unit_tests": 95,
+  "browser_tests": 68,
+  "evidence": [
+    "PM-04-scenarios.md",
+    "../../../../../tmp/pm-04-red-unit.json",
+    "../../../../../tmp/pm-04-red-browser.json",
+    "../../../../../tmp/pm-04-green-browser.log",
+    "../../../../../tmp/pm-04-green-browser-2.log",
+    "../../../../../tmp/pm-04-format-equivalence.json",
+    "../../../../../tmp/pm-04-check.log",
+    "../../../../../tmp/pm-04-desktop.png",
+    "../../../../../tmp/pm-04-mobile.png"
+  ],
+  "stop_reason": null,
+  "external_actions_performed": [],
+  "notes": "Attempt 1 revealed reload ordering mismatch; attempt 2 aligns creation with IndexedDB ID order. Green test hashes unchanged; post-Green formatting preserves AST node kinds, children and literal values. Independent AC and Refactor/security review passed. No new dependencies; fresh audit not repeated. Full check exit 0. Windows and user acceptance are separate."
+}

@@ -1,12 +1,12 @@
 # cc-harness · 아이디어부터 검증된 프로젝트까지
 
-PM 기획: [PRD](docs/features/pm-program-tracker/prd.md)와 [승인 이슈 계획](docs/features/pm-program-tracker/issues.md). C안(React + TypeScript + IndexedDB)으로 PM-01 등록·로컬 저장과 PM-02 정보·상태·날짜 수정을 구현했다. 현재 단계와 검증 경계는 [진행 기록](docs/features/pm-program-tracker/progress.md)을 따른다.
+PM 기획: [PRD](docs/features/pm-program-tracker/prd.md)와 [승인 이슈 계획](docs/features/pm-program-tracker/issues.md). C안(React + TypeScript + IndexedDB)으로 PM-01–PM-06을 구현·검증했다. **현재는 미구현 Excel 테스트가 포함된 PM-07 재개 준비 상태**이며 전체 테스트 통과 상태가 아니다. 이전 Red 중단 이력을 보존하고 수정된 테스트를 독립 검토한다. [진행 기록](docs/features/pm-program-tracker/progress.md) · [독립 재개 검토](docs/features/pm-program-tracker/tests/PM-07-resume-review.md) · [이전 중단 원인](docs/features/pm-program-tracker/tests/PM-07-stop.md).
 
 PM 디자인 검사: `npm run design:check:pm` 또는 `npm run design:check:pm -- 경로.css`. 통합 `npm run check`와 PostToolUse 훅에 연결했으며, 신뢰 승인 후 위반 파일 생성 → 경고 전달 → 토큰 수정까지 확인했다. [검사 범위·사용법](docs/features/pm-program-tracker/ontology/verification.md#pm-검사-연결).
 
 PM 디자인의 읽기 시작점은 `docs/features/pm-program-tracker/design.md`, 공통 기준은 같은 폴더의 `design-system/`이다. `ontology/`에는 합성 입력·실행 토큰·검증 근거를 보존한다. 중복 하네스 팩과 빌드 사본은 외부 백업으로 옮겼다. 루트 `docs/design-system/`은 구조도용 기준이므로 PM 기준으로 사용하지 않는다.
 
-아이디어를 요구사항·설계·이슈별 구현·검증까지 연결하는 Codex 프로젝트 하네스입니다. **15개 실행 스킬과 PM 등록·수정·저장 실행 기반**이 있습니다. 간트·검색·백업·오프라인 실행은 후속 이슈입니다.
+아이디어를 요구사항·설계·이슈별 구현·검증까지 연결하는 Codex 프로젝트 하네스입니다. **15개 실행 스킬과 PM 등록·수정·저장·간트·검색·백업·복원·삭제 실행 기반**이 있습니다. Excel부터의 후속 이슈는 진행 기록을 확인하세요.
 
 ## PM 앱 실행
 
@@ -18,13 +18,17 @@ npx playwright install chromium
 npm run dev
 ```
 
-`http://127.0.0.1:5173`에서 프로그램 등록 → 모듈·프로그램명 입력 → 저장 → 새로고침으로 보존을 확인합니다. 상태 기본값은 개발 대기이며 날짜는 비워둘 수 있습니다. 같은 모듈·프로그램명은 중복 등록할 수 없습니다. 현재 브라우저·주소에만 저장되며 브라우저 데이터 삭제 시 유실될 수 있습니다. 아직 백업 기능이 없으므로 업무 원본을 따로 보관하세요.
+`http://127.0.0.1:5173`에서 프로그램 등록 → 모듈·프로그램명 입력 → 저장 → 새로고침으로 보존을 확인합니다. 상태 기본값은 개발 대기이며 날짜는 비워둘 수 있습니다. 같은 모듈·프로그램명은 중복 등록할 수 없습니다. 현재 브라우저·주소에만 저장되며 브라우저 데이터 삭제 시 유실될 수 있습니다. ‘전체 백업’으로 JSON 파일을 별도 보관하세요.
 
 `npm run typecheck`, `npm test`, `npm run build`를 개별 실행할 수 있습니다. `npm run check`는 하네스 검사와 단위·타입·빌드·Playwright 검사를 통합합니다. 배포·Windows 실기기·오프라인 검증은 별도입니다. [PM-00 검증 기록](docs/features/pm-program-tracker/pm-00-verification.md) · [PM-01 구현 기록](docs/features/pm-program-tracker/tests/PM-01-green.md).
 
 ## 시작하기
 
 PM 수정: 목록의 프로그램명을 누르면 수정창이 열립니다. 정보를 바꾸고 저장하면 기존 행이 갱신됩니다. ‘편집할 프로그램’에서 다른 행으로 이동할 수 있으며 미저장 변경을 버릴 때는 확인을 받습니다. 상태를 바꿔도 날짜가 자동 입력·삭제되지 않습니다. [PM-02 구현·검증](docs/features/pm-program-tracker/tests/PM-02-green.md).
+
+PM 일정·검색: ‘간트 보기’를 켜면 같은 행에 개발 예정 기간과 이관 표식이 나타납니다. 이전 달·다음 달·오늘로 이동할 수 있습니다. 네 텍스트 필드 통합 검색과 모듈·담당자·상태 필터는 목록과 간트에 함께 적용됩니다. ‘조건 초기화’는 필터만 해제하며 저장 데이터를 삭제하지 않습니다. 기본 행 순서는 저장소 ID 기준이며 등록 시간순이 아닙니다. [PM-03 결과](docs/features/pm-program-tracker/tests/PM-03-result.json) · [PM-04 결과](docs/features/pm-program-tracker/tests/PM-04-result.json).
+
+PM 백업·삭제: ‘전체 백업’은 검색 조건과 무관하게 모든 프로그램을 내보냅니다. ‘백업 복원’에서 JSON을 선택하면 검증 후 전체 교체 확인을 받습니다. 빈 백업을 확인하면 모두 삭제되므로 내용을 먼저 확인하세요. 한 행 삭제는 프로그램명 → 수정창 → ‘프로그램 삭제’에서 확인 후 실행합니다. 백업 없이는 복구할 수 없습니다. [PM-05 결과](docs/features/pm-program-tracker/tests/PM-05-result.json) · [PM-06 결과](docs/features/pm-program-tracker/tests/PM-06-result.json).
 
 - 전체 진행 순서와 승인 기준: [전 사이클 설명서](docs/harness/lifecycle.md)
 - 다른 프로젝트에 가져가기: [이식 방법](docs/harness/reuse.md)
