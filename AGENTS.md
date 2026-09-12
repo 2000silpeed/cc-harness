@@ -3,7 +3,7 @@
 ## 현재 범위
 
 - 실제 프로젝트 진행에 사용하는 Codex 하네스다. 현재는 실행 스킬, 작성 방법론, PM 요구사항, 구조도와 코드 품질 도구가 있다.
-- 앱 소스, React/TypeScript 구성, 앱 테스트·빌드, 원격 CI는 없다. 파일명만으로 구현이나 의존성을 추정하지 않는다.
+- src/ React·TypeScript 앱에 PM-01 등록·저장과 PM-02 수정이 구현돼 있다. Vite·Vitest·Playwright를 사용하며 후속 이슈 상태는 docs/features/pm-program-tracker/progress.md를 따른다. 원격 CI는 없다.
 - 사람용 설명서와 검증 기록은 `README.md`, 구조도는 `docs/architecture/index.html`이다.
 - 강의 PDF·중복 원본·Claude 호환 파일·임시 자료는 저장소 밖에 백업했다. 다시 가져오거나 Git에 포함하지 않는다. 기존 PM 인터뷰와 승인 상태는 요청 없이 변경하지 않는다.
 - 전체 사이클은 `docs/harness/lifecycle.md`, 실제 스킬 목록은 `docs/harness/registry.json`을 따른다. 요구사항·아키텍처·범위·이슈·시나리오 승인 근거를 보존한다. 등록과 실제 제품 실행을 구분한다.
@@ -22,7 +22,7 @@
 - 설치: `npm ci`. 잠금 파일의 개발 도구를 설치하고 `prepare`가 Husky Git 훅을 연결한다.
 - 코드 검사: `npm run lint`. JS/MJS 및 HTML 안의 JavaScript를 검사한다.
 - 서식 검사: `npm run format:check`. 수정하려면 `npm run format`을 사용한다.
-- 최종 통합 검사: `npm run check`. ESLint·디자인 기준·하네스 등록·Prettier 검사이며 앱 테스트나 CI를 뜻하지 않는다.
+- 최종 통합 검사: `npm run check`. ESLint·디자인·하네스·Prettier·단위 검사·타입/빌드·브라우저 smoke를 실행한다. Windows 실기능 검증·원격 CI를 뜻하지 않는다. 최초 브라우저 검사는 `npx playwright install chromium`이 필요하다.
 - 관련 검사를 먼저 1회 수행하고, 실패하면 원인을 수정해 재실행한다. 마지막에 가능한 통합 검사를 1회 수행한다. 변경·실패 없이 반복하지 않는다.
 - `pre-commit`은 lint-staged로 스테이징된 대상에 ESLint 자동 수정과 Prettier를 실행한다. 수정 불가능한 오류는 커밋을 차단한다.
 - `commit-msg`는 commitlint로 Conventional Commits를 검사한다. 훅은 Codex 전용이 아니라 Git에서 동작한다.
@@ -41,7 +41,7 @@
 ## 디자인 시스템
 
 - UI 변경 시 `.agents/skills/design-system/SKILL.md`와 대상 `design.md`, `docs/design-system/` 기준을 읽고 `npm run design:check`를 실행한다.
-- 현재 기준은 기존 구조도 화면에만 적용한다. PM 앱 디자인 확정으로 간주하지 않는다. 정적 검사와 실제 화면 검증을 구분한다.
+- 루트 docs/design-system/은 구조도용이다. PM은 docs/features/pm-program-tracker/AGENTS.md와 해당 design.md·design-system/을 따른다. npm run design:check는 구조도와 PM 정적 검사를 실행하며, PM 디자인 승인이나 화면 검증을 뜻하지 않는다.
 - Codex 훅 설정·신뢰 승인·검사 범위는 `docs/lessons/05-design-system.md`를 따른다.
 
 ## 커밋 메시지

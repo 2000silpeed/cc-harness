@@ -19,7 +19,7 @@ description: 디자인 시스템 문서를 새로 작성하거나 다른 프로�
 2. 대상 기능의 design.md를 먼저 읽는다. 현재 구현 화면의 기준은 `docs/architecture/design.md`다. 다른 앱까지 승인된 디자인으로 확대하지 않는다.
 3. `docs/design-system/`의 colors.md, typography.md, spacing.md, components.md를 읽는다. 기존 값을 재사용하고 새 값이 필요하면 이유를 제시한다. 통과를 위해 검사 기준을 무작정 완화하지 않는다.
 4. 승인된 범위만 구현한다. 참고 이미지가 없으면 이미지 분석 결과를 만들어내지 않는다. 없는 hover/disabled/error 상태를 이미 구현된 것으로 기록하지 않는다.
-5. `npm run design:check`를 실행한다. 현재 검사 범위는 구조도 HTML의 정적 style 블록이다. 새 CSS 파일·프레임워크는 검사 범위를 먼저 확장한다.
+5. `npm run design:check`로 구조도와 PM 검사를 실행한다. PM은 `docs/features/pm-program-tracker/design.md`와 해당 design-system 문서를 읽는다. 개별 검사는 `npm run design:check:pm -- 경로.css`다. 기본 대상은 src/app/public의 CSS·HTML·JSX·TSX다. TSX는 TypeScript AST의 정적 style만 지원하며 동적 style·JSX spread는 오류로 알린다. 상세 범위와 훅 상태는 `docs/features/pm-program-tracker/ontology/verification.md`를 따른다.
 6. 화면을 바꿨다면 실제 브라우저에서 반응형·상태·키보드 포커스를 확인한다. 정적 검사와 시각 검증 결과를 구분해 보고한다.
 
 훅은 검사를 실행할 뿐 자동 수정이나 변경 취소를 하지 않는다. 사용법과 신뢰 승인 절차는 `docs/lessons/05-design-system.md`를 따른다.

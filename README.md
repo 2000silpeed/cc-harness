@@ -1,8 +1,30 @@
 # cc-harness · 아이디어부터 검증된 프로젝트까지
 
-아이디어를 요구사항·설계·이슈별 구현·검증까지 연결하는 Codex 프로젝트 하네스입니다. **15개 실행 스킬과 작성 방법론·검사 도구**를 준비한 상태이며 실제 앱은 아직 구현하지 않았습니다.
+PM 기획: [PRD](docs/features/pm-program-tracker/prd.md)와 [승인 이슈 계획](docs/features/pm-program-tracker/issues.md). C안(React + TypeScript + IndexedDB)으로 PM-01 등록·로컬 저장과 PM-02 정보·상태·날짜 수정을 구현했다. 현재 단계와 검증 경계는 [진행 기록](docs/features/pm-program-tracker/progress.md)을 따른다.
+
+PM 디자인 검사: `npm run design:check:pm` 또는 `npm run design:check:pm -- 경로.css`. 통합 `npm run check`와 PostToolUse 훅에 연결했으며, 신뢰 승인 후 위반 파일 생성 → 경고 전달 → 토큰 수정까지 확인했다. [검사 범위·사용법](docs/features/pm-program-tracker/ontology/verification.md#pm-검사-연결).
+
+PM 디자인의 읽기 시작점은 `docs/features/pm-program-tracker/design.md`, 공통 기준은 같은 폴더의 `design-system/`이다. `ontology/`에는 합성 입력·실행 토큰·검증 근거를 보존한다. 중복 하네스 팩과 빌드 사본은 외부 백업으로 옮겼다. 루트 `docs/design-system/`은 구조도용 기준이므로 PM 기준으로 사용하지 않는다.
+
+아이디어를 요구사항·설계·이슈별 구현·검증까지 연결하는 Codex 프로젝트 하네스입니다. **15개 실행 스킬과 PM 등록·수정·저장 실행 기반**이 있습니다. 간트·검색·백업·오프라인 실행은 후속 이슈입니다.
+
+## PM 앱 실행
+
+개발 환경은 Node 22.12+ 또는 24 계열을 사용합니다. 잠금 파일로 설치하고 실행합니다.
+
+```sh
+npm ci
+npx playwright install chromium
+npm run dev
+```
+
+`http://127.0.0.1:5173`에서 프로그램 등록 → 모듈·프로그램명 입력 → 저장 → 새로고침으로 보존을 확인합니다. 상태 기본값은 개발 대기이며 날짜는 비워둘 수 있습니다. 같은 모듈·프로그램명은 중복 등록할 수 없습니다. 현재 브라우저·주소에만 저장되며 브라우저 데이터 삭제 시 유실될 수 있습니다. 아직 백업 기능이 없으므로 업무 원본을 따로 보관하세요.
+
+`npm run typecheck`, `npm test`, `npm run build`를 개별 실행할 수 있습니다. `npm run check`는 하네스 검사와 단위·타입·빌드·Playwright 검사를 통합합니다. 배포·Windows 실기기·오프라인 검증은 별도입니다. [PM-00 검증 기록](docs/features/pm-program-tracker/pm-00-verification.md) · [PM-01 구현 기록](docs/features/pm-program-tracker/tests/PM-01-green.md).
 
 ## 시작하기
+
+PM 수정: 목록의 프로그램명을 누르면 수정창이 열립니다. 정보를 바꾸고 저장하면 기존 행이 갱신됩니다. ‘편집할 프로그램’에서 다른 행으로 이동할 수 있으며 미저장 변경을 버릴 때는 확인을 받습니다. 상태를 바꿔도 날짜가 자동 입력·삭제되지 않습니다. [PM-02 구현·검증](docs/features/pm-program-tracker/tests/PM-02-green.md).
 
 - 전체 진행 순서와 승인 기준: [전 사이클 설명서](docs/harness/lifecycle.md)
 - 다른 프로젝트에 가져가기: [이식 방법](docs/harness/reuse.md)
@@ -120,6 +142,8 @@ node scripts/install-harness.mjs --target /absolute/path/to/project --apply
 [전체 224쪽 커버리지](docs/harness/coverage.md)에 페이지별 근거와 원문/보강 차이를 연결했습니다. 18강은 예고만 있고 PDF가 없어 분석했다고 주장하지 않습니다. 배포·운영은 강의 밖의 보완 인계입니다.
 
 ## 기존 프로젝트 요구사항
+
+PM 디자인은 Design Ontology Harness의 실제 합성과 Semantic-os 컬러 근거를 거쳐 [PM 디자인 정의](docs/features/pm-program-tracker/design.md)로 재정립했습니다. 빈 장부에 등록 패널·저장 피드백을 연결했습니다. 구현 범위는 [진행 기록](docs/features/pm-program-tracker/progress.md)을 따르며 최종 사용자 디자인 승인은 별도입니다.
 
 PM 프로그램 관리 도구의 기존 결정은 다음 문서에 있습니다. 정리 과정에서 내용이나 승인 상태를 변경하지 않았습니다. 이 기능을 진행할 때 재사용하고, 다른 프로젝트에 이식할 때는 복사하지 않습니다.
 
