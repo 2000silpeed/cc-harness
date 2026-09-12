@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "^(apply_patch|Bash)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/scripts/check-design-system.mjs\" --hook",
+            "timeout": 10,
+            "statusMessage": "디자인 기준 검사"
+          }
+        ]
+      }
+    ]
+  }
+}

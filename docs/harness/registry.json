@@ -1,0 +1,270 @@
+{
+  "schemaVersion": 1,
+  "scope": "Reusable course harness, not a completed product",
+  "sourcePageTotal": 224,
+  "sources": [
+    {
+      "id": "02",
+      "file": "02.Claude와 협업 준비.pdf",
+      "sha256": "8ab474cb8ab9bbc13096423c1cacc361f68fed72834ed8550bc976f268121613",
+      "pages": 13,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+      "reviewDocument": "docs/lessons/02-03-foundation.md",
+      "skills": ["project-bootstrap", "mermaid-diagram"]
+    },
+    {
+      "id": "03",
+      "file": "03.코드 품질 자동화.pdf",
+      "sha256": "b197fc1dd24f4bf4627e4dca1c6f16d6ad9b3d6cc57f967a6be35c21004b7367",
+      "pages": 10,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "reviewDocument": "docs/lessons/02-03-foundation.md",
+      "skills": ["project-bootstrap"]
+    },
+    {
+      "id": "04",
+      "file": "04.요구사항 인터뷰_v1.pdf",
+      "sha256": "9b8d9bd1250976c02bf2e49d456de2ad4b10fca163c539515d18f2871357247f",
+      "pages": 11,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+      "reviewDocument": "docs/lessons/04-requirements-interview.md",
+      "skills": ["feature-planner"]
+    },
+    {
+      "id": "05",
+      "file": "05.디자인 시스템 구축.pdf",
+      "sha256": "479f8811245463eebe93bb96a523726d7d3311ebbe0deda2b3eb1897211b1fe4",
+      "pages": 11,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+      "reviewDocument": "docs/lessons/05-design-system.md",
+      "skills": ["design-system"]
+    },
+    {
+      "id": "06",
+      "file": "06.PRD 작성 & 기술 결정(ADR).pdf",
+      "sha256": "5e2db440def6681bdd110bcfa49730da8162f28019d123250fe2e0a3702a6642",
+      "pages": 16,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      "reviewDocument": "docs/lessons/06-08-planning.md",
+      "skills": ["feature-planner"]
+    },
+    {
+      "id": "07",
+      "file": "07.이슈 분해 & GitHub 등록.pdf",
+      "sha256": "e7b5ca1acf2e887614dd18aece33712fbf0167848135ecb69079838f3310f18c",
+      "pages": 11,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+      "reviewDocument": "docs/lessons/06-08-planning.md",
+      "skills": ["feature-planner"]
+    },
+    {
+      "id": "08",
+      "file": "08.기획 워크플로우 자산화 & feature-planner.pdf",
+      "sha256": "9a9cb6d430cc130077fadcf4682c1f1fe10344c0cb329dd259040897c0a83cbb",
+      "pages": 14,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+      "reviewDocument": "docs/lessons/06-08-planning.md",
+      "skills": ["feature-planner"]
+    },
+    {
+      "id": "09",
+      "file": "09.TDD 개념.pdf",
+      "sha256": "d3c76d2c3b23107937810e61307b8958d941622220cb9c26e1f098378eb40516",
+      "pages": 12,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      "reviewDocument": "docs/lessons/09-13-tdd.md",
+      "skills": ["test-scenarios"]
+    },
+    {
+      "id": "10",
+      "file": "10.Red.pdf",
+      "sha256": "1099a2c2c4b9e9a17f59cd970e82421a184b70047be09967f72e69e9a411cff9",
+      "pages": 10,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "reviewDocument": "docs/lessons/09-13-tdd.md",
+      "skills": ["tdd-red"]
+    },
+    {
+      "id": "11",
+      "file": "11.Green 최소 구현.pdf",
+      "sha256": "f85995acb88d0622d3b29d919fc88a167cc0e8d7f2a270d23ca2d7422e5cf45b",
+      "pages": 16,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      "reviewDocument": "docs/lessons/09-13-tdd.md",
+      "skills": ["tdd-green", "ac-verifier"]
+    },
+    {
+      "id": "12",
+      "file": "12.Refactor + 보안.pdf",
+      "sha256": "852fbb6307374413bfb8786115e35ea084a9e07320938ea2d7942940015cd908",
+      "pages": 14,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+      "reviewDocument": "docs/lessons/09-13-tdd.md",
+      "skills": ["tdd-refactor", "security-review"]
+    },
+    {
+      "id": "13",
+      "file": "13.이슈 사이클 반복.pdf",
+      "sha256": "826d304ec1a3eb6b07b52c6da974b54b7bb6d76676a526208b28dab87af38dc2",
+      "pages": 5,
+      "reviewedPages": [1, 2, 3, 4, 5],
+      "reviewDocument": "docs/lessons/09-13-tdd.md",
+      "skills": ["tdd-loop"]
+    },
+    {
+      "id": "14",
+      "file": "14.E2E 개념.pdf",
+      "sha256": "ea6e4a96f8f03e34ef7512a779dc32f4db494625433eef1c965e98f1c2819ea7",
+      "pages": 16,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      "reviewDocument": "docs/lessons/14-17-delivery-automation.md",
+      "skills": ["e2e-write"]
+    },
+    {
+      "id": "15",
+      "file": "15.main 머지.pdf",
+      "sha256": "0004357212e5392e95050fe8b6b54a321ee53b628c3c9bfd29c559416c947a7e",
+      "pages": 16,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      "reviewDocument": "docs/lessons/14-17-delivery-automation.md",
+      "skills": ["create-pr"]
+    },
+    {
+      "id": "16",
+      "file": "16. tdd-loop.pdf",
+      "sha256": "49cb3d0b0737554fa4c8bd987e5d836b8414949f587589c0bf6f44d135d55297",
+      "pages": 9,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      "reviewDocument": "docs/lessons/14-17-delivery-automation.md",
+      "skills": ["tdd-loop"]
+    },
+    {
+      "id": "17",
+      "file": "17강.tdd-auto-loop.pdf",
+      "sha256": "5ec1bf716a259545e0ff93fe22886aa2152be4bc59b04d293d04f1be4f43936c",
+      "pages": 9,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      "reviewDocument": "docs/lessons/14-17-delivery-automation.md",
+      "skills": ["tdd-auto-loop"]
+    },
+    {
+      "id": "special",
+      "file": "[특강]  배경지식 - Test Code 에 대한 이해.pdf",
+      "sha256": "4ce6b5fa110c07dfe4b1abd374c75dc6879b23bc6188a735a94c5b0b873824fc",
+      "pages": 24,
+      "reviewedPages": [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24
+      ],
+      "reviewDocument": "docs/lessons/00-orientation-testing.md",
+      "skills": ["test-scenarios", "tdd-red"]
+    },
+    {
+      "id": "intro",
+      "file": "강의소개.pdf",
+      "sha256": "f2cab7f75753713ae329b7cb32d3443449d008354b79f34f804a16fec28499a0",
+      "pages": 7,
+      "reviewedPages": [1, 2, 3, 4, 5, 6, 7],
+      "reviewDocument": "docs/lessons/00-orientation-testing.md",
+      "skills": ["harness-cycle"]
+    }
+  ],
+  "skills": [
+    {
+      "name": "harness-cycle",
+      "path": ".agents/skills/harness-cycle/SKILL.md",
+      "kind": "orchestration"
+    },
+    {
+      "name": "project-bootstrap",
+      "path": ".agents/skills/project-bootstrap/SKILL.md",
+      "kind": "procedure"
+    },
+    {
+      "name": "feature-planner",
+      "path": ".agents/skills/feature-planner/SKILL.md",
+      "kind": "procedure"
+    },
+    {
+      "name": "test-scenarios",
+      "path": ".agents/skills/test-scenarios/SKILL.md",
+      "kind": "procedure"
+    },
+    {
+      "name": "tdd-red",
+      "path": ".agents/skills/tdd-red/SKILL.md",
+      "kind": "procedure"
+    },
+    {
+      "name": "tdd-green",
+      "path": ".agents/skills/tdd-green/SKILL.md",
+      "kind": "procedure"
+    },
+    {
+      "name": "ac-verifier",
+      "path": ".agents/skills/ac-verifier/SKILL.md",
+      "kind": "review-contract"
+    },
+    {
+      "name": "tdd-refactor",
+      "path": ".agents/skills/tdd-refactor/SKILL.md",
+      "kind": "procedure"
+    },
+    {
+      "name": "security-review",
+      "path": ".agents/skills/security-review/SKILL.md",
+      "kind": "procedure"
+    },
+    {
+      "name": "e2e-write",
+      "path": ".agents/skills/e2e-write/SKILL.md",
+      "kind": "procedure"
+    },
+    {
+      "name": "create-pr",
+      "path": ".agents/skills/create-pr/SKILL.md",
+      "kind": "procedure"
+    },
+    {
+      "name": "tdd-loop",
+      "path": ".agents/skills/tdd-loop/SKILL.md",
+      "kind": "orchestration"
+    },
+    {
+      "name": "tdd-auto-loop",
+      "path": ".agents/skills/tdd-auto-loop/SKILL.md",
+      "kind": "orchestration"
+    },
+    {
+      "name": "design-system",
+      "path": ".agents/skills/design-system/SKILL.md",
+      "kind": "procedure"
+    },
+    {
+      "name": "mermaid-diagram",
+      "path": ".agents/skills/mermaid-diagram/SKILL.md",
+      "kind": "procedure"
+    }
+  ],
+  "documents": [
+    "docs/harness/lifecycle.md",
+    "docs/harness/templates.md",
+    "docs/harness/reuse.md",
+    "docs/harness/coverage.md",
+    "docs/harness/verification.md",
+    "docs/design-system/authoring-guide.md",
+    "docs/lessons/02-03-foundation.md",
+    "docs/lessons/04-requirements-interview.md",
+    "docs/lessons/05-design-system.md",
+    "docs/lessons/06-08-planning.md",
+    "docs/lessons/09-13-tdd.md",
+    "docs/lessons/14-17-delivery-automation.md",
+    "docs/lessons/00-orientation-testing.md"
+  ],
+  "supportFiles": [".agents/skills/mermaid-diagram/agents/openai.yaml"],
+  "distributionTools": ["scripts/check-harness.mjs", "scripts/install-harness.mjs"],
+  "outsideCourse": [
+    "New-project runtime scaffold after approved architecture",
+    "Deployment and operations handoff"
+  ],
+  "missingReferencedMaterial": ["Lesson 18 is previewed but no lesson 18 PDF is present"]
+}

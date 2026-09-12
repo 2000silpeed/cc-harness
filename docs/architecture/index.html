@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <title>cc-harness | 현재 협업 구조</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+        background: #111519;
+        color: #e8edf1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 48px 24px;
+      }
+      .eyebrow {
+        color: #f5b957;
+        font-size: 13px;
+        letter-spacing: 0.12em;
+        font-weight: 700;
+      }
+      h1 {
+        margin: 12px 0;
+        font-size: clamp(28px, 4vw, 42px);
+        letter-spacing: -0.04em;
+      }
+      h2 {
+        margin-top: 0;
+        font-size: 20px;
+      }
+      p,
+      li {
+        line-height: 1.75;
+      }
+      .muted {
+        color: #b2bec8;
+      }
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 22px 0;
+      }
+      .badge {
+        border: 1px solid #3b4b58;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+      .badge.warning {
+        border-color: #936728;
+        color: #f5c36e;
+      }
+      section {
+        margin-top: 22px;
+        padding: 24px;
+        border: 1px solid #303a43;
+        border-radius: 16px;
+        background: #191f25;
+      }
+      #render-status {
+        margin: 0 0 18px;
+        color: #b2bec8;
+        font-size: 14px;
+      }
+      #render-status[data-state="success"] {
+        color: #95d9b3;
+      }
+      #render-status[data-state="error"] {
+        color: #ffbc97;
+      }
+      #diagram {
+        overflow-x: auto;
+        text-align: center;
+      }
+      #diagram svg {
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+        height: auto;
+      }
+      .legend {
+        margin-bottom: 0;
+        font-size: 14px;
+        color: #b2bec8;
+      }
+      .table-scroll {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 14px;
+      }
+      th,
+      td {
+        padding: 13px 12px;
+        vertical-align: top;
+        border-bottom: 1px solid #303a43;
+        line-height: 1.65;
+      }
+      th {
+        color: #f5c36e;
+        font-weight: 600;
+      }
+      td:first-child {
+        width: 46%;
+        overflow-wrap: anywhere;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.92em;
+      }
+      summary {
+        cursor: pointer;
+        padding: 4px 0;
+        font-weight: 600;
+      }
+      summary:focus-visible,
+      a:focus-visible {
+        outline: 2px solid #f5c36e;
+        outline-offset: 5px;
+      }
+      pre {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        padding: 18px;
+        background: #10161b;
+        border-radius: 8px;
+        line-height: 1.65;
+        font-size: 13px;
+      }
+      a {
+        color: #a8d4ff;
+      }
+      footer {
+        padding-top: 24px;
+        font-size: 13px;
+        color: #b2bec8;
+        line-height: 1.8;
+      }
+      @media (max-width: 600px) {
+        main {
+          padding: 28px 16px;
+        }
+        section {
+          padding: 16px;
+        }
+        th,
+        td {
+          padding: 10px 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="eyebrow">CC-HARNESS / IDEA TO PROJECT</div>
+        <h1>아이디어에서 프로젝트까지</h1>
+        <p class="muted">무엇을 정하고, 어떤 스킬을 쓰고, 무엇을 확인한 뒤 다음으로 가는가.</p>
+        <nav class="badges" aria-label="전체 진행 순서">
+          <a class="badge" href="#start">00 · 시작</a>
+          <a class="badge" href="#foundation">01 · 기반</a>
+          <a class="badge" href="#definition">02 · 요구사항과 디자인</a>
+          <a class="badge" href="#planning">03 · 설계와 작업 분해</a>
+          <a class="badge" href="#implementation">04 · 이슈마다 반복</a>
+          <a class="badge" href="#delivery">05 · 기능 완성</a>
+        </nav>
+        <p class="muted">
+          18개 자료 · 224쪽 분석 / 스킬셋 등록. 실제 제품 구현·머지·배포는 별도 실행 단계입니다.
+        </p>
+      </header>
+      <section id="start" aria-labelledby="start-title">
+        <div class="eyebrow">00 · 시작 / 소개 · 전체 사이클 진입</div>
+        <h2 id="start-title">아이디어와 대상부터 정한다</h2>
+        <p>누가 어떤 문제를 해결하는지, 어느 프로젝트에서 어디까지 진행할지 확인합니다.</p>
+        <p><code>$harness-cycle</code></p>
+        <p class="muted">다음 단계로 넘기는 것: 최초 요청 · 대상 경로 · 현재 단계</p>
+      </section>
+      <section id="foundation" aria-labelledby="foundation-title">
+        <div class="eyebrow">01 · 기반 / 2–3강</div>
+        <h2 id="foundation-title">같은 규칙으로 작업하고 자동으로 검사한다</h2>
+        <p>기존 도구를 조사한 뒤 협업 지침과 코드·커밋 검사를 연결합니다.</p>
+        <p><code>$project-bootstrap · $mermaid-diagram</code></p>
+        <p class="muted">다음 단계로 넘기는 것: AGENTS · 실제 검사 명령 · Git 훅</p>
+      </section>
+      <section id="definition" aria-labelledby="definition-title">
+        <div class="eyebrow">02 · 요구사항과 디자인 / 4–5강</div>
+        <h2 id="definition-title">무엇을 만들고 어떻게 보일지 정한다</h2>
+        <p>한 번에 하나씩 질문해 결정을 남기고, 참고 화면에서 공통 디자인 기준을 만듭니다.</p>
+        <p><code>$feature-planner · $design-system</code></p>
+        <p class="muted">다음 단계로 넘기는 것: spec-fixed · design.md · 공통 디자인 기준</p>
+        <details>
+          <summary>사람이 결정하는 지점</summary>
+          <p>
+            요구사항과 필요한 디자인 결정을 확정합니다. AI의 추천을 사용자 승인으로 기록하지
+            않습니다.
+          </p>
+        </details>
+      </section>
+      <section id="planning" aria-labelledby="planning-title">
+        <div class="eyebrow">03 · 설계와 작업 분해 / 6–8강</div>
+        <h2 id="planning-title">기술 선택의 이유를 남기고 작은 동작으로 나눈다</h2>
+        <p>기술안 세 가지를 비교하고, 범위를 확정한 뒤 AC와 의존성이 있는 수직 이슈를 만듭니다.</p>
+        <p><code>$feature-planner</code></p>
+        <p class="muted">다음 단계로 넘기는 것: PRD · ADR · Out of Scope · 이슈와 AC</p>
+
+        <details>
+          <summary>사람이 결정하는 지점</summary>
+          <p>
+            기술안 선택 → 제외 범위 → 이슈 목록. 실제 GitHub 등록은 별도 승인 범위에서만 수행합니다.
+          </p>
+        </details>
+      </section>
+      <section id="implementation" aria-labelledby="implementation-title">
+        <div class="eyebrow">04 · 이슈마다 반복 / 9–13강 · 테스트 특강</div>
+        <h2 id="implementation-title">실패 테스트에서 검증된 구현으로 간다</h2>
+        <p>
+          시나리오 → Red → Green → 독립 AC 검증 → Refactor → 보안. 누락된 AC는 다시 Red로
+          돌아갑니다.
+        </p>
+        <p>
+          <code
+            >$test-scenarios · $tdd-red · $tdd-green · $ac-verifier · $tdd-refactor ·
+            $security-review</code
+          >
+        </p>
+        <p class="muted">다음 단계로 넘기는 것: 테스트 · 최소 구현 · AC 근거 · 보안 결과</p>
+
+        <details>
+          <summary>반복하는 방법 선택 / 16–17강</summary>
+          <p><code>$tdd-loop</code>: 한 이슈의 순서를 묶고 단계별 확인을 유지합니다.</p>
+          <p>
+            <code>$tdd-auto-loop</code>: 사전 위임된 범위에서 격리된 단계·결과 JSON·객관 STOP으로
+            PR까지 진행합니다. 무한 반복이나 자동 머지가 아닙니다.
+          </p>
+          <p class="muted">
+            16·17강은 이 사이클을 감싸는 실행 방식입니다. 프로젝트가 끝난 뒤 추가하는 단계가
+            아닙니다.
+          </p>
+        </details>
+      </section>
+      <section id="delivery" aria-labelledby="delivery-title">
+        <div class="eyebrow">05 · 기능 완성 / 14–15강</div>
+        <h2 id="delivery-title">실제 사용자 흐름과 CI를 확인한 뒤 통합한다</h2>
+        <p>
+          기능 이슈를 모아 E2E로 연결을 확인하고, PR 초안·필수 검사·리뷰·승인을 거쳐 main에
+          통합합니다.
+        </p>
+        <p><code>$e2e-write · $create-pr</code></p>
+        <p class="muted">다음 단계로 넘기는 것: E2E 증거 · PR · CI · 승인된 머지</p>
+
+        <details>
+          <summary>main 이후 / 강의 밖 보완</summary>
+          <p>
+            배포 대상·비용·데이터·백업·롤백을 정하고 승인받습니다. 실제 배포 후 smoke test와 운영
+            인계를 확인합니다. main 머지만으로 배포 완료를 선언하지 않습니다.
+          </p>
+        </details>
+      </section>
+      <section aria-label="전체 도식">
+        <details>
+          <summary>전체 흐름을 도식으로 보기</summary>
+          <p id="render-status" role="status" aria-live="polite" data-state="loading">
+            도식을 불러오는 중입니다.
+          </p>
+          <div id="diagram" aria-label="아이디어부터 통합까지의 전체 사이클"></div>
+          <p class="legend">
+            실선은 진행 순서, 점선은 재작업입니다. 각 단계의 승인은 별도로 유지합니다.
+          </p>
+          <details id="source-details" open>
+            <summary>도식 원문</summary>
+            <pre id="diagram-source">
+flowchart TD
+  accTitle: 아이디어부터 검증된 프로젝트까지
+  accDescr: 기획 승인 후 이슈별 TDD를 반복하고 E2E, CI, 머지로 진행. 자동 루프는 구현 단계의 선택 모드.
+  idea["아이디어 · 대상 확인"] --&gt; setup["협업 · 품질 기반 / 2–3강"]
+  setup --&gt; spec["요구사항 · 디자인 / 4–5강"]
+  spec --&gt; plan["PRD · ADR · 이슈 / 6–8강"]
+  plan --&gt; tdd["시나리오 · Red · Green / 9–11강"]
+  tdd --&gt; review["AC · Refactor · 보안 / 11–13강"]
+  review -. 누락 또는 다음 이슈 .-&gt; tdd
+  review --&gt; e2e["기능 E2E / 14강"]
+  e2e --&gt; delivery["PR · CI · 승인된 머지 / 15강"]
+  delivery --&gt; release["배포 · 운영 인계 / 보강"]</pre>
+          </details>
+          <noscript><p>도식 원문과 단계별 카드로 전체 흐름을 확인할 수 있습니다.</p></noscript>
+        </details>
+      </section>
+      <footer>
+        재사용 진입점: <code>$harness-cycle</code><br />
+        자동화 등록과 실제 실행은 다릅니다. 현재 앱·원격 CI·배포는 없으며 Codex 훅 실제 발화는
+        미검증입니다.<br />
+        보조 도식은 Mermaid 11.12.0 CDN을 사용합니다.
+      </footer>
+    </main>
+    <script type="module">
+      const status = document.querySelector("#render-status");
+      const diagram = document.querySelector("#diagram");
+      const source = document.querySelector("#diagram-source").textContent;
+      try {
+        const { default: mermaid } =
+          await import("https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.esm.min.mjs");
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: "dark",
+          securityLevel: "strict",
+          fontFamily:
+            '-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif',
+          flowchart: { htmlLabels: false },
+        });
+        const { svg } = await mermaid.render("workspace-graph", source);
+        diagram.innerHTML = svg;
+        status.textContent = "도식 렌더링 완료 · 아이디어부터 통합까지";
+        status.dataset.state = "success";
+        document.querySelector("#source-details").open = false;
+      } catch (error) {
+        status.textContent =
+          "도식을 표시하지 못했습니다. 인터넷/CDN 접근 또는 Mermaid 문법을 확인하세요. 아래 원문과 근거 표는 계속 볼 수 있습니다.";
+        status.dataset.state = "error";
+        console.error("Mermaid 렌더링 실패:", error);
+      }
+    </script>
+  </body>
+</html>

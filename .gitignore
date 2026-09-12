@@ -1,0 +1,15 @@
+node_modules/
+.DS_Store
+
+temp/
+tmp/
+*.tmp
+
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+
+/*.pdf
