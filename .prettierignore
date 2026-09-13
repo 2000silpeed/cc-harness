@@ -1,13 +1,3 @@
-/docs/features/pm-program-tracker/interview.md
-/docs/features/pm-program-tracker/spec-original.md
-/docs/features/pm-program-tracker/spec-fixed.md
-/docs/features/pm-program-tracker/ontology/build/
-/docs/features/pm-program-tracker/ontology/plugins/
-/docs/features/pm-program-tracker/ontology/agent-team/
-/docs/features/pm-program-tracker/ontology/design-system/tokens.css
-/docs/features/pm-program-tracker/ontology/design-system/fonts/
-/docs/features/pm-program-tracker/ontology/design-system/INTERACTION.md
-/docs/features/pm-program-tracker/ontology/design-system/interactions.css
 dist/
 test-results/
 playwright-report/

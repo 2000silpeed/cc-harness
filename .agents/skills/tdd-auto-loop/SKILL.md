@@ -1,11 +1,11 @@
 ---
 name: tdd-auto-loop
-description: 사용자가 승인한 이슈를 격리된 단계별 에이전트와 구조화 결과로 자동 진행해 PR까지 준비하도록 요청할 때 사용한다. 여러 이슈 반복은 명시된 집합과 상한 안에서만 수행한다.
+description: 승인된 이슈를 명시적 위임·유한 상한 안에서 자동 반복해 PR 준비까지 진행하도록 요청할 때 사용한다.
 ---
 
 # 범위가 정해진 반복 자동화
 
-`docs/harness/lifecycle.md`와 `docs/methods/delivery-automation.md`의 자동 반복 방법을 읽는다.
+진입 전에 `docs/harness/lifecycle.md`의 승인·이슈 루프(5–7절), [필수 오케스트레이션 정책](../../../docs/methods/delivery-automation.md#필수-오케스트레이션-정책), [자동 승인·STOP·결과 JSON 계약](../../../docs/methods/delivery-automation.md#tdd-auto-loop의-자체-승인과-객관-stop)을 읽는다. E2E·PR 상세는 해당 단계에서만 읽는다.
 
 ## 진입 계약
 
@@ -19,14 +19,7 @@ description: 사용자가 승인한 이슈를 격리된 단계별 에이전트�
 
 ## STOP 프로필
 
-- 사전 점검: AC 없음, uncommitted 변경, 잘못된 base이면 STOP. 다른 사람 변경을 삭제·커밋해 통과시키지 않는다.
-- 시나리오: 5개 미만 또는 경계값 누락이면 STOP. 의미 없는 중복으로 수만 맞추지 않는다.
-- Red: import 등 잘못된 실패 이유이면 STOP.
-- Green: 최대 3회 시도 중 3회 실패 또는 테스트 수정 시도이면 STOP. 사용자가 더 낮은 상한을 정하면 그것을 따른다.
-- AC: 독립 결과 ac_passed=false 또는 증거 부족이면 STOP.
-- Refactor: 대상 프로젝트의 전체 회귀 테스트 명령이 미통과이면 STOP. 관련 테스트 일부 통과로 대체하지 않는다.
-- Security: 수정 후 재스캔에서도 high 이상이면 STOP. 대상의 더 엄격한 CI 기준을 완화하지 않는다.
-- PR: commitlint 실패이면 STOP. 외부 게시 권한이 없으면 URL 생성 없이 로컬 초안에서 끝낸다.
+위 자동 승인·STOP 계약의 조건 전체를 실행 전에 확인하고 각 단계 전후에 적용한다. Green은 최대 3회이며 사용자 상한이 더 낮으면 그 값을 따른다. Refactor는 대상 프로젝트의 전체 회귀 테스트 명령이 미통과이면 STOP이며 관련 테스트 일부 통과로 대체하지 않는다. 필수 STOP은 국소 복구보다 우선하고, 외부 게시 권한이 없으면 로컬 초안까지만 준비한다.
 
 STOP은 계속할지 반복해서 묻는 대기가 아니라 로그·재개 조건을 남기고 해당 실행을 끝내는 상태다. 이슈 코멘트도 승인된 경우만 게시한다. 재실행은 입력 보강과 사전 점검부터 한다.
 

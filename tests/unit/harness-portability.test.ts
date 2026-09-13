@@ -69,7 +69,7 @@ function run(root: string, script = "check-harness", args: string[] = []) {
   });
 }
 
-it("validates a standalone distribution without npm, package, PDFs, or PM files", () => {
+it("validates a standalone distribution without npm, package, or product files", () => {
   const root = fixture();
   const result = run(root);
   expect(result.stderr).toBe("");
@@ -84,7 +84,7 @@ it("dry-runs, applies only registered files, and repeats idempotently", () => {
     "package.json",
     "AGENTS.md",
     ".husky/pre-commit",
-    "docs/features/pm-program-tracker/spec-fixed.md",
+    "docs/features/example-product/spec-fixed.md",
     "source.pdf",
   ])
     write(source, filename, "not distributable");

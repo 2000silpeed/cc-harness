@@ -36,7 +36,7 @@ node scripts/check-harness.mjs
 codex
 ```
 
-CLI 대신 앱을 쓰면 마지막에 새 제품 루트 폴더를 연다. 위 복사·등록 검사에는 npm ci가 필요 없다. 원본 AGENTS·package·앱·PM 명세·Git/Codex 훅·브라우저 데이터는 복사하지 않는다.
+CLI 대신 앱을 쓰면 마지막에 새 제품 루트 폴더를 연다. 위 복사·등록 검사에는 npm ci가 필요 없다. 원본 AGENTS·package·Git/Codex 훅·브라우저 데이터는 복사하지 않는다.
 
 Codex 대화창의 첫 입력:
 
@@ -46,7 +46,7 @@ $harness-cycle
 아이디어: [누가 어떤 문제를 해결하는 도구인지]
 로컬 .agents/skills와 docs/harness/lifecycle.md를 읽어줘.
 짧은 AGENTS와 기능별 progress를 준비하고, 인터뷰를 한 질문씩 진행해줘.
-PM 사례를 내 제품의 결정으로 복사하지 마.
+제품 요구사항과 기술 결정은 이 프로젝트에서 확인해.
 기술안 승인 전 앱을 설치하지 말고 커밋·푸시·배포는 제외해.
 ```
 
@@ -84,28 +84,19 @@ mermaid-diagram은 요청 시 구조도를 갱신하는 보조 스킬이다. 두
 
 이 표는 cc-harness 원본의 명령이다. 새 제품의 명령은 해당 스택에 맞게 별도로 구성한다.
 
-| 명령                           | 역할                                                 |
-| ------------------------------ | ---------------------------------------------------- |
-| node scripts/check-harness.mjs | 등록·스킬·문서·참조 검사, npm 설치 없이 실행 가능    |
-| npm ci                         | 원본 앱·검사 의존성 설치 및 Husky 연결               |
-| npm run dev                    | 현재 PM 사례 앱의 개발 서버                          |
-| npm run lint                   | JS/MJS·TS/TSX·HTML 검사                              |
-| npm run design:check           | 구조도와 PM 정적 디자인 검사                         |
-| npm run format:check           | 서식 검사                                            |
-| npm test                       | 단위 테스트                                          |
-| npm run build                  | 타입 검사와 Vite 빌드                                |
-| npm run test:browser           | 빌드된 앱의 Playwright 검사                          |
-| npm run check                  | lint·디자인·하네스·서식·단위·타입/빌드·브라우저 통합 |
+| 명령                           | 역할                                              |
+| ------------------------------ | ------------------------------------------------- |
+| node scripts/check-harness.mjs | 등록·스킬·문서·참조 검사, npm 설치 없이 실행 가능 |
+| npm ci                         | 하네스 검사 의존성 설치 및 Husky 연결             |
+| npm run lint                   | JS/MJS·TS/TSX·HTML 검사                           |
+| npm run design:check           | 구조도 정적 디자인 검사                           |
+| npm run format:check           | 서식 검사                                         |
+| npm test                       | Vitest 하네스 이식 회귀 44개                      |
+| npm run harness:check          | 하네스 등록·참조 검사                             |
+| npm run typecheck              | TypeScript 타입 검사                              |
+| npm run check                  | lint·디자인·하네스·서식·테스트·타입 통합          |
 
-원본 앱은 Node 22.12+ 또는 24 계열을 사용한다. 브라우저 검사 전 `npx playwright install chromium`이 필요하다. `npm run test:browser` 단독 실행 전 현재 코드로 빌드한다. 제품·샘플 포트를 일괄 종료하거나 기존 브라우저 데이터를 지우지 않는다. 새 제품 이식에는 이 앱 실행 과정이 필요 없다.
-
-## PM 사례의 경계
-
-PM 사례는 단일 PC·브라우저의 프로그램 장부다. 등록·수정·간트·검색·백업·복원·삭제 구현은 기존 검증 기록을 따른다. **Git에 포함된 PM-07은 미구현 테스트·stub을 가진 준비 기준점(ca79c7a)**이다. 이후 로컬 Excel 구현은 미커밋이며 이번 하네스 문서 배포에 포함하지 않는다. 따라서 새 clone의 PM 전체 검사는 준비 단계의 실패 테스트를 포함한다. 하네스 이식·등록 검사와 구분한다.
-
-로컬 Excel 구현은 단위 240·브라우저 85개를 통과했지만 독립 AC에서 정상 XLSX 일부 거부와 캐시 없는 수식 누락을 재현했다. 이후 일반 동작에 대한 사용자 확인을 받았으며, 이 확인을 해당 결함 해결로 바꾸지 않는다. PM-08–PM-10은 미착수다. [진행 상태](docs/features/pm-program-tracker/progress.md) · [검수 결과와 재개 조건](docs/features/pm-program-tracker/tests/PM-07-resume-stop.md).
-
-이 데이터는 Git이 아니라 IndexedDB에 저장된다. 다른 PC로 옮기려면 별도 백업·복원이 필요하다. 새 제품에는 PM 데이터·인터뷰·승인·디자인을 복사하지 않는다.
+하네스 도구의 검증 기준은 Node 24 계열이다. TypeScript는 이식 회귀와 타입 검사를 위해 유지한다. 제품 앱·개발 서버·미리보기·앱 빌드·브라우저 테스트는 포함하지 않는다. 하네스 검사 통과는 제품 구현·AC 충족·시각 검증을 뜻하지 않는다. [검증 경계](docs/harness/verification.md)를 따른다.
 
 ## 구조도와 운영 경계
 

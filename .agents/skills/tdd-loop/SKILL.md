@@ -1,14 +1,14 @@
 ---
 name: tdd-loop
-description: 승인된 이슈 하나에 시나리오·Red·Green·AC 검증·Refactor·보안 사이클을 순서대로 수행하고 PR 인계까지 정리할 때 사용한다.
+description: 승인된 이슈 하나를 단계별 사용자 검토와 TDD·독립 AC 검증을 거쳐 PR 준비까지 진행한다.
 ---
 
 # 한 이슈의 TDD 사이클
 
-`docs/harness/lifecycle.md`와 `docs/methods/delivery-automation.md`의 단계별 반복 방법을 읽는다.
+[필수 오케스트레이션 정책](../../../docs/methods/delivery-automation.md#필수-오케스트레이션-정책)과 [단계별 진입·재개 계약](../../../docs/methods/delivery-automation.md#tdd-loop는-순서-자동화-승인은-유지), `docs/harness/lifecycle.md`의 승인·이슈 루프(5–7절)를 먼저 확인한다. 전달 단계에서만 `docs/methods/delivery-automation.md`의 PR·CI 절을 추가로 읽는다.
 
 1. 이슈·선행 의존성·기획 승인·대상 경로·실행 범위를 확인한다. 미완료 선행 작업을 건너뛰지 않는다.
-2. 해당 SKILL.md를 순서대로 읽어 test-scenarios → tdd-red → tdd-green → ac-verifier → tdd-refactor → security-review를 수행한다.
+2. test-scenarios → tdd-red → tdd-green → ac-verifier → tdd-refactor → security-review 순서로 배정한다. 각 작업자는 현재 단계의 SKILL.md와 그 단계에 필요한 참조만 읽고 수행한다.
 3. G5 계약·시나리오와 구현 결과·PR 초안의 단계별 사용자 검토를 보존한다. 단계별 모드는 순서만 자동화하며 승인을 생략하지 않는다. 이미 유효한 승인·단계 증거가 있으면 그 다음부터 재개한다.
 4. AC 누락은 시나리오/Red로 돌아가고, Refactor 회귀는 자신의 마지막 변경부터 복구한다.
 5. Broken 환경·새 요구사항·승인 부재·차단 발견·진전 없는 반복은 정지 이유와 다음 결정을 기록한다.

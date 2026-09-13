@@ -4,20 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
-    "build": "npm run typecheck && vite build",
-    "preview": "vite preview --host 127.0.0.1",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:browser": "playwright test",
     "prepare": "husky",
     "lint": "eslint --no-error-on-unmatched-pattern --no-warn-ignored \"**/*.{js,mjs,ts,tsx,html}\"",
     "format:check": "prettier . --check --ignore-unknown",
     "format": "prettier . --write --ignore-unknown",
-    "design:check": "node scripts/check-design-system.mjs && npm run design:check:pm",
-    "design:check:pm": "node scripts/check-pm-design.mjs",
+    "design:check": "node scripts/check-design-system.mjs",
     "harness:check": "node scripts/check-harness.mjs",
-    "check": "npm run lint && npm run design:check && npm run harness:check && npm run format:check && npm run test && npm run build && npm run test:browser",
+    "check": "npm run lint && npm run design:check && npm run harness:check && npm run format:check && npm run test && npm run typecheck",
     "lint-staged": "lint-staged",
     "lint:commit": "commitlint --edit"
   },
@@ -37,14 +32,9 @@
     "useTabs": false
   },
   "devDependencies": {
-    "@playwright/test": "1.63.0",
     "@types/node": "22.20.2",
-    "@types/react": "19.3.0",
-    "@types/react-dom": "19.3.0",
-    "fake-indexeddb": "6.2.5",
     "typescript": "6.0.3",
     "typescript-eslint": "8.70.0",
-    "vite": "8.3.0",
     "vitest": "5.0.0",
     "@commitlint/cli": "21.2.2",
     "@commitlint/config-conventional": "21.2.2",
@@ -55,10 +45,5 @@
     "husky": "9.1.7",
     "lint-staged": "17.5.1",
     "prettier": "3.9.6"
-  },
-  "dependencies": {
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   }
 }
