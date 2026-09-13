@@ -5,7 +5,7 @@ description: 검증된 이슈 또는 기능을 PR·CI·머지 단계로 인계�
 
 # PR과 통합 인계
 
-`docs/lessons/14-17-delivery-automation.md`와 `docs/harness/templates.md`의 delivery 기록을 읽는다.
+`docs/methods/delivery-automation.md`와 `docs/harness/templates.md`의 delivery 기록을 읽는다.
 
 1. 실제 repo·base/head·브랜치 전략·dirty 변경·관련 이슈와 실행 권한을 확인한다. main이나 원격 이름을 추정하지 않는다.
 2. 먼저 PR 본문·변경 요약 초안을 검토받고, 대상의 기존 E2E를 포함한 필수 검사가 통과해야 push/PR로 간다. 승인 범위 안에서만 브랜치·스테이징·커밋·푸시·PR을 수행한다. 승인 없으면 초안만 작성한다.
@@ -13,7 +13,7 @@ description: 검증된 이슈 또는 기능을 PR·CI·머지 단계로 인계�
 4. PR에는 요구사항/AC·변경·검사 증거·위험·미완료를 기록한다. GitHub 보드와 이슈 상태는 실제 결과를 조회해 맞춘다.
 5. CI가 검토 대상 커밋을 검사했는지, 필수 상태와 리뷰가 충족됐는지 확인한다. 실패는 원인 수정 후 재검증한다.
 6. [GATE] 머지는 별도 승인 또는 명시된 사전 승인 범위, 필수 CI·리뷰·차단 발견 해소가 모두 필요하다.
-7. 강의는 feature→main에서 merge commit으로 이슈 이력을 보존한다. 대상 정책이 다르면 이유와 승인된 전략을 기록한 후 실제 실행 결과를 확인한다. 브랜치 삭제·이슈 종료도 대상과 권한을 확인한다.
+7. feature→main에서 merge commit을 사용하면 이슈 이력을 보존할 수 있다. 대상 정책이 다르면 이유와 승인된 전략을 기록한 후 실제 실행 결과를 확인한다. 브랜치 삭제·이슈 종료도 대상과 권한을 확인한다.
 8. 재사용할 규칙·문서·다음 작업을 정리한다. 머지를 배포 완료라고 보고하지 않는다.
 
 이슈→feature 통합과 feature→main 릴리스를 구분한다. 강제 푸시·보호 우회·실패 CI 무시로 완료하지 않는다.

@@ -3,9 +3,9 @@
 ## 현재 범위
 
 - 실제 프로젝트 진행에 사용하는 Codex 하네스다. 현재는 실행 스킬, 작성 방법론, PM 요구사항, 구조도와 코드 품질 도구가 있다.
-- src/ React·TypeScript 앱에 PM-01 등록·저장과 PM-02 수정이 구현돼 있다. Vite·Vitest·Playwright를 사용하며 후속 이슈 상태는 docs/features/pm-program-tracker/progress.md를 따른다. 원격 CI는 없다.
+- src/에는 React·TypeScript PM 앱이 있다. Vite·Vitest·Playwright를 사용하며 후속 이슈 상태는 docs/features/pm-program-tracker/progress.md를 따른다. 원격 CI는 없다.
 - 사람용 설명서와 검증 기록은 `README.md`, 구조도는 `docs/architecture/index.html`이다.
-- 강의 PDF·중복 원본·Claude 호환 파일·임시 자료는 저장소 밖에 백업했다. 다시 가져오거나 Git에 포함하지 않는다. 기존 PM 인터뷰와 승인 상태는 요청 없이 변경하지 않는다.
+- 미사용 원본·호환 파일·임시 자료는 저장소 밖에 백업했다. 다시 가져오거나 Git에 포함하지 않는다. 기존 PM 인터뷰와 승인 상태는 요청 없이 변경하지 않는다.
 - 전체 사이클은 `docs/harness/lifecycle.md`, 실제 스킬 목록은 `docs/harness/registry.json`을 따른다. 요구사항·아키텍처·범위·이슈·시나리오 승인 근거를 보존한다. 등록과 실제 제품 실행을 구분한다.
 
 ## 작업 방식
@@ -30,19 +30,19 @@
 
 ## 요구사항 인터뷰
 
-- 전 사이클 요청은 harness-cycle, 기획은 feature-planner, 이슈 구현은 tdd-loop로 연결한다. 자동 모드는 명시적 위임·유한 범위·원문 STOP 조건이 필요하다.
+- 전 사이클 요청은 harness-cycle, 기획은 feature-planner, 이슈 구현은 tdd-loop로 연결한다. 자동 모드는 명시적 위임·유한 범위·하네스 STOP 조건이 필요하다.
 
 - 먼저 최초 기능 정의서와 실제 코드·설정을 읽는다. 앱 소스가 없으면 없다고 밝히고 구현·패턴을 추정하지 않는다.
 - 한 번에 질문 하나만 하고, 판단이 필요한 질문에는 추천 방식과 이유를 함께 제시한다. 이미 확인한 사실을 반복해서 묻지 않는다.
 - 최초 요청은 `spec-original.md`에 보존하고, 사용자 결정·이유·용어를 `spec-fixed.md`에 정리한다. 미승인 AI 제안을 사용자 결정으로 기록하지 않는다.
 - 사용자 확정 전 구현으로 넘어가지 않는다. 요청 범위 밖의 기존 인터뷰를 재진행하거나 수정하지 않는다.
-- 4강 브리핑·재사용 프롬프트·점검표는 `docs/lessons/04-requirements-interview.md`를 따른다.
+- 요구사항 인터뷰 방법론·프롬프트·점검표는 `docs/methods/requirements-interview.md`를 따른다.
 
 ## 디자인 시스템
 
 - UI 변경 시 `.agents/skills/design-system/SKILL.md`와 대상 `design.md`, `docs/design-system/` 기준을 읽고 `npm run design:check`를 실행한다.
 - 루트 docs/design-system/은 구조도용이다. PM은 docs/features/pm-program-tracker/AGENTS.md와 해당 design.md·design-system/을 따른다. npm run design:check는 구조도와 PM 정적 검사를 실행하며, PM 디자인 승인이나 화면 검증을 뜻하지 않는다.
-- Codex 훅 설정·신뢰 승인·검사 범위는 `docs/lessons/05-design-system.md`를 따른다.
+- Codex 훅 설정·신뢰 승인·검사 범위는 `docs/methods/design-system.md`를 따른다.
 
 ## 커밋 메시지
 
@@ -57,4 +57,4 @@
 - Codex CLI에서 `$mermaid-diagram 현재 문서와 품질 검사 구조를 갱신해줘`처럼 명시적으로 호출한다.
 - `agents/openai.yaml`에서 암묵적 호출을 비활성화했다. 상시 파일 감시기나 자동 동기화 기능은 아니다.
 - 구조 변경 시 실제 근거와 구조도의 일치를 확인한다. 문서만 변경한 것과 브라우저 렌더링 검증을 구분한다.
-- Codex의 기준 지침은 이 파일이며 스킬의 기준은 `.agents/skills/`다. `docs/lessons/`는 스킬이 사용하는 상세 방법론이므로 참조 대체 없이 삭제하지 않는다.
+- Codex의 기준 지침은 이 파일이며 스킬의 기준은 `.agents/skills/`다. `docs/methods/`는 스킬이 사용하는 상세 방법론이므로 참조 대체 없이 삭제하지 않는다.

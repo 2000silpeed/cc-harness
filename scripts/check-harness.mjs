@@ -1,6 +1,5 @@
-import { existsSync, readFileSync } from "node:fs";
-import { createHash } from "node:crypto";
-import { dirname, isAbsolute, relative, resolve } from "node:path";
+import { lstatSync, readFileSync } from "node:fs";
+import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -8,82 +7,132 @@ const errors = [];
 const check = (condition, message) => {
   if (!condition) errors.push(message);
 };
-const localPath = (name) => {
-  if (typeof name !== "string" || isAbsolute(name)) throw new Error("잘못된 등록 경로");
-  const absolute = resolve(root, name);
-  if (relative(root, absolute).startsWith("..")) throw new Error(`루트 밖 경로: ${name}`);
-  return absolute;
+const localPath = (name, allowParents = false) => {
+  if (
+    typeof name !== "string" ||
+    !name ||
+    isAbsolute(name) ||
+    /[\\:]/.test(name) ||
+    [...name].some((character) => character.charCodeAt(0) < 32) ||
+    (!allowParents && name.split("/").some((part) => !part || part === "." || part === ".."))
+  )
+    throw new Error("안전하지 않은 경로: " + name);
+  let current = resolve(root);
+  const parts = name.split("/");
+  for (const [index, part] of parts.entries()) {
+    current = resolve(current, part);
+    const withinRoot = relative(root, current);
+    if (withinRoot === ".." || withinRoot.startsWith(".." + sep) || isAbsolute(withinRoot))
+      throw new Error("루트 밖 경로: " + name);
+    const stat = lstatSync(current);
+    if (stat.isSymbolicLink()) throw new Error("심볼릭 링크 경로: " + name);
+    if (index < parts.length - 1 ? !stat.isDirectory() : !stat.isFile())
+      throw new Error("비정규 파일 경로: " + name);
+  }
+  return current;
 };
 
 try {
-  const registry = JSON.parse(readFileSync(resolve(root, "docs/harness/registry.json"), "utf8"));
-  check(registry.schemaVersion === 1, "지원하지 않는 registry 버전");
+  const registry = JSON.parse(readFileSync(localPath("docs/harness/registry.json"), "utf8"));
+  if (!registry || typeof registry !== "object" || Array.isArray(registry))
+    throw new Error("잘못된 registry 객체");
+  check(registry.schemaVersion === 2, "지원하지 않는 registry 버전");
+  const keys = [
+    "schemaVersion",
+    "scope",
+    "skills",
+    "documents",
+    "supportFiles",
+    "distributionTools",
+  ];
+  check(
+    Object.keys(registry).every((key) => keys.includes(key)),
+    "알 수 없는 registry 필드",
+  );
+  check(registry.scope === undefined || typeof registry.scope === "string", "잘못된 scope");
+  for (const key of ["skills", "documents", "supportFiles", "distributionTools"]) {
+    if (!Array.isArray(registry[key])) throw new Error("배열이 아닌 registry 필드: " + key);
+  }
+  check(registry.skills.length > 0, "등록 스킬 없음");
   const names = new Set();
+  const paths = new Set(["docs/harness/registry.json"]);
+  const contents = new Map();
+  const register = (filename) => {
+    check(!paths.has(filename), "중복 경로: " + filename);
+    paths.add(filename);
+    const content = readFileSync(localPath(filename), "utf8");
+    contents.set(filename, content);
+    return content;
+  };
   for (const skill of registry.skills) {
-    check(!names.has(skill.name), `중복 스킬: ${skill.name}`);
+    if (
+      !skill ||
+      typeof skill !== "object" ||
+      typeof skill.name !== "string" ||
+      !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(skill.name) ||
+      skill.name.length > 64 ||
+      !["procedure", "orchestration", "review-contract"].includes(skill.kind) ||
+      Object.keys(skill).some((key) => !["name", "path", "kind"].includes(key))
+    )
+      throw new Error("잘못된 스킬 등록");
+    check(!names.has(skill.name), "중복 스킬: " + skill.name);
     names.add(skill.name);
-    const content = readFileSync(localPath(skill.path), "utf8");
-    const header = content.match(/^---\n([\s\S]*?)\n---/);
-    check(Boolean(header), `frontmatter 없음: ${skill.path}`);
-    check(header?.[1].includes(`name: ${skill.name}\n`), `이름 불일치: ${skill.path}`);
-    check(/^description:\s*\S.+$/m.test(header?.[1] ?? ""), `설명 없음: ${skill.path}`);
-  }
-  const ids = new Set();
-  let pages = 0;
-  let hashes = 0;
-  for (const source of registry.sources) {
-    check(!ids.has(source.id), `중복 강의: ${source.id}`);
-    ids.add(source.id);
-    check(Number.isInteger(source.pages) && source.pages > 0, `잘못된 페이지 수: ${source.id}`);
     check(
-      source.reviewedPages.length === source.pages &&
-        source.reviewedPages.every((page, index) => page === index + 1),
-      `페이지 누락·중복: ${source.id}`,
+      skill.path === ".agents/skills/" + skill.name + "/SKILL.md",
+      "스킬 경로 불일치: " + skill.name,
     );
-    check(existsSync(localPath(source.reviewDocument)), `판독 문서 없음: ${source.id}`);
-    for (const name of source.skills)
-      check(names.has(name), `연결 스킬 없음: ${source.id}/${name}`);
-    const filename = localPath(source.file);
-    if (existsSync(filename)) {
-      hashes += 1;
-      check(
-        createHash("sha256").update(readFileSync(filename)).digest("hex") === source.sha256,
-        `원본 해시 변경: ${source.file}`,
-      );
-    }
-    pages += source.pages;
+    const content = register(skill.path);
+    const header = content.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1];
+    check(Boolean(header), "frontmatter 없음: " + skill.path);
+    const headerNames = [...(header ?? "").matchAll(/^name:\s*([^\r\n]+)$/gm)];
+    check(
+      headerNames.length === 1 && headerNames[0][1].trim() === skill.name,
+      "이름 불일치: " + skill.path,
+    );
+    const description = (header ?? "").match(/^description:[ \t]*([^\r\n]*)$/m)?.[1].trim();
+    check(
+      Boolean(description) && !/^(['"])\s*\1(?:\s+#.*)?$/.test(description),
+      "설명 없음: " + skill.path,
+    );
   }
-  check(pages === registry.sourcePageTotal, "전체 페이지 합계 불일치");
-  check(registry.sources.length === 18 && pages === 224, "강의 원본 범위 불일치");
   for (const filename of [
     ...registry.documents,
     ...registry.supportFiles,
     ...registry.distributionTools,
-  ]) {
-    check(existsSync(localPath(filename)), `등록 파일 없음: ${filename}`);
-  }
-  for (const filename of registry.documents) {
-    if (!existsSync(localPath(filename))) continue;
-    const content = readFileSync(localPath(filename), "utf8");
-    for (const [, link] of content.matchAll(/\[[^\]]*\]\(([^)\s]+)\)/g)) {
-      if (/^(https?:|mailto:|#)/.test(link)) continue;
-      const destination = resolve(
-        dirname(localPath(filename)),
-        decodeURIComponent(link.split("#")[0]),
-      );
-      check(
-        !relative(root, destination).startsWith("..") && existsSync(destination),
-        `끊어진 링크: ${filename} → ${link}`,
-      );
+  ])
+    register(filename);
+  for (const [filename, content] of contents) {
+    if (!filename.endsWith(".md")) continue;
+    const links = [
+      ...content.matchAll(/\[[^\]]*\]\(<?([^\s)>]+)>?(?:\s+"[^"]*")?\)/g),
+      ...content.matchAll(/^\s*\[[^\]]+\]:\s*<?([^\s>]+)>?/gm),
+    ];
+    for (const [, rawLink] of links) {
+      if (/^(?:https?:|mailto:|#|\/\/)/i.test(rawLink)) continue;
+      const link = decodeURIComponent(rawLink.split(/[?#]/)[0]);
+      if (!link) continue;
+      if (isAbsolute(link) || link.includes("\\"))
+        throw new Error("안전하지 않은 링크: " + filename + " → " + rawLink);
+      try {
+        localPath(dirname(filename).split(sep).join("/") + "/" + link, true);
+      } catch (error) {
+        errors.push("끊어진 링크: " + filename + " → " + rawLink + ": " + error.message);
+      }
     }
+    if (!filename.endsWith("/SKILL.md")) continue;
+    for (const [reference] of content.matchAll(/docs\/methods\/[a-zA-Z0-9_./-]+\.md/g)) {
+      try {
+        localPath(reference);
+        check(paths.has(reference), "미등록 방법 문서: " + reference);
+      } catch (error) {
+        errors.push("방법 문서 없음: " + filename + " → " + reference + ": " + error.message);
+      }
+    }
+    for (const [, name] of content.matchAll(/\.agents\/skills\/([a-z0-9-]+)\/SKILL\.md/g))
+      check(names.has(name), "연결 스킬 없음: " + filename + " → " + name);
   }
   if (errors.length) throw new Error(errors.join("\n"));
-  console.log(
-    `하네스 검사 통과: 스킬 ${names.size}개, 원본 ${registry.sources.length}개, 페이지 선언 ${pages}쪽`,
-  );
-  console.log(
-    `원본 해시 확인 ${hashes}개 / 원본 미포함으로 건너뜀 ${registry.sources.length - hashes}개`,
-  );
+  console.log("하네스 검사 통과: 스킬 " + names.size + "개, 등록 파일 " + paths.size + "개");
   console.log("파일·참조·등록 구조 검사이며 제품 구현·독립 검토·훅 발화 검증은 아닙니다.");
 } catch (error) {
   console.error(error.message);

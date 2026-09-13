@@ -1,0 +1,85 @@
+{
+  "issue": "PM-07",
+  "stage": "Red",
+  "status": "verified_expected_unit_red",
+  "cwd": "/Users/sungwoon/ai-projects/cc-harness",
+  "revision": "ca79c7aa20acd6fa92651b96669738ac6c30b2ec",
+  "preflight_worktree_clean": true,
+  "preparation_review": "PM-07-resume-review.md: PASS_PREPARATION_ONLY, 83 collected",
+  "attempt": 1,
+  "retries": 0,
+  "green_attempts": 0,
+  "ac_passed": null,
+  "command": "npx vitest run tests/unit/program-excel.test.ts tests/unit/xlsx-zip.test.ts tests/unit/excel-preview-task.test.ts --reporter=json --outputFile=tmp/pm-resume-07-red-unit.json",
+  "exit_code": 1,
+  "stdout_stderr_log": "tmp/pm-resume-07-red-unit-XXXXXX.log",
+  "log_allocation": "mktemp exclusively created the returned path; no prior log overwritten",
+  "report": "tmp/pm-resume-07-red-unit.json",
+  "report_sha256": "ec472d9802fe739401051c4d665ffee8fbdef4342b8a071bd7ad369ede79737f",
+  "counts": {
+    "suites": 3,
+    "failed_suites": 3,
+    "collected": 83,
+    "passed": 12,
+    "failed": 71,
+    "pending": 0,
+    "todo": 0
+  },
+  "files": [
+    {
+      "path": "tests/unit/program-excel.test.ts",
+      "collected": 40,
+      "passed": 0,
+      "failed": 40,
+      "classification": "expected_unimplemented_behavior",
+      "reason": "Empty template bytes and empty preview rows/errors violate template, normalization, validation, formula, date and boundary assertions. All failures are AssertionError at product-result assertions, not fixture construction or import errors."
+    },
+    {
+      "path": "tests/unit/xlsx-zip.test.ts",
+      "collected": 34,
+      "passed": 12,
+      "failed": 22,
+      "classification": "expected_unimplemented_behavior",
+      "reason": "Every failure is promise resolved undefined instead of rejecting: the no-op validator does not reject limit violations, forged sizes or unsafe/malformed ZIP structures.",
+      "passed_classification": "Valid-input and inclusive-boundary cases also pass a no-op; these 12 passes are not implementation evidence."
+    },
+    {
+      "path": "tests/unit/excel-preview-task.test.ts",
+      "collected": 9,
+      "passed": 0,
+      "failed": 9,
+      "classification": "expected_unimplemented_behavior",
+      "reason": "W01 never creates a worker; W02 settles before 4999ms; W03-W05 return empty errors instead of cancellation/error/response; all four W06 cases fail because terminate is never called. These are assertions against the immediate-empty-result/no-op stub, not timer infrastructure failures."
+    }
+  ],
+  "failure_classification": {
+    "expected_unimplemented_behavior": 71,
+    "fixture": 0,
+    "import_or_collection": 0,
+    "environment_or_runtime": 0,
+    "other_wrong_reason": 0
+  },
+  "formula_fixture_evidence": "Normal/shared/array read-back assertions all completed before failing at invalid(), program-excel.test.ts:73 via :192. Shared C3 fixture assertions passed; its later product validation assertion is not reached after the C2 Red assertion fails.",
+  "stop_triggered": false,
+  "stop_reason": null,
+  "green_freeze": {
+    "algorithm": "sha256",
+    "unchanged_before_after_run": true,
+    "hashes": {
+      "tests/unit/program-excel.test.ts": "45f3f78a6dc6dea4029dfebf1e958560787350046080fc9f5da0289589696576",
+      "tests/unit/xlsx-zip.test.ts": "c4b8608b81350c6a6a3d56c7e49276b73091a7e959ee92adfe7c914e53e75f0f",
+      "tests/unit/excel-preview-task.test.ts": "afc00ebbce4728628a36bee155148099c760399b1f05f51d8a1b160687432f4c",
+      "tests/browser/program-excel.spec.ts": "cff8e7a3ff87a1d417c794d214bb31d3968b648509866683e2be412378dc2281"
+    }
+  },
+  "previous_result": {
+    "path": "docs/features/pm-program-tracker/tests/PM-07-result.json",
+    "preserved": true,
+    "sha256": "8df7dd02e7785f43912fdd12e4368dde4aa555254e1b4ea650c963047bb67801"
+  },
+  "changed_files": ["docs/features/pm-program-tracker/tests/PM-07-resume-red.json"],
+  "production_or_test_edits": [],
+  "external_actions_performed": [],
+  "not_run": ["browser", "full_check", "build", "Green", "commit"],
+  "handoff": "Unit Red only. Main owns parallel browser Red and combined Green gate. Browser file hash is a freeze reference, not browser execution evidence. Historical STOP/result remains unchanged."
+}

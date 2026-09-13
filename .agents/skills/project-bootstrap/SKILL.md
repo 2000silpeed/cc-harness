@@ -1,11 +1,11 @@
 ---
 name: project-bootstrap
-description: 강의 하네스를 새 저장소에 적용하거나 승인된 기술안으로 앱의 최소 실행·검사 기반을 준비할 때 사용한다. 기존 도구를 조사하고 필요한 설정만 병합한다.
+description: 독립형 개발 하네스를 새 저장소에 적용하거나 승인된 기술안으로 앱의 최소 실행·검사 기반을 준비할 때 사용한다. 기존 도구를 조사하고 필요한 설정만 병합한다.
 ---
 
 # 프로젝트 기반 준비
 
-`docs/harness/lifecycle.md`의 환경 준비와 빈 저장소 절차, `docs/harness/reuse.md`를 읽는다.
+`docs/harness/lifecycle.md`의 환경 준비와 빈 저장소 절차, `docs/harness/reuse.md`, `docs/methods/project-foundation.md`를 읽는다.
 
 ## 두 가지 모드
 

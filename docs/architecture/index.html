@@ -180,25 +180,25 @@
           <a class="badge" href="#delivery">05 · 기능 완성</a>
         </nav>
         <p class="muted">
-          18개 자료 · 224쪽 분석 / 스킬셋 등록. 실제 제품 구현·머지·배포는 별도 실행 단계입니다.
+          15개 스킬 · 독립형 방법론. 실제 제품 구현·머지·배포는 별도 실행 단계입니다.
         </p>
       </header>
       <section id="start" aria-labelledby="start-title">
-        <div class="eyebrow">00 · 시작 / 소개 · 전체 사이클 진입</div>
+        <div class="eyebrow">00 · 시작 / 전체 사이클 진입</div>
         <h2 id="start-title">아이디어와 대상부터 정한다</h2>
         <p>누가 어떤 문제를 해결하는지, 어느 프로젝트에서 어디까지 진행할지 확인합니다.</p>
         <p><code>$harness-cycle</code></p>
         <p class="muted">다음 단계로 넘기는 것: 최초 요청 · 대상 경로 · 현재 단계</p>
       </section>
       <section id="foundation" aria-labelledby="foundation-title">
-        <div class="eyebrow">01 · 기반 / 2–3강</div>
+        <div class="eyebrow">01 · 기반</div>
         <h2 id="foundation-title">같은 규칙으로 작업하고 자동으로 검사한다</h2>
         <p>기존 도구를 조사한 뒤 협업 지침과 코드·커밋 검사를 연결합니다.</p>
         <p><code>$project-bootstrap · $mermaid-diagram</code></p>
         <p class="muted">다음 단계로 넘기는 것: AGENTS · 실제 검사 명령 · Git 훅</p>
       </section>
       <section id="definition" aria-labelledby="definition-title">
-        <div class="eyebrow">02 · 요구사항과 디자인 / 4–5강</div>
+        <div class="eyebrow">02 · 요구사항과 디자인</div>
         <h2 id="definition-title">무엇을 만들고 어떻게 보일지 정한다</h2>
         <p>한 번에 하나씩 질문해 결정을 남기고, 참고 화면에서 공통 디자인 기준을 만듭니다.</p>
         <p><code>$feature-planner · $design-system</code></p>
@@ -212,7 +212,7 @@
         </details>
       </section>
       <section id="planning" aria-labelledby="planning-title">
-        <div class="eyebrow">03 · 설계와 작업 분해 / 6–8강</div>
+        <div class="eyebrow">03 · 설계와 작업 분해</div>
         <h2 id="planning-title">기술 선택의 이유를 남기고 작은 동작으로 나눈다</h2>
         <p>기술안 세 가지를 비교하고, 범위를 확정한 뒤 AC와 의존성이 있는 수직 이슈를 만듭니다.</p>
         <p><code>$feature-planner</code></p>
@@ -226,7 +226,7 @@
         </details>
       </section>
       <section id="implementation" aria-labelledby="implementation-title">
-        <div class="eyebrow">04 · 이슈마다 반복 / 9–13강 · 테스트 특강</div>
+        <div class="eyebrow">04 · 이슈마다 반복</div>
         <h2 id="implementation-title">실패 테스트에서 검증된 구현으로 간다</h2>
         <p>
           시나리오 → Red → Green → 독립 AC 검증 → Refactor → 보안. 누락된 AC는 다시 Red로
@@ -241,20 +241,20 @@
         <p class="muted">다음 단계로 넘기는 것: 테스트 · 최소 구현 · AC 근거 · 보안 결과</p>
 
         <details>
-          <summary>반복하는 방법 선택 / 16–17강</summary>
+          <summary>반복하는 방법 선택</summary>
           <p><code>$tdd-loop</code>: 한 이슈의 순서를 묶고 단계별 확인을 유지합니다.</p>
           <p>
             <code>$tdd-auto-loop</code>: 사전 위임된 범위에서 격리된 단계·결과 JSON·객관 STOP으로
             PR까지 진행합니다. 무한 반복이나 자동 머지가 아닙니다.
           </p>
           <p class="muted">
-            16·17강은 이 사이클을 감싸는 실행 방식입니다. 프로젝트가 끝난 뒤 추가하는 단계가
+            두 반복 모드는 이 사이클을 감싸는 실행 방식입니다. 프로젝트가 끝난 뒤 추가하는 단계가
             아닙니다.
           </p>
         </details>
       </section>
       <section id="delivery" aria-labelledby="delivery-title">
-        <div class="eyebrow">05 · 기능 완성 / 14–15강</div>
+        <div class="eyebrow">05 · 기능 완성</div>
         <h2 id="delivery-title">실제 사용자 흐름과 CI를 확인한 뒤 통합한다</h2>
         <p>
           기능 이슈를 모아 E2E로 연결을 확인하고, PR 초안·필수 검사·리뷰·승인을 거쳐 main에
@@ -264,7 +264,7 @@
         <p class="muted">다음 단계로 넘기는 것: E2E 증거 · PR · CI · 승인된 머지</p>
 
         <details>
-          <summary>main 이후 / 강의 밖 보완</summary>
+          <summary>main 이후 / 배포·운영 인계</summary>
           <p>
             배포 대상·비용·데이터·백업·롤백을 정하고 승인받습니다. 실제 배포 후 smoke test와 운영
             인계를 확인합니다. main 머지만으로 배포 완료를 선언하지 않습니다.
@@ -287,15 +287,15 @@
 flowchart TD
   accTitle: 아이디어부터 검증된 프로젝트까지
   accDescr: 기획 승인 후 이슈별 TDD를 반복하고 E2E, CI, 머지로 진행. 자동 루프는 구현 단계의 선택 모드.
-  idea["아이디어 · 대상 확인"] --&gt; setup["협업 · 품질 기반 / 2–3강"]
-  setup --&gt; spec["요구사항 · 디자인 / 4–5강"]
-  spec --&gt; plan["PRD · ADR · 이슈 / 6–8강"]
-  plan --&gt; tdd["시나리오 · Red · Green / 9–11강"]
-  tdd --&gt; review["AC · Refactor · 보안 / 11–13강"]
+  idea["아이디어 · 대상 확인"] --&gt; setup["협업 · 품질 기반"]
+  setup --&gt; spec["요구사항 · 디자인"]
+  spec --&gt; plan["PRD · ADR · 이슈"]
+  plan --&gt; tdd["시나리오 · Red · Green"]
+  tdd --&gt; review["AC · Refactor · 보안"]
   review -. 누락 또는 다음 이슈 .-&gt; tdd
-  review --&gt; e2e["기능 E2E / 14강"]
-  e2e --&gt; delivery["PR · CI · 승인된 머지 / 15강"]
-  delivery --&gt; release["배포 · 운영 인계 / 보강"]</pre>
+  review --&gt; e2e["기능 E2E"]
+  e2e --&gt; delivery["PR · CI · 승인된 머지"]
+  delivery --&gt; release["배포 · 운영 인계"]</pre>
           </details>
           <noscript><p>도식 원문과 단계별 카드로 전체 흐름을 확인할 수 있습니다.</p></noscript>
         </details>
@@ -305,8 +305,9 @@ flowchart TD
         · PM-00 기반 → PM-01 등록·저장 → PM-02 수정 → PM-03 간트 → PM-04 검색·필터 → PM-05 백업·복원
         → PM-06 삭제<br />
         후속 이슈와 검증 경계: <code>docs/features/pm-program-tracker/progress.md</code><br />
-        현재 실행: PM-07 독립 재개 검토·미구현 테스트 포함 준비 상태 · PM-08–PM-10 미착수<br />
-        재사용 진입점: <code>$harness-cycle</code><br />
+        현재 실행: PM-07 테스트 통과 후 독립 AC 실패로 STOP · PM-08–PM-10 미착수<br />
+        재사용 진입점: <code>$harness-cycle</code> ·
+        <a href="../harness/reuse.md">새 PC 시작 안내</a><br />
         자동화 등록과 실제 실행은 다릅니다. PM 디자인 훅 피드백은 확인했으며 원격 CI·배포와 Windows
         업무 흐름은 아직 미검증입니다.<br />
         보조 도식은 Mermaid 11.12.0 CDN을 사용합니다.

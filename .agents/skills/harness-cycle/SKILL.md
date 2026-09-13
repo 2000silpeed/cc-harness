@@ -13,7 +13,7 @@ description: 아이디어부터 요구사항·설계·이슈별 TDD·E2E·PR 인
 2. `progress.md`와 실제 산출물을 대조해 가장 먼저 미완료이거나 무효가 된 단계에서 재개한다. 기록이 없으면 사실만으로 초안을 작성한다.
 3. 준비에는 project-bootstrap, 기획에는 feature-planner, UI에는 design-system을 사용한다. 각 SKILL.md를 읽고 수행하며 이름을 셸 명령으로 실행하지 않는다.
 4. 준비된 이슈는 기본 tdd-loop로 처리한다. tdd-auto-loop는 사용자가 명시적으로 유한 이슈 집합과 상한을 승인한 경우만 사용한다.
-5. 이슈 통합 뒤 e2e-write, create-pr로 인계한다. 강의 밖 배포·운영은 별도 계획·승인·실제 확인 단계로 둔다.
+5. 이슈 통합 뒤 e2e-write, create-pr로 인계한다. 배포·운영은 별도 계획·승인·실제 확인 단계로 둔다.
 6. 수행한 단계·승인·로그·미검증·다음 행동을 progress에 기록하고 README와 흐름 화면을 갱신한다.
 
 ## 경계

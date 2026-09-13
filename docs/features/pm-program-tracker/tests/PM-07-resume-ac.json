@@ -1,0 +1,154 @@
+{
+  "issue": "PM-07",
+  "stage": "independent_ac_verification",
+  "reviewer": "Independent AC reviewer; did not implement Green",
+  "revision": "ca79c7aa20acd6fa92651b96669738ac6c30b2ec plus owned Green changes",
+  "status": "fail",
+  "ac_passed": false,
+  "stop_triggered": true,
+  "green_attempts": 2,
+  "inputs": [
+    ".agents/skills/ac-verifier/SKILL.md",
+    "docs/methods/tdd.md",
+    "docs/features/pm-program-tracker/issues.md:163",
+    "docs/features/pm-program-tracker/prd.md",
+    "docs/features/pm-program-tracker/tests/PM-07-scenarios.md",
+    "docs/features/pm-program-tracker/tests/PM-07-parser-decision.md",
+    "docs/features/pm-program-tracker/tests/PM-07-resume-red.json"
+  ],
+  "verified_existing_evidence": {
+    "unit": {
+      "path": "tmp/pm07-green-attempt1-unit-recheck.json",
+      "total": 83,
+      "passed": 83,
+      "failed": 0
+    },
+    "whole_unit": {
+      "path": "tmp/pm07-green-attempt1-wholeunit.json",
+      "total": 240,
+      "passed": 240,
+      "failed": 0
+    },
+    "build": "tmp/pm-resume-07-build.log: successful build with dedicated excel-preview.worker asset; chunk-size warning remains",
+    "browser": "tmp/pm-resume-07-green-browser-current.log: five passing PM-07 browser tests, run by main, not this reviewer",
+    "historical_browser_failure": "tmp/pm-resume-07-green-browser.log used stale dist according to main handoff; preserved, not counted as current-artifact Green failure",
+    "historical_unit_failure": "First Green unit run exposed input mutation; corrected second run passed. Green count remains 2 per handoff.",
+    "frozen_tests": "All four current test SHA256 values match PM-07-resume-red.json green_freeze.hashes"
+  },
+  "criteria": [
+    {
+      "id": "PM-07-AC1",
+      "criterion": "템플릿을 내려받아 정상 .xlsx를 선택하면, 예상 신규 행 수와 정규화된 값을 미리 확인할 수 있다.",
+      "status": "fail",
+      "implementation": ["src/domain/program-excel.ts:16", "src/App.tsx:74", "src/App.tsx:402"],
+      "evidence": [
+        "S01/S02 and current B01/B02 pass; UI displays count and all nine normalized values.",
+        "Independent normal Python ZIP repack accepted one row with LE/NORMAL, 개발 대기 and 2026-09-13.",
+        "P02: identical workbook content repacked with Python zipfile streaming data descriptors is readable by SheetJS, but previewExcel returns a file error. No unsupported encryption, ZIP64, extra sheet or extra column was introduced."
+      ],
+      "finding": "F02",
+      "next_action": "Add an approved interoperability scenario and failing regression for descriptor-bearing XLSX, then implement bounded descriptor validation. Do not silently narrow normal XLSX acceptance."
+    },
+    {
+      "id": "PM-07-AC2",
+      "criterion": "필수 열·값·날짜가 잘못됐거나 수식·파일 내부/기존 키 중복이 있으면, 위치와 이유가 표시되고 적용할 수 없다.",
+      "status": "fail",
+      "implementation": [
+        "src/domain/program-excel.ts:44",
+        "src/domain/program-excel.ts:86",
+        "src/App.tsx:415"
+      ],
+      "evidence": [
+        "S04-S07/S09 and B03/B04 cover invalid headers, values, dates and normalized duplicates; errors discard all candidate rows. PM-07 has no apply action.",
+        "Cached normal/shared/array fixtures are materially asserted, including shared follower C3. Composite key JSON preserves delimiter distinctions and internal spaces.",
+        "P03: C2 XML containing <c r=\"C2\"><f>1+1</f></c> without a cached value yields one successful candidate row, owner empty, errors empty. SheetJS read drops C2 under current options, so the downstream formula guard never sees it."
+      ],
+      "finding": "F01",
+      "next_action": "Return to scenario/Red for uncached formulas, then Green. Preserve formula presence through parsing and reject with row 2, 담당자, and a 수식 reason. Do not edit frozen tests without the main-owned gate."
+    },
+    {
+      "id": "PM-07-AC3",
+      "criterion": "날짜 셀 또는 YYYY-MM-DD 텍스트를 읽으면, 날짜 이동 없이 같은 업무 날짜를 표시하고 빈 상태는 개발 대기로 해석한다.",
+      "status": "pass",
+      "implementation": [
+        "src/domain/program-excel.ts:94",
+        "src/domain/program-excel.ts:103",
+        "src/domain/program.ts:72",
+        "src/App.tsx:434"
+      ],
+      "evidence": [
+        "S03/S08 cover blank defaults, 1900/1904 systems and UTC/Asia-Seoul/America-Los-Angeles; serial 60 in 1900, negative and fractional serials are rejected.",
+        "SSF calendar components become zero-padded date-only strings; UI displays those strings without local timezone conversion. ISO text uses existing calendar validation.",
+        "Current B02 displays date strings/default status; independent P01 preserved 2026-09-13 and 개발 대기."
+      ],
+      "next_action": "No AC3-specific defect observed; this does not override AC1/AC2 failures or establish all application interoperability."
+    },
+    {
+      "id": "PM-07-AC4",
+      "criterion": "빈 파일·잘못된 형식·파싱 실패이면, 안내하고 기존 데이터를 변경하지 않는다.",
+      "status": "pass",
+      "implementation": [
+        "src/domain/program-excel.ts:42",
+        "src/domain/xlsx-zip.ts:1",
+        "src/domain/excel-preview-task.ts:9",
+        "src/domain/excel-preview.worker.ts:4",
+        "src/App.tsx:59",
+        "src/App.tsx:94"
+      ],
+      "evidence": [
+        "S10-S14 and current B02/B03/B05 cover empty/wrong/corrupt files, retry and backup/reload preservation. Input bytes remained identical in all three independent probes.",
+        "Preview domain, client and worker have no repository writes. UI upload only updates preview state; no setRecords or storage mutation occurs on this path.",
+        "W01-W06 cover dispatch, exact 5000ms timeout, repeated cancellation, error, success and queued late events. Client terminates once, clears handlers/timer and resolves file errors.",
+        "App creates the actual module Worker; successful current B02/B05 plus dedicated build asset support integration. Generation checks protect cancellation/reselection during arrayBuffer and after worker completion; unmount cancels."
+      ],
+      "limitations": "In-flight UI cancellation was inspected statically and through mock-client tests, not independently exercised in a browser. Existing backup tests compare count/identity, not every stored field; no-write implementation inspection supplies the additional preservation evidence.",
+      "next_action": "Main retains visual review and final integration checks; neither may be recorded complete from this report."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F01",
+      "severity": "blocking",
+      "location": "src/domain/program-excel.ts:44",
+      "summary": "Uncached formula disappears during parsing and is accepted as blank.",
+      "expected": "rows empty; row 2 / 담당자 / 수식 error",
+      "actual": "rows length 1; owner empty; errors empty",
+      "formula_execution": "No formula execution observed; defect is missing rejection, not execution."
+    },
+    {
+      "id": "F02",
+      "severity": "blocking",
+      "location": "src/domain/xlsx-zip.ts:49",
+      "summary": "ZIP flag 0x0008 data descriptors are rejected despite otherwise supported workbook content.",
+      "expected": "Same normalized candidate as the non-streaming archive",
+      "actual": "row 0 / 파일 / 지원하지 않거나 손상된 ZIP 파일입니다.",
+      "root_cause": "flags & ~0x800 rejects bit 3; local-header size/CRC equality and contiguous-payload assumptions also need descriptor-aware validation, not just a flag-mask change."
+    }
+  ],
+  "independent_probe": {
+    "execution": "One node --input-type=module stdin probe, exit 0, tool output chunk 3a77cc. No application database, browser or network accessed.",
+    "loader": "Transpile current domain TypeScript to CommonJS in memory using installed TypeScript; execute via node:vm with recursive local-module resolution.",
+    "fixture": "SheetJS one-sheet workbook: fixed excelHeaders and [' le ', ' normal ', '담당', '', '', '2026-09-13']; Python standard-library zipfile independently repacks all entries with ZIP_DEFLATED.",
+    "P01": "Seekable io.BytesIO repack: ZIP flags 0, preview succeeds, input unchanged.",
+    "P02": "Same entries into io.BytesIO subclass whose seekable returns False and seek raises io.UnsupportedOperation: ZIP flags 8; SheetJS reads identical rows, preview rejects, input unchanged.",
+    "P03": "Seekable repack replacing C2 element in xl/worksheets/sheet1.xml with <c r=\"C2\"><f>1+1</f></c>: read-back C2 undefined, preview succeeds with blank owner and no errors, input unchanged.",
+    "environment_note": "openpyxl is not installed (ModuleNotFoundError); no dependency installed. Python zipfile used instead. Native Excel/LibreOffice interoperability was not tested.",
+    "source_artifact": "tmp/pm07-ac-repro.mjs",
+    "artifacts": "Exact previously executed stdin JavaScript preserved via apply_patch at tmp/pm07-ac-repro.mjs after the STOP was accepted. No rerun performed. Fixture buffers were in memory; observations remain in this report and conversation tool output. No saved raw execution log is claimed.",
+    "reproduction_command": "From repository root: node --input-type=module < tmp/pm07-ac-repro.mjs"
+  },
+  "source_sha256": {
+    "src/App.tsx": "c6dcbaefa8a09801fce24c944d6aaa4562eeda90850e4e07ac4e2854a4f7b430",
+    "src/domain/program-excel.ts": "3fa01638f42701d820212a4975aa91d86a82b468bcd8feb1a2ebf4e24e530453",
+    "src/domain/xlsx-zip.ts": "c41e0dc36fb055888ce9408d5ae27bb9ea4cded77c5f5db1217a622fb7a39e00",
+    "src/domain/excel-preview-task.ts": "4912cabe4abbc8ba6e60aa5d8c0bd0e9da99021c86e97a2ff540f88b3be418df",
+    "src/domain/excel-preview.worker.ts": "9f6e1949ff479698b39c673c378347676726edcf5901f7cf11e9fea882da78ea"
+  },
+  "changed_files": [
+    "docs/features/pm-program-tracker/tests/PM-07-resume-ac.json",
+    "tmp/pm07-ac-repro.mjs"
+  ],
+  "production_or_test_edits": [],
+  "not_run": ["browser", "full_check", "build", "unit_suite_rerun", "commit", "visual_acceptance"],
+  "handoff": "STOP: AC1 and AC2 fail despite Green. No implementation repair performed. Main must route missing cases through scenario/Red and Green before independent AC re-review; do not advance on an AC-pass assumption."
+}

@@ -5,7 +5,7 @@ description: 사용자가 승인한 이슈를 격리된 단계별 에이전트�
 
 # 범위가 정해진 반복 자동화
 
-`docs/harness/lifecycle.md`와 `docs/lessons/14-17-delivery-automation.md`의 17강을 읽는다.
+`docs/harness/lifecycle.md`와 `docs/methods/delivery-automation.md`의 자동 반복 방법을 읽는다.
 
 ## 진입 계약
 
@@ -13,18 +13,18 @@ description: 사용자가 승인한 이슈를 격리된 단계별 에이전트�
 
 ## 실행
 
-원문 17강은 격리된 단계별 subagent, 결과 JSON, Green 직후 독립 AC 검증, 객관 STOP, 사람의 PR 리뷰를 사용한다. 실제 위임 도구와 독립 검증자를 사용할 수 있는지 확인한다. 사용할 수 없으면 자동 모드 준비 불가로 보고하고 tdd-loop의 단계별 진행으로 전환할지 확인한다. 스킬 파일로 격리 런타임이 설치됐다고 주장하지 않는다.
+자동 모드는 격리된 단계별 subagent, 결과 JSON, Green 직후 독립 AC 검증, 객관 STOP, 사람의 PR 리뷰를 사용한다. 실제 위임 도구와 독립 검증자를 사용할 수 있는지 확인한다. 사용할 수 없으면 자동 모드 준비 불가로 보고하고 tdd-loop의 단계별 진행으로 전환할지 확인한다. 스킬 파일로 격리 런타임이 설치됐다고 주장하지 않는다.
 
-각 단계의 결과는 docs/lessons/14-17-delivery-automation.md의 JSON 계약으로 받는다. 메인은 상태·변경 버전·증거·STOP 조건을 대조한다. 결과의 passed 표기만 믿지 않는다. 명시된 자율 위임 안의 기술 판단은 매번 사용자에게 묻지 않되, 요구사항·아키텍처·범위·이슈 승인은 바꾸지 않는다.
+각 단계의 결과는 docs/methods/delivery-automation.md의 JSON 계약으로 받는다. 메인은 상태·변경 버전·증거·STOP 조건을 대조한다. 결과의 passed 표기만 믿지 않는다. 명시된 자율 위임 안의 기술 판단은 매번 사용자에게 묻지 않되, 요구사항·아키텍처·범위·이슈 승인은 바꾸지 않는다.
 
-## 원문 STOP 프로필
+## STOP 프로필
 
 - 사전 점검: AC 없음, uncommitted 변경, 잘못된 base이면 STOP. 다른 사람 변경을 삭제·커밋해 통과시키지 않는다.
 - 시나리오: 5개 미만 또는 경계값 누락이면 STOP. 의미 없는 중복으로 수만 맞추지 않는다.
 - Red: import 등 잘못된 실패 이유이면 STOP.
 - Green: 최대 3회 시도 중 3회 실패 또는 테스트 수정 시도이면 STOP. 사용자가 더 낮은 상한을 정하면 그것을 따른다.
 - AC: 독립 결과 ac_passed=false 또는 증거 부족이면 STOP.
-- Refactor: 대상 프로젝트의 전체 회귀 테스트 명령(원문 npm test에 대응)이 미통과이면 STOP. 관련 테스트 일부 통과로 대체하지 않는다.
+- Refactor: 대상 프로젝트의 전체 회귀 테스트 명령이 미통과이면 STOP. 관련 테스트 일부 통과로 대체하지 않는다.
 - Security: 수정 후 재스캔에서도 high 이상이면 STOP. 대상의 더 엄격한 CI 기준을 완화하지 않는다.
 - PR: commitlint 실패이면 STOP. 외부 게시 권한이 없으면 URL 생성 없이 로컬 초안에서 끝낸다.
 

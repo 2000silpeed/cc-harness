@@ -5,7 +5,7 @@ description: 새 기능의 아이디어를 인터뷰·디자인 연계·PRD/ADR�
 
 # 아이디어를 실행 가능한 이슈로
 
-`docs/harness/templates.md`, `docs/lessons/04-requirements-interview.md`, `docs/lessons/06-08-planning.md`를 읽는다. 원본 feature-planning-workflow의 세 단계와 네 승인 게이트를 아래에 Codex 방식으로 보존했다.
+`docs/harness/templates.md`, `docs/methods/requirements-interview.md`, `docs/methods/planning.md`를 읽는다. 세 단계와 네 승인 게이트를 따른다.
 
 ## 1. 요구사항 인터뷰
 
