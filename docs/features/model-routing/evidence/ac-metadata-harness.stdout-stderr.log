@@ -1,0 +1,6 @@
+
+> cc-harness@0.0.0 harness:check
+> node scripts/check-harness.mjs
+
+하네스 검사 통과: 스킬 15개, 등록 파일 32개
+파일·참조·등록 구조 검사이며 제품 구현·독립 검토·훅 발화 검증은 아닙니다.
