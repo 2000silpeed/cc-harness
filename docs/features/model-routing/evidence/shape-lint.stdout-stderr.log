@@ -1,0 +1,4 @@
+
+> cc-harness@0.0.0 lint
+> eslint --no-error-on-unmatched-pattern --no-warn-ignored "**/*.{js,mjs,ts,tsx,html}"
+

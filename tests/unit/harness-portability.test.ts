@@ -278,3 +278,89 @@ it("exports the actual registry into an empty target and validates without produ
   ])
     expect(existsSync(resolve(target, filename))).toBe(false);
 });
+
+it("preserves project-owned files while applying registered harness files", () => {
+  const source = fixture();
+  const target = directory();
+  write(target, "AGENTS.md", "# Product-owned instructions\n");
+  write(target, "docs/features/product/progress.md", "# Product-owned progress\n");
+
+  const result = run(source, "install-harness", ["--target", target, "--apply"]);
+
+  expect(result.status).toBe(0);
+  expect(readFileSync(resolve(target, "AGENTS.md"), "utf8")).toBe("# Product-owned instructions\n");
+  expect(readFileSync(resolve(target, "docs/features/product/progress.md"), "utf8")).toBe(
+    "# Product-owned progress\n",
+  );
+  expect(existsSync(resolve(target, registryPath))).toBe(true);
+});
+
+it("ships a parseable adaptive-execution result example without inventing observation", () => {
+  const templates = readFileSync(resolve(repository, "docs/harness/templates.md"), "utf8");
+  const json = templates.match(
+    /## Adaptive Execution 결과 JSON[\s\S]*?```json\n([\s\S]*?)\n```/m,
+  )?.[1];
+
+  expect(json).toBeTypeOf("string");
+  const result = JSON.parse(json ?? "null");
+  expect(result).toMatchObject({
+    profile: "standard",
+    requested: {
+      worker: { model: "Sol", effort: "medium" },
+      verifier: { model: "Sol", effort: "high" },
+    },
+    observed: {
+      worker: { model: "unknown", effort: "unknown" },
+      usage: { value: "unknown", source: "unavailable", unit: "unknown" },
+    },
+    diagnostic: { budget: 1, used: 0, remaining: 1 },
+  });
+  expect(result.evidence_reuse.checks).toContain(
+    "same_relevant_code_contract_ac_test_command_environment",
+  );
+  expect(result).toMatchObject({
+    source_revision: "<verified-source-revision>",
+    contract_hashes: { "docs/methods/delivery-automation.md": "<sha256-of-effective-contract>" },
+    policy_effective_checkpoint: "<approved-checkpoint>",
+    evidence: [],
+    evidence_validity: { state: "unknown", reason: "<not-yet-assessed>", refs: [] },
+    green_attempts: { limit: 3, used: 3, remaining: 0 },
+    retry_count: 2,
+    diagnostic: {
+      escalation_reason: "not-run",
+      diagnostic_result: null,
+      evidence_ref: null,
+      requested: { model: "unknown", effort: "unknown" },
+      observed: { model: "unknown", effort: "unknown" },
+      context_id: null,
+      approval_ref: null,
+      status: "not-run",
+    },
+    failure: { current: null, previous: [] },
+  });
+});
+
+it("keeps the delivery result example aligned with the reusable result shape", () => {
+  const delivery = readFileSync(resolve(repository, "docs/methods/delivery-automation.md"), "utf8");
+  const json = delivery.match(/다음 결과 JSON 템플릿[\s\S]*?```json\n([\s\S]*?)\n```/m)?.[1];
+
+  expect(json).toBeTypeOf("string");
+  const result = JSON.parse(json ?? "null");
+  expect(result).toMatchObject({
+    issue: "<approved-issue>",
+    base: "<approved-base>",
+    head: "<issue-branch>",
+    attempt: 1,
+    ac_passed: null,
+    evidence: [],
+    evidence_validity: { state: "unknown", reason: "<not-yet-assessed>", refs: [] },
+    source_revision: "<verified-source-revision>",
+    contract_hashes: { "docs/methods/delivery-automation.md": "<sha256-of-effective-contract>" },
+    policy_effective_checkpoint: "<approved-checkpoint>",
+    green_attempts: { limit: 3, used: 3, remaining: 0 },
+    retry_count: 2,
+    failure: { current: null, previous: [] },
+  });
+  expect("retry" in result).toBe(false);
+  expect("effective_checkpoint" in result).toBe(false);
+});

@@ -1,0 +1,42 @@
+
+> cc-harness@0.0.0 check
+> npm run lint && npm run design:check && npm run harness:check && npm run format:check && npm run test && npm run typecheck
+
+
+> cc-harness@0.0.0 lint
+> eslint --no-error-on-unmatched-pattern --no-warn-ignored "**/*.{js,mjs,ts,tsx,html}"
+
+
+> cc-harness@0.0.0 design:check
+> node scripts/check-design-system.mjs
+
+디자인 검사 통과: 84개 선언 (/Users/sungwoon/ai-projects/cc-harness/docs/architecture/index.html)
+
+> cc-harness@0.0.0 harness:check
+> node scripts/check-harness.mjs
+
+하네스 검사 통과: 스킬 15개, 등록 파일 32개
+파일·참조·등록 구조 검사이며 제품 구현·독립 검토·훅 발화 검증은 아닙니다.
+
+> cc-harness@0.0.0 format:check
+> prettier . --check --ignore-unknown
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> cc-harness@0.0.0 test
+> vitest run
+
+
+ RUN  v5.0.0 /Users/sungwoon/ai-projects/cc-harness
+
+
+ Test Files  1 passed (1)
+      Tests  47 passed (47)
+   Start at  22:45:34
+   Duration  1.66s (tests 99%, transform 1%)
+
+
+> cc-harness@0.0.0 typecheck
+> tsc --noEmit
+

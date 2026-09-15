@@ -4,14 +4,14 @@
 
 이 저장소의 검사는 독립 하네스 자산을 대상으로 한다. 제품 앱은 포함하지 않는다. 과거 제품 검사 결과를 현재 하네스 검증 결과로 사용하지 않는다.
 
-| 검사                  | 확인하는 것                                                                                  | 보장하지 않는 것               |
-| --------------------- | -------------------------------------------------------------------------------------------- | ------------------------------ |
-| lint·format           | 소스 규칙·서식                                                                               | 제품 동작                      |
-| design:check          | 구조도 CSS 속성·값과 문서 기준 일치                                                          | 실제 렌더링·접근성·디자인 승인 |
-| harness:check         | registry 형식·안전한 경로·등록 파일·스킬 이름·문서 참조                                      | 모델 실행·제품 구현            |
-| Vitest 이식 회귀 44개 | 배포 목록·dry-run 무변경·apply·재실행·충돌 보존·누락 참조·경로·심볼릭 링크·빈 스킬 설명 거부 | 모든 운영 환경의 안전성        |
-| typecheck             | TypeScript 하네스 테스트 등의 타입 일관성                                                    | 앱 빌드·런타임 동작            |
-| Codex 발견            | 대상에서 로컬 스킬을 읽을 수 있음                                                            | 독립 에이전트나 훅 실제 실행   |
+| 검사             | 확인하는 것                                                                                                                              | 보장하지 않는 것                       |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| lint·format      | 소스 규칙·서식                                                                                                                           | 제품 동작                              |
+| design:check     | 구조도 CSS 속성·값과 문서 기준 일치                                                                                                      | 실제 렌더링·접근성·디자인 승인         |
+| harness:check    | registry 형식·안전한 경로·등록 파일·스킬 이름·문서 참조                                                                                  | 모델 실행·제품 구현                    |
+| Vitest 이식 회귀 | 배포 목록·dry-run 무변경·apply·재실행·충돌 보존·project-owned 보존·canonical JSON 예시 파싱·누락 참조·경로·심볼릭 링크·빈 스킬 설명 거부 | 실제 agent routing·모델 실행·비용 절감 |
+| typecheck        | TypeScript 하네스 테스트 등의 타입 일관성                                                                                                | 앱 빌드·런타임 동작                    |
+| Codex 발견       | 대상에서 로컬 스킬을 읽을 수 있음                                                                                                        | 독립 에이전트나 훅 실제 실행           |
 
 ## 재현 절차
 
@@ -40,9 +40,15 @@ npm run check
 
 충돌·심볼릭 링크·손상 registry 실험은 폐기 가능한 임시 대상에서만 수행한다. 운영 제품에 실패 fixture를 주입하지 않는다. 검사마다 작업 경로·명령·종료 코드·대상 버전 또는 파일 상태·로그 위치를 남긴다.
 
+Adaptive Execution의 unit regression은 installer의 project-owned 보존과 canonical result JSON의 구조·unknown 관측값만 확인한다. profile 의미, blast radius 판정, Evidence Reuse, STOP 우선, 실제 worker/verifier 분리, backend model/usage는 문구나 JSON 파싱만으로 증명되지 않는다. 해당 부분은 실제 orchestration trace와 독립 verifier evidence에서 관찰하며, 제공되지 않은 metadata는 `unknown`으로 둔다.
+
 ## 2026-09-13 검증 상태
 
 macOS·Node 24.14.1에서 `npm ci --offline`과 문서 정리 후 `npm run check`가 exit 0으로 통과했다. lint·디자인·하네스·서식·이식 회귀 44개·타입 검사를 포함한다. 전체 실행 로그는 로컬 `/tmp/cc-harness-pm-removal-check.log`에 있다. 구조도 문구 변경의 브라우저 시각 검수와 새 환경의 실제 훅 발화는 수행하지 않았다.
+
+## 2026-09-15 Adaptive Execution 최종 검사
+
+독립 AC 검토 PASS 뒤 main이 배정한 작업자가 `npm run check`를 한 번 실행해 exit 0을 확인했다. lint, design 검사 84개 선언, harness 검사 15 skills/32 registered files, format, Vitest 47/47, typecheck를 포함한다. 전체 stdout/stderr는 feature-local `docs/features/model-routing/evidence/final-check.stdout-stderr.log`에 있으며 이 경로는 배포 하네스 자산이 아니다. 이 검사는 실제 agent routing, backend model/usage, 비용 절감을 검증하지 않는다.
 
 ## 검증 결과의 해석
 

@@ -1,0 +1,118 @@
+
+ RUN  v5.0.0 /Users/sungwoon/ai-projects/cc-harness
+
+ ❯ tests/unit/harness-portability.test.ts (47 tests | 2 failed) 1561ms
+   × ships a parseable adaptive-execution result example without inventing observation 5ms
+   × keeps the delivery result example aligned with the reusable result shape 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/harness-portability.test.ts > ships a parseable adaptive-execution result example without inventing observation
+AssertionError: expected { issue: 'MR-IMP-01', …(25) } to match object { …(9) }
+(34 matching properties omitted from actual)
+
+- Expected
++ Received
+
+@@ -1,9 +1,7 @@
+  {
+-   "contract_hashes": {
+-     "docs/methods/delivery-automation.md": "<sha256-of-effective-contract>",
+-   },
++   "contract_hashes": {},
+    "diagnostic": {
+      "approval_ref": null,
+      "context_id": null,
+      "diagnostic_result": null,
+      "escalation_reason": "not-run",
+@@ -16,23 +14,22 @@
+        "effort": "unknown",
+        "model": "unknown",
+      },
+      "status": "not-run",
+    },
+-   "evidence": [],
+-   "evidence_validity": {
++   "evidence": {
+      "reason": "<not-yet-assessed>",
+      "refs": [],
+-     "state": "unknown",
++     "validity": "unknown",
+    },
+    "failure": {
+      "current": null,
+      "previous": [],
+    },
+    "green_attempts": {
+      "limit": 3,
+      "used": 1,
+    },
+    "policy_effective_checkpoint": "<approved-checkpoint>",
+-   "retry_count": 2,
++   "retry_count": 0,
+    "source_revision": "<verified-source-revision>",
+  }
+
+ ❯ tests/unit/harness-portability.test.ts:322:18
+    320|     "same_relevant_code_contract_ac_test_command_environment",
+    321|   );
+    322|   expect(result).toMatchObject({
+       |                  ^
+    323|     source_revision: "<verified-source-revision>",
+    324|     contract_hashes: { "docs/methods/delivery-automation.md": "<sha256…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/unit/harness-portability.test.ts > keeps the delivery result example aligned with the reusable result shape
+AssertionError: expected { issue: '<approved-issue>', …(35) } to match object { issue: '<approved-issue>', …(12) }
+(50 matching properties omitted from actual)
+
+- Expected
++ Received
+
+@@ -1,13 +1,13 @@
+  {
+-   "ac_passed": null,
++   "ac_passed": false,
+    "attempt": 1,
+    "base": "<approved-base>",
+-   "contract_hashes": {
+-     "docs/methods/delivery-automation.md": "<sha256-of-effective-contract>",
+-   },
+-   "evidence": [],
++   "contract_hashes": {},
++   "evidence": [
++     "<local-log-or-report-path>",
++   ],
+    "evidence_validity": {
+      "reason": "<not-yet-assessed>",
+      "refs": [],
+      "state": "unknown",
+    },
+@@ -21,8 +21,8 @@
+      "used": 1,
+    },
+    "head": "<issue-branch>",
+    "issue": "<approved-issue>",
+    "policy_effective_checkpoint": "<approved-checkpoint>",
+-   "retry_count": 2,
++   "retry_count": 0,
+    "source_revision": "<verified-source-revision>",
+  }
+
+ ❯ tests/unit/harness-portability.test.ts:350:18
+    348|   expect(json).toBeTypeOf("string");
+    349|   const result = JSON.parse(json ?? "null");
+    350|   expect(result).toMatchObject({
+       |                  ^
+    351|     issue: "<approved-issue>",
+    352|     base: "<approved-base>",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 45 passed (47)
+   Start at  22:35:18
+   Duration  1.65s (tests 99%, transform 1%)
+

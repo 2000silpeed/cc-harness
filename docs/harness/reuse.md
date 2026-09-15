@@ -244,6 +244,12 @@ progress.md와 실제 변경을 대조해 마지막 미완료 단계부터 이�
 - 대상의 check-harness와 제품 자체 검사를 실행하고 변경한 원본 SHA를 기록한다.
 - 원본을 pull했다고 제품의 독립 사본이 자동 변경되지 않는다. 필수 오케스트레이션 정책도 기존 대상의 `AGENTS.md`·방법론·스킬에 명시적으로 병합해야 한다. 이 의무는 지침으로 적용되며 메인의 직접 실행을 런타임에서 기술적으로 차단하지 않는다.
 
+### ADOPT/RESUME reconciliation 경계
+
+registry path만으로 대상 파일을 Harness-managed라고 단정하지 않는다. known previous source revision과 relevant contract hash가 일치할 때만 managed이며, project-owned(제품 코드·feature 문서·config·AGENTS)는 보존한다. shared/customized 또는 source가 unknown이면 diff와 user gate가 필요하다. installer의 same/충돌 all-or-nothing 계약은 유지하며 `--upgrade`, manifest, 3-way merge, 강제 덮어쓰기는 제공하지 않는다.
+
+증거 재사용은 source revision과 relevant contract hash, AC/test/command/environment, effective checkpoint를 low-cost metadata로 먼저 대조한다. 관련 입력이 모두 같지 않거나 확인할 수 없으면 그 영향 범위만 재검증한다. global HEAD 불일치만으로 전체 evidence를 버리지 않는다.
+
 ## 10. 새 제품과 기존 제품 이사는 다르다
 
 | 목적                            | 방법                                                                                                |

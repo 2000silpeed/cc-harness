@@ -152,6 +152,80 @@
 
 명령을 실행하지 않았다면 planned/unverified로 적는다. 목표 스킬 이름을 나열했다고 실행 완료로 바꾸지 않는다.
 
+## Adaptive Execution 결과 JSON
+
+기존 auto-loop 결과 필드를 제거하지 않고 아래 metadata를 추가한다. 이 예시는 문서 계약의 literal JSON이며 실제 agent 행동·backend metadata·cost 절감을 증명하지 않는다. 관찰하지 못한 값은 0이 아니라 `unknown` 또는 `unavailable`으로 기록한다.
+
+```json
+{
+  "issue": "<approved-issue>",
+  "stage": "green",
+  "status": "passed",
+  "base": "<approved-base>",
+  "head": "<issue-branch>",
+  "revision": "<verified-revision>",
+  "attempt": 1,
+  "ac_passed": null,
+  "source_revision": "<verified-source-revision>",
+  "contract_hashes": { "docs/methods/delivery-automation.md": "<sha256-of-effective-contract>" },
+  "evidence": [],
+  "evidence_validity": { "state": "unknown", "reason": "<not-yet-assessed>", "refs": [] },
+  "profile": "standard",
+  "profile_reason": "impact was not fully known",
+  "risk_flags": [],
+  "context_scope": ["approved-AC", "relevant-contract", "focused-test", "checkpoint"],
+  "verification": { "depth": "focused", "scope": ["tests/unit/harness-portability.test.ts"] },
+  "evidence_reuse": {
+    "reused": false,
+    "checks": ["same_relevant_code_contract_ac_test_command_environment"]
+  },
+  "roles": {
+    "worker": { "role": "default_worker", "context_id": "worker-new" },
+    "verifier": { "role": "verifier", "context_id": "verifier-independent" }
+  },
+  "requested": {
+    "worker": { "model": "Sol", "effort": "medium" },
+    "verifier": { "model": "Sol", "effort": "high" }
+  },
+  "observed": {
+    "worker": { "model": "unknown", "effort": "unknown" },
+    "verifier": { "model": "unknown", "effort": "unknown" },
+    "usage": {
+      "value": "unknown",
+      "source": "unavailable",
+      "unit": "unknown",
+      "coverage": "unknown"
+    }
+  },
+  "green_attempts": { "limit": 3, "used": 3, "remaining": 0 },
+  "retry_count": 2,
+  "diagnostic": {
+    "budget": 1,
+    "used": 0,
+    "remaining": 1,
+    "escalation_reason": "not-run",
+    "diagnostic_result": null,
+    "evidence_ref": null,
+    "requested": { "model": "unknown", "effort": "unknown" },
+    "observed": { "model": "unknown", "effort": "unknown" },
+    "context_id": null,
+    "approval_ref": null,
+    "status": "not-run"
+  },
+  "rework": { "count": "unknown", "definition": "post-verification correction cycles" },
+  "failure": { "current": null, "previous": [] },
+  "outcome": "passed",
+  "next_action": "independent-verification",
+  "policy_effective_checkpoint": "<approved-checkpoint>"
+}
+```
+
+`compact`는 확인된 관련 호출·계약·의존성에서만 쓴다. 영향 불명확, security/data/authority, user gate, STOP 계약은 `standard` 이상 또는 user gate다. 파일 수·diff 크기로 낮추지 않는다. 재사용은 low-cost metadata/version/hash/command/checkpoint로 same relevant code + contract/AC + test + command + environment를 먼저 확인하고, 하나라도 불명확하면 해당 부분만 추가 탐색 또는 재검증한다.
+
+`green_attempts.used`는 Green 구현 시도 수이며 `retry_count`는 첫 Green 뒤 실제로 수행한 추가 구현 시도 수다. 검증 입력이 같은 버전인 단순 재실행만 제외한다. 독립 AC 실패 뒤 구현 또는 계약을 바꾸고 Green으로 돌아가면 새 Green 시도와 rework다. limit은 `min(3, 1 + user_approved_retry)`이고 scope/context/model/RESUME으로 reset하지 않는다. diagnostic은 별도 budget이며 `not-run`은 미호출, `unknown`은 호출했지만 관측값이 없는 경우다. 성공 sample의 `ac_passed: null`은 아직 독립 AC 검토 전임을 뜻한다.
+
+실패 중에는 `failure.current`에 `{ "class": "<failure-class>", "identity": "<class-command-signature-tool-version-scope>" }`를 기록한다. 해결되면 current를 `null`로 두고 previous에 옮긴다. 자동 예시의 수치는 `tdd-auto-loop` 계약을 보인 것이다. 수동 tdd-loop는 승인된 유한 범위와 실제 누적 Green/retry/rework를 자체 progress에 기록하며 자동 상한을 묵시적으로 적용하지 않는다.
+
 ## PR·CI·머지 기록
 
 ```markdown

@@ -16,6 +16,38 @@
 
 이 위임 의무는 자동 의사결정 승인이 아니다. 요구사항·아키텍처·범위·이슈·시나리오 승인과 외부 작업 권한을 그대로 유지하고, `tdd-auto-loop`의 유한 범위·상한은 별도 명시적 승인으로만 정한다. 이 정책은 지침 수준의 의무이며 런타임에서 메인의 편집·실행을 기술적으로 차단하는 장치가 아니다. 기존 이식 사본은 자동 갱신되지 않으므로 대상 지침과 이 문서를 명시적으로 갱신해야 한다.
 
+## Adaptive Execution: process와 model의 분리
+
+Adaptive Execution은 단일 요청의 token이나 프로젝트 총비용 절감을 보장하지 않는다. Discovery, context reconstruction, implementation, test, verification, reasoning, retry, rework, escalation을 포함한 total project cost를 이후 execution evidence로 검증하기 위한 첫 policy다. **Process Routing**은 필요한 절차 깊이를, **Model Routing**은 그 절차 안의 역할 capability 요청을 정한다. 기존 gate와 STOP이 항상 먼저다.
+
+model capability는 선택한 모델 자체의 추론·생성 능력이고, harness capability는 승인·역할 분리·planning·verification·retry·escalation·evidence를 조직하는 계약이다. 하네스가 약한 모델을 강한 모델과 같게 만들거나 낮은 분산·비용을 증명하지 않는다. 의도한 품질·비용 결과는 실제 execution observation이 있어야 평가한다.
+
+| process profile | 선택 조건                                                                   | 실행 계약                                                                                                          |
+| --------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `compact`       | 관련 호출·계약·의존성을 확인해 blast radius가 국소적이고 충분히 알려진 변경 | MSC와 focused relevant check를 사용한다. worker, 독립 verifier, 필수 검사, retry/STOP 예산을 생략할 권한은 아니다. |
+| `standard`      | 일반 feature 또는 영향 범위가 불명확한 변경                                 | 기존 이슈 TDD와 관련 회귀를 적용한다. 모르는 영향은 compact로 낮추지 않는다.                                       |
+| `intensive`     | 복잡한 통합, 공통 계약 변경, unknown runtime behavior                       | bounded diagnostic, 독립 검증, 넓어진 관련 회귀와 명시한 context scope를 적용한다.                                 |
+
+파일 수나 diff 크기는 profile의 주 기준이 아니다. security, data, authority, destructive/production, user gate, STOP 계약은 작은 diff여도 compact가 아니며 user gate가 우선한다. profile은 안전 계약의 면제가 아니고, 실제 실행 trace 없이는 profile 선택이 올바른 agent 행동을 증명하지 않는다.
+
+기본 역할 요청은 `default_worker=Sol/medium`, `diagnostic=Astra/high`, `verifier=Sol/high`다. 환경이 제공하는 모델로 교체할 수 있지만, `requested` 값과 실행 metadata에서 관찰한 `observed` 값은 분리한다. metadata가 없으면 `unknown`이며 모델 요청 성공으로 독립성이나 backend 모델을 주장하지 않는다. diagnostic은 읽기 전용 원인·가설·권고 계획만 반환하고, 뒤 구현은 새 worker가 수행한다.
+
+`tdd-auto-loop`의 기존 Green 총 예산은 `min(3, 1 + user_approved_retry)`이며 diagnostic 예산은 이슈당 1회다. diagnostic 실패도 소비하며 새 context, model 교체, RESUME은 counter를 초기화하지 않는다. `no-progress` 또는 Green 3회 실패 뒤에는 escalation하지 않고 STOP한다. 수동 `tdd-loop` 유지보수에는 이 자동 상한을 묵시적으로 적용하지 않고, 승인된 유한 범위와 실제 누적 시도를 기록한다. failure identity는 class만이 아니라 command, failure signature, tool version, scope로 비교한다. `LOCAL_IMPLEMENTATION_ERROR`, `ARCHITECTURE_UNCERTAINTY`, `CROSS_MODULE_DEPENDENCY`, `UNKNOWN_RUNTIME_BEHAVIOR`, `REQUIREMENT_AMBIGUITY`, `BROKEN_ENVIRONMENT`, `EXTERNAL_TOOL_FAILURE`, `SECURITY_BLOCK` 중 evidence에 맞는 값을 기록하고, requirement ambiguity와 새 권한은 user gate로 보낸다.
+
+### Minimum Sufficient Context, JIT, Evidence Reuse
+
+새 작업자의 Minimum Sufficient Context(MSC)는 승인 목표·허용 범위·revision/dirty hash, 관련 파일과 contract reference, 검사·STOP·남은 예산, checkpoint, evidence link와 반환 형식이다. 전체 대화·전체 repository·긴 로그는 기본 입력이 아니다.
+
+JIT repository understanding은 얕은 구조 탐색 뒤 current change area와 직접 dependency/test/interface/relevant doc만 읽고, 확대 근거가 있을 때만 범위를 넓힌다. Evidence Reuse는 metadata, version/hash, command, checkpoint를 먼저 비교한다. same relevant code + contract/AC + test + command + environment가 모두 확인될 때만 재사용하고, 불확실한 부분만 추가 탐색 또는 재검증한다. 관련 변경만 evidence를 무효화하며 global HEAD가 다르다는 이유로 모두 폐기하지 않는다.
+
+### Execution metadata와 관측 경계
+
+progress와 결과 JSON에는 profile/reason/risk flags, context scope, verification depth/scope, reuse 여부와 checks, worker/verifier role·context id, requested/observed model·effort, retry/escalation/rework, failure class/outcome/next action, policy checkpoint, observed usage와 source/unit/coverage를 기록한다. `unknown` 또는 `unavailable`은 값 0이 아니다. 누적 usage의 중복 합산이나 부분 usage를 total project cost로 주장하지 않는다.
+
+지원되는 Codex CLI `exec --json`의 `turn.completed` usage와 App Server thread token usage 알림은 관찰 가능한 execution metadata의 후보다. 이 하네스는 collector를 추가하지 않으며, 현재 collaboration surface에서 제공되지 않은 model/usage는 `unknown`으로 남긴다.
+
+실행 surface가 model slug 선택을 지원하면 `gpt-5.6-sol`, `gpt-6-astra` 같은 지원 slug를 명시적으로 요청하고 runtime/config의 우선 override를 먼저 확인한다. 역할 이름은 교체 가능하다. 지원 여부·override·독립 context를 확인할 수 없으면 성공으로 추정하지 않고 `unavailable`/`manual-handoff`로 기록한다. [Codex Subagents](https://learn.chatgpt.com/docs/subagents) 문서와 현재 runtime 도움말로 실제 지원을 확인한다.
+
 ## 아이디어부터 전달까지 연결하는 입력 계약
 
 전체 흐름은 `최초 요청 → 요구사항 인터뷰 → PRD/ADR → 이슈 분해 → Red/Green/Refactor → 보안 → E2E → CI/브랜치 보호 → main 머지`다. 앞단의 [기획](planning.md)과 [TDD](tdd.md) 승인 근거를 다음 단계로 인계한다.
@@ -226,6 +258,18 @@ STOP은 “계속할까요?”라고 세션을 매달아 두는 방식이 아니
 
 Green 실행 시도를 1–3으로 기록하며 세 번째 실패 후 네 번째 자동 시도는 금지한다. 시나리오 수 5개는 사례의 질을 대신하지 않는다. 각 결과의 버전·증거·상태를 함께 검증한다.
 
+`attempt`는 기존 단계 실행 식별자이고 `green_attempts.used`는 실제 Green 구현 시도다. `retry_count`는 첫 Green 뒤 추가 구현 시도만 센다. expected Red와 code·contract·test·environment가 같은 버전의 test-only 재실행만 Green attempt/retry에서 제외한다. AC 보완 뒤 실제 구현 또는 계약을 수정해 Green으로 돌아가면 model/context/RESUME과 무관하게 누적 Green 시도와 retry다. diagnostic은 별도 1회 budget이며 새 context/model/RESUME으로 어떤 counter도 reset하지 않는다.
+
+| failure class                                                                     | 다음 행동                                                                       |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `LOCAL_IMPLEMENTATION_ERROR`                                                      | 남은 Green 시도가 있을 때만 retry 후보                                          |
+| `ARCHITECTURE_UNCERTAINTY`, `CROSS_MODULE_DEPENDENCY`, `UNKNOWN_RUNTIME_BEHAVIOR` | 새 근거가 있고 diagnostic budget·위임이 남았을 때 읽기 전용 diagnostic 후보     |
+| `REQUIREMENT_AMBIGUITY`                                                           | user gate                                                                       |
+| `BROKEN_ENVIRONMENT`, `SECURITY_BLOCK`                                            | STOP                                                                            |
+| `EXTERNAL_TOOL_FAILURE`                                                           | evidence 보존, 중복 호출·model 교체로 재호출하지 않으며 권한/환경 복구까지 STOP |
+
+diagnostic 호출 전에는 STOP/gate 없음, 정상 환경, 승인 scope와 진단 위임, 남은 Green/diagnostic budget, 동일 failure identity가 아닌 새 근거를 모두 확인한다. diagnostic이 승인된 기술안 안의 plan을 주면 새 worker가 구현하고, 새 architecture 결정이면 user gate, diagnostic 실패·불명·no-progress면 STOP이다. record에는 escalation reason, result/evidence ref, requested/observed model·effort, context id, approval ref, usage/budget/status를 둔다. `not-run`과 `unknown`을 구분한다.
+
 CI에서 `moderate` 이상 감사를 차단하도록 구성했다면 자동 모드 재스캔의 `high 이상` STOP과 별도 게이트다. high가 없다는 이유로 moderate CI 실패를 통과로 바꾸지 않는다.
 
 ### 자동 승인에 대한 필수 제한
@@ -262,14 +306,64 @@ CI에서 `moderate` 이상 감사를 차단하도록 구성했다면 자동 모�
   "base": "<approved-base>",
   "head": "<issue-branch>",
   "revision": "<verified-revision>",
+  "source_revision": "<verified-source-revision>",
+  "contract_hashes": { "docs/methods/delivery-automation.md": "<sha256-of-effective-contract>" },
+  "evidence_validity": { "state": "unknown", "reason": "<not-yet-assessed>", "refs": [] },
   "attempt": 1,
-  "ac_passed": false,
-  "evidence": ["<local-log-or-report-path>"],
+  "ac_passed": null,
+  "evidence": [],
   "stop_source": "harness-auto-loop",
   "stop_reason": "<unmet-AC-and-observed-result>",
   "changed_files": [],
   "external_actions_performed": [],
-  "resume_condition": "<required-correction-and-verification>"
+  "resume_condition": "<required-correction-and-verification>",
+  "profile": "standard",
+  "profile_reason": "<risk-and-complexity-evidence>",
+  "risk_flags": [],
+  "context_scope": ["<MSC-reference>"],
+  "verification": { "depth": "focused", "scope": ["<relevant-check>"] },
+  "evidence_reuse": {
+    "reused": false,
+    "checks": ["same_relevant_code_contract_ac_test_command_environment"]
+  },
+  "roles": {
+    "worker": { "role": "default_worker", "context_id": "<new-context>" },
+    "verifier": { "role": "verifier", "context_id": "<independent-context>" }
+  },
+  "requested": {
+    "worker": { "model": "Sol", "effort": "medium" },
+    "verifier": { "model": "Sol", "effort": "high" }
+  },
+  "observed": {
+    "worker": { "model": "unknown", "effort": "unknown" },
+    "verifier": { "model": "unknown", "effort": "unknown" },
+    "usage": {
+      "value": "unknown",
+      "source": "unavailable",
+      "unit": "unknown",
+      "coverage": "unknown"
+    }
+  },
+  "green_attempts": { "limit": 3, "used": 3, "remaining": 0 },
+  "retry_count": 2,
+  "diagnostic": {
+    "budget": 1,
+    "used": 0,
+    "remaining": 1,
+    "escalation_reason": "not-run",
+    "diagnostic_result": null,
+    "evidence_ref": null,
+    "requested": { "model": "unknown", "effort": "unknown" },
+    "observed": { "model": "unknown", "effort": "unknown" },
+    "context_id": null,
+    "approval_ref": null,
+    "status": "not-run"
+  },
+  "rework": { "count": "unknown", "definition": "post-verification correction cycles" },
+  "failure": { "current": null, "previous": [] },
+  "outcome": "<passed-or-stopped>",
+  "next_action": "<bounded-next-action>",
+  "policy_effective_checkpoint": "<approved-checkpoint>"
 }
 ```
 

@@ -91,7 +91,7 @@ mermaid-diagram은 요청 시 구조도를 갱신하는 보조 스킬이다. 두
 | npm run lint                   | JS/MJS·TS/TSX·HTML 검사                           |
 | npm run design:check           | 구조도 정적 디자인 검사                           |
 | npm run format:check           | 서식 검사                                         |
-| npm test                       | Vitest 하네스 이식 회귀 44개                      |
+| npm test                       | Vitest 하네스 이식 회귀 검사                      |
 | npm run harness:check          | 하네스 등록·참조 검사                             |
 | npm run typecheck              | TypeScript 타입 검사                              |
 | npm run check                  | lint·디자인·하네스·서식·테스트·타입 통합          |

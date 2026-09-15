@@ -59,7 +59,17 @@ $harness-cycle
 
 기록에는 현재 단계·이슈 ID·승인 대상/내용/근거·수정 파일·실행 명령/cwd/종료 코드·증거 경로·남은 문제·다음 행동을 둔다. 승인된 문서가 바뀌면 해당 문서에 의존하는 승인과 테스트가 여전히 유효한지 확인한다. AI가 스스로 `approved`를 채우지 않는다.
 
-재개 시 실제 파일과 진행 기록을 대조한다. CI가 다른 커밋을 검사했거나 테스트 후 코드가 바뀌었다면 이전 pass를 재사용하지 않는다. Git 커밋이 없다면 검사 당시 변경 파일의 해시 등 재현 가능한 식별 정보를 기록한다.
+재개 시 실제 파일과 진행 기록을 대조한다. CI가 다른 커밋을 검사했거나 테스트 후 관련 코드·contract/AC·test·command·environment가 바뀌었다면 해당 pass를 재사용하지 않는다. global HEAD 차이만으로 전체 evidence를 폐기하지 않고 저비용 metadata/hash/command/checkpoint로 관련 입력을 먼저 대조한다. Git 커밋이 없다면 검사 당시 변경 파일의 해시 등 재현 가능한 식별 정보를 기록한다.
+
+### NEW, ADOPT, RESUME과 Adaptive Execution
+
+NEW는 새 프로젝트, ADOPT는 하네스를 처음 적용하는 기존 프로젝트, RESUME은 기존 하네스 프로젝트의 재개/호환 갱신이다. ADOPT/RESUME은 기존 승인, spec, ADR, issue, progress, code, config, AGENTS와 evidence를 보존한다. source revision, relevant contract hashes, `policy_effective_checkpoint`, evidence valid/invalid와 이유를 기존 기록에 추가한다. routing field가 없는 과거 기록은 `legacy-unknown`으로 보존하며 새 policy를 소급 적용하지 않는다.
+
+ADOPT discovery는 runtime, 구조, 경계, 검사, CI/CD, Git, 문서, 기존 결정, 현재 작업, 기술부채를 `CONFIRMED`/`DOCUMENTED`/`INFERRED`/`UNKNOWN`으로 표기한다. AI 추론은 과거 승인이나 ADR이 아니다. baseline은 사용자 승인 후에만 유효하고, legacy AC는 제안 → 사용자 확인 → 독립 검증 → 남은 lifecycle 순서를 따른다. 기술부채 자체는 adoption blocker가 아니지만 security/data-loss/Broken STOP, dirty auto-loop STOP, Refactor 전체 회귀 STOP은 baseline으로 완화하지 않는다.
+
+ADOPT ratchet는 count뿐 아니라 같은 입력의 failure identity(command, signature, tool version, scope)를 비교한다. count가 같아도 기존 identity A가 새 identity B로 바뀌면 regression이다. relevant code·contract/AC·test·command·environment가 같은지 먼저 대조하고, `unknown`은 해당 범위의 targeted investigation으로 남긴다. baseline은 어떤 mandatory STOP도 면제하지 않는다.
+
+재개 시 profile과 역할 요청을 새 checkpoint 이후에만 기록한다. profile은 compact/standard/intensive 중 risk evidence로 정하며, known local blast radius가 아닌 경우 compact를 쓰지 않는다. MSC와 JIT 탐색·Evidence Reuse는 [공통 실행 정책](../methods/delivery-automation.md#adaptive-execution-process와-model의-분리)을 따른다.
 
 ## 5. 승인과 외부 작업
 
