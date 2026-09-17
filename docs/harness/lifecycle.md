@@ -71,6 +71,18 @@ ADOPT ratchet는 count뿐 아니라 같은 입력의 failure identity(command, s
 
 재개 시 profile과 역할 요청을 새 checkpoint 이후에만 기록한다. profile은 compact/standard/intensive 중 risk evidence로 정하며, known local blast radius가 아닌 경우 compact를 쓰지 않는다. MSC와 JIT 탐색·Evidence Reuse는 [공통 실행 정책](../methods/delivery-automation.md#adaptive-execution-process와-model의-분리)을 따른다.
 
+### 세션 checkpoint와 handoff
+
+의미 단계가 끝나 다음의 비싼 작업 묶음을 시작하기 전이나 runtime이 실제 context pressure를 알린 때 checkpoint를 만든다. 계정 quota나 임의 context 비율을 신호로 쓰지 않는다. native compaction은 현재 대화의 runtime 기능이고, durable handoff 및 새 세션 생성과 구분한다. 비동기 compaction은 `contextCompaction` 완료 뒤에만 끝난 것으로 기록하며 `resume`·`fork`는 과거 history를 유지하므로 fresh session이 아니다. 2026-09-17에 관찰한 Codex App surface에는 compact 호출과 정확한 thread별 context telemetry가 없었다. 실행 때마다 현재 callable capability를 다시 확인하고 지원을 추정하지 않는다. 관련 공식 사양은 [config reference](https://learn.chatgpt.com/docs/config-file/config-reference), [developer commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli), [App Server](https://learn.chatgpt.com/docs/app-server)를 따른다.
+
+`docs/features/{feature}/session-handoff.json`에는 목표·승인 범위와 근거, source revision·dirty 소유/해시, 현재 checkpoint와 정확한 다음 행동, contract·evidence 참조/해시와 유효성, 실패 identity와 증거 참조, 실제 Green/diagnostic/rework/rollover 누계, 진행 중 worker·외부 작업, STOP·재개 조건만 보존한다. 대화 서사, 반복 계획, 긴 로그·도구 출력, 전체 저장소 목록, 폐기한 선택지와 evidence 본문은 다음 prompt에서 빼되 디스크에서는 삭제하지 않고 필요한 경로·해시·무효 이유를 남긴다.
+
+`node scripts/session-handoff.mjs --help`와 `template`로 필요할 때만 strict 입력 계약을 읽는다. `prepare --input <json> --state docs/features/{feature}/session-handoff.json`으로 record를 원자적으로 준비하고 `decide --state <path> --root <project> [--session-id <real-id>]`로 source·dirty·참조와 승인·증거·STOP·관련 다음 행동 예산·in-flight 상태를 다시 확인한다. 자동 decide/claim은 Git HEAD/status를 전제로 한다. Git이 없으면 `progress.md`와 동일한 참조/해시 manifest로 수동 인계하고 자동 claim은 사용하지 않는다. helper는 session을 만들지 않는다.
+
+`fresh-session`은 작업별 rollover 승인과 유한 cap이 남아 있을 때만 가능하며, 같은 checkpoint의 no-progress 연쇄와 누계 reset을 막는다. `action_kind=phase`인 다음 Green만 Green 예산을 쓰고, `action_kind=diagnostic`은 기존 정책의 bounded read-only 역할로 diagnostic 예산을 쓴다. 한 handoff chain의 rollover·Green·diagnostic limit은 불변이다. 새 limit이나 범위는 lifecycle 승인으로 새 chain을 열되 이전 task의 사용량·실패를 reset하지 않는다. active STOP 해제는 새 sequence에서 기존 reason/condition을 보존하고 `resume:<previous-handoff-id>` 승인과 같은 새 valid evidence를 `resolution_ref`로 연결할 때만 허용한다.
+
+새 세션은 `claim --state <path> --handoff-id <id> --executor-id <id>` 성공 뒤 runtime에 startup-only prompt로 한 번만 생성한다. claim 직후 원 세션은 project/source 수정을 멈추고 생성·receipt 기록·prompt 전달만 한다. 같은 claim replay에는 launch prompt가 없으며 reconciliation에서 멈춘다. 새 thread는 제품 작업을 기다린다. caller가 real session ID를 받은 뒤 `receipt --state <path> --handoff-id <id> --executor-id <id> --session-id <real-id>`를 기록하고, 이때 처음 반환된 bounded resume prompt를 그 thread에 보낸다. consumer는 prompt 첫 명령으로 자신의 session ID를 넣은 `decide`에서 matching receipt를 확인한 뒤에만 다음 행동을 수행한다. pending client ID, timeout, claim 뒤 불명확한 생성은 재생성하지 않는다. executor/session ID는 runtime 영수증이지 실행 진실성의 독립 증거가 아니다.
+
 ## 5. 승인과 외부 작업
 
 G1 요구사항, G2 기술안, G3 Out of Scope, G4 이슈 목록은 사용자 확정이 필요하다. 기술 선택을 위임받아도 세 안의 비교와 AI 추천을 먼저 제시하고 최종 선택을 확인한다. 기술 선택 위임은 요구사항 확정이 아니다. G5 시그니처·시나리오는 일반 모드에서 사용자 검토를 유지하며, 자동 모드에 한해 명시적 기술 판단 위임과 객관 STOP 조건을 적용한다. 위임 대상·범위·근거를 기록하고 이미 받은 승인을 반복 요구하지 않는다.

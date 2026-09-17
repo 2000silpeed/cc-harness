@@ -5,7 +5,7 @@ description: 테스트와 AC 검토를 통과한 구현의 외부 동작을 유�
 
 # 동작을 유지하며 정리
 
-`docs/methods/tdd.md`의 Refactor 방법을 읽는다.
+`docs/methods/tdd.md`의 `### Refactor` 절만 읽는다(다음 같은/상위 수준 제목 직전까지).
 
 1. 현재 Green·AC 결과와 검사 대상 변경이 일치하는지 확인한다.
 2. 중복, 이름의 명확성, 단일 책임, 불필요한 복잡도, AGENTS 규칙 일치의 다섯 기준으로 후보를 고른다.

@@ -5,7 +5,7 @@ description: 승인된 이슈 하나를 단계별 사용자 검토와 TDD·독�
 
 # 한 이슈의 TDD 사이클
 
-[필수 오케스트레이션 정책](../../../docs/methods/delivery-automation.md#필수-오케스트레이션-정책)과 [단계별 진입·재개 계약](../../../docs/methods/delivery-automation.md#tdd-loop는-순서-자동화-승인은-유지), `docs/harness/lifecycle.md`의 승인·이슈 루프(5–7절)를 먼저 확인한다. 전달 단계에서만 `docs/methods/delivery-automation.md`의 PR·CI 절을 추가로 읽는다.
+[필수 오케스트레이션 정책](../../../docs/methods/delivery-automation.md#필수-오케스트레이션-정책), [단계별 진입·재개 계약](../../../docs/methods/delivery-automation.md#tdd-loop는-순서-자동화-승인은-유지), `docs/harness/lifecycle.md`의 `## 5. 승인과 외부 작업`부터 `## 7. 스킬과 독립 판단 역할`까지를 읽는다. 제목 절은 다음 같은/상위 수준 제목 직전까지만 선택한다. 전달 단계에서만 delivery의 `## PR, CI, 보호 규칙, 최종 머지`를 추가한다.
 
 1. 이슈·선행 의존성·기획 승인·대상 경로·실행 범위를 확인한다. 미완료 선행 작업을 건너뛰지 않는다.
 2. test-scenarios → tdd-red → tdd-green → ac-verifier → tdd-refactor → security-review 순서로 배정한다. 각 작업자는 현재 단계의 SKILL.md와 그 단계에 필요한 참조만 읽고 수행한다.

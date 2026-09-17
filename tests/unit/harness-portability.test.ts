@@ -13,12 +13,14 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 
 const temporary: string[] = [];
 const registryPath = "docs/harness/registry.json";
 const skillPath = ".agents/skills/example/SKILL.md";
 const methodPath = "docs/methods/testing-strategy.md";
 const repository = process.cwd();
+const handoffScript = "scripts/session-handoff.mjs";
 
 afterEach(() => {
   for (const directory of temporary.splice(0)) rmSync(directory, { recursive: true, force: true });
@@ -68,6 +70,580 @@ function run(root: string, script = "check-harness", args: string[] = []) {
     env: { ...process.env, PATH: "" },
   });
 }
+
+function git(root: string, ...args: string[]) {
+  const result = spawnSync("git", args, { cwd: root, encoding: "utf8" });
+  expect(result.status, result.stderr).toBe(0);
+  return result.stdout.trim();
+}
+
+function sha256(content: string | Buffer) {
+  return createHash("sha256").update(content).digest("hex");
+}
+
+function handoffRepository() {
+  const root = directory();
+  write(root, "scope.md", "approved scope\n");
+  write(root, "rollover.md", "one rollover\n");
+  write(root, "next-stage.md", "ac verification approved\n");
+  write(root, "resume.md", "resume condition resolved\n");
+  write(root, "contract.md", "contract\n");
+  write(root, "evidence.json", '{"passed":true}\n');
+  write(root, "tracked.txt", "baseline\n");
+  git(root, "init", "-q");
+  git(root, "config", "user.email", "test@example.com");
+  git(root, "config", "user.name", "Test");
+  git(root, "add", ".");
+  git(root, "commit", "-qm", "fixture");
+  write(root, "tracked.txt", "worker change\n");
+  return root;
+}
+
+function reference(root: string, path: string) {
+  return { path, sha256: sha256(readFileSync(resolve(root, path))) };
+}
+
+function handoffInput(root: string, overrides: Record<string, unknown> = {}) {
+  const base = {
+    schema_version: 1,
+    sequence: 1,
+    task: {
+      objective: "Verify the approved issue",
+      approved_scope_ref: "scope.md",
+      rollover_authority_ref: "rollover.md",
+      max_rollovers: 1,
+      used_rollovers: 0,
+    },
+    checkpoint: {
+      mode: "RESUME",
+      stage: "green",
+      stage_status: "passed",
+      action_kind: "phase",
+      next_stage: "ac-verification",
+      next_skill: "ac-verifier",
+      next_action: "Verify AC-1 against the focused test evidence.",
+    },
+    state: {
+      source_revision: git(root, "rev-parse", "HEAD"),
+      dirty_manifest: [{ path: "tracked.txt", sha256: sha256("worker change\n"), owner: "worker" }],
+      contract_hashes: { "contract.md": reference(root, "contract.md").sha256 },
+      approval_refs: [
+        { gate: "scope", ...reference(root, "scope.md"), status: "approved" },
+        { gate: "rollover", ...reference(root, "rollover.md"), status: "approved" },
+        {
+          gate: "stage:ac-verification",
+          ...reference(root, "next-stage.md"),
+          status: "approved",
+        },
+      ],
+      evidence_refs: [{ ...reference(root, "evidence.json"), required: true, validity: "valid" }],
+      evidence_validity: "valid",
+    },
+    budgets: {
+      green: { limit: 3, used: 3 },
+      diagnostic: { limit: 1, used: 0 },
+      rework_count: 0,
+    },
+    failures: [],
+    activity: { workers: [], external_actions: [] },
+    stop: { active: false, reason: null, resume_condition: null, resolution_ref: null },
+    rollover: { requested: "fresh-session", claim: null, receipt: null },
+  };
+  return { ...base, ...overrides };
+}
+
+function runHandoff(root: string, args: string[]) {
+  return spawnSync(process.execPath, [resolve(repository, handoffScript), ...args], {
+    cwd: root,
+    encoding: "utf8",
+    env: { ...process.env, PATH: process.env.PATH ?? "" },
+  });
+}
+
+function prepareHandoff(root: string, input = handoffInput(root)) {
+  const inputPath = resolve(directory(), "input.json");
+  const statePath = resolve(root, "docs/features/example/session-handoff.json");
+  writeFileSync(inputPath, JSON.stringify(input));
+  const result = runHandoff(root, ["prepare", "--input", inputPath, "--state", statePath]);
+  return {
+    result,
+    statePath,
+    state: existsSync(statePath) ? JSON.parse(readFileSync(statePath, "utf8")) : null,
+  };
+}
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+it("ships the session handoff helper in an installed harness", () => {
+  const target = directory();
+  const installed = run(repository, "install-harness", ["--target", target, "--apply"]);
+  expect(installed.status, installed.stderr).toBe(0);
+  expect(existsSync(resolve(target, handoffScript))).toBe(true);
+});
+
+it("exposes compact help and a machine-readable input template", () => {
+  const help = runHandoff(repository, ["--help"]);
+  expect(help.status, help.stderr).toBe(0);
+  expect(help.stdout).toContain("template");
+  expect(help.stdout).toContain("prepare|decide|claim|receipt");
+  const template = runHandoff(repository, ["template"]);
+  expect(template.status, template.stderr).toBe(0);
+  expect(JSON.parse(template.stdout)).toMatchObject({
+    schema_version: 1,
+    task: { approved_scope_ref: "<project-relative-path>" },
+    checkpoint: { mode: "RESUME" },
+    failures: [],
+  });
+});
+
+it("prepares a stable record and distinguishes phase continuation from fresh rollover", () => {
+  const root = handoffRepository();
+  const first = prepareHandoff(root);
+  expect(first.result.status, first.result.stderr).toBe(0);
+  const second = prepareHandoff(root);
+  expect(second.result.status, second.result.stderr).toBe(0);
+  expect(second.state.handoff_id).toBe(first.state.handoff_id);
+
+  const rolloverDecision = runHandoff(root, ["decide", "--state", first.statePath, "--root", root]);
+  expect(JSON.parse(rolloverDecision.stdout).decision).toBe("ROLLOVER_READY");
+  expect(JSON.parse(rolloverDecision.stdout)).not.toHaveProperty("launch_prompt");
+  expect(JSON.parse(rolloverDecision.stdout)).not.toHaveProperty("resume_prompt");
+  expect(JSON.parse(rolloverDecision.stdout)).not.toHaveProperty("instruction");
+
+  const phaseRoot = handoffRepository();
+  const phaseInput = handoffInput(phaseRoot, {
+    rollover: { requested: "continue-current", claim: null, receipt: null },
+  });
+  const phase = prepareHandoff(phaseRoot, phaseInput);
+  expect(phase.result.status, phase.result.stderr).toBe(0);
+  const phaseDecision = runHandoff(phaseRoot, [
+    "decide",
+    "--state",
+    phase.statePath,
+    "--root",
+    phaseRoot,
+  ]);
+  expect(phaseDecision.status, phaseDecision.stderr).toBe(0);
+  expect(JSON.parse(phaseDecision.stdout)).toMatchObject({
+    decision: "PHASE_READY",
+    next_skill: "ac-verifier",
+  });
+  expect(phaseDecision.stdout).toContain("perform only checkpoint.next_action");
+});
+
+it.each([
+  ["missing key", (input: any) => delete input.stop],
+  ["extra key", (input: any) => (input.extra = true)],
+  ["bad counter", (input: any) => (input.budgets.green.used = 4)],
+  ["unknown owner", (input: any) => (input.state.dirty_manifest[0].owner = "unknown")],
+  [
+    "duplicate approval gate",
+    (input: any) => input.state.approval_refs.push({ ...input.state.approval_refs[0] }),
+  ],
+])("fails closed while preparing malformed state: %s", (_name, mutate) => {
+  const root = handoffRepository();
+  const input: any = handoffInput(root);
+  mutate(input);
+  const prepared = prepareHandoff(root, input);
+  expect(prepared.result.status).toBe(1);
+  expect(prepared.state).toBeNull();
+});
+
+it("rejects state path escape and symlink paths", () => {
+  const root = handoffRepository();
+  const inputPath = resolve(directory(), "input.json");
+  writeFileSync(inputPath, JSON.stringify(handoffInput(root)));
+  const escaped = runHandoff(root, [
+    "prepare",
+    "--input",
+    inputPath,
+    "--state",
+    resolve(root, "outside.json"),
+  ]);
+  expect(escaped.status).toBe(1);
+
+  const outside = directory();
+  mkdirSync(resolve(root, "docs/features"), { recursive: true });
+  symlinkSync(outside, resolve(root, "docs/features/example"));
+  const linked = runHandoff(root, [
+    "prepare",
+    "--input",
+    inputPath,
+    "--state",
+    resolve(root, "docs/features/example/session-handoff.json"),
+  ]);
+  expect(linked.status).toBe(1);
+  expect(readdirSync(outside)).toEqual([]);
+});
+
+it.each([
+  ["changed source", (root: string) => git(root, "commit", "--allow-empty", "-qm", "new")],
+  ["changed dirty file", (root: string) => write(root, "tracked.txt", "changed again\n")],
+  ["unlisted dirty file", (root: string) => write(root, "new.txt", "unlisted\n")],
+  ["changed contract", (root: string) => write(root, "contract.md", "changed\n")],
+  ["changed approval", (root: string) => write(root, "scope.md", "changed\n")],
+  ["changed evidence", (root: string) => write(root, "evidence.json", '{"passed":false}\n')],
+])("stops when persisted identity becomes stale: %s", (_name, mutate) => {
+  const root = handoffRepository();
+  const prepared = prepareHandoff(root);
+  expect(prepared.result.status, prepared.result.stderr).toBe(0);
+  mutate(root);
+  const decision = runHandoff(root, ["decide", "--state", prepared.statePath, "--root", root]);
+  expect(JSON.parse(decision.stdout).decision).toMatch(/^STOP_/);
+});
+
+it.each([
+  ["missing scope approval", (input: any) => input.state.approval_refs.shift()],
+  ["unknown evidence", (input: any) => (input.state.evidence_validity = "unknown")],
+  [
+    "active stop",
+    (input: any) =>
+      (input.stop = {
+        active: true,
+        reason: "blocked",
+        resume_condition: "fix",
+        resolution_ref: null,
+      }),
+  ],
+  ["pending worker", (input: any) => input.activity.workers.push({ id: "w1", status: "pending" })],
+  [
+    "unknown external action",
+    (input: any) => input.activity.external_actions.push({ id: "x1", status: "unknown" }),
+  ],
+  ["missing rollover authority", (input: any) => (input.task.rollover_authority_ref = null)],
+  ["rollover budget", (input: any) => (input.task.used_rollovers = 1)],
+])("does not ready an unsafe handoff: %s", (_name, mutate) => {
+  const root = handoffRepository();
+  const input: any = handoffInput(root);
+  mutate(input);
+  const prepared = prepareHandoff(root, input);
+  expect(prepared.result.status, prepared.result.stderr).toBe(0);
+  const decision = runHandoff(root, ["decide", "--state", prepared.statePath, "--root", root]);
+  expect(JSON.parse(decision.stdout).decision).toMatch(/^STOP_/);
+});
+
+it("applies a budget only to its relevant next action", () => {
+  const root = handoffRepository();
+  const acVerification = prepareHandoff(root);
+  expect(acVerification.result.status, acVerification.result.stderr).toBe(0);
+  expect(
+    JSON.parse(
+      runHandoff(root, ["decide", "--state", acVerification.statePath, "--root", root]).stdout,
+    ).decision,
+  ).toBe("ROLLOVER_READY");
+
+  const greenRoot = handoffRepository();
+  const nextGreen: any = handoffInput(greenRoot);
+  nextGreen.checkpoint.stage = "red";
+  nextGreen.checkpoint.next_stage = "green";
+  nextGreen.checkpoint.next_skill = "tdd-green";
+  nextGreen.state.approval_refs.push({
+    gate: "stage:green",
+    ...reference(greenRoot, "next-stage.md"),
+    status: "approved",
+  });
+  const stopped = prepareHandoff(greenRoot, nextGreen);
+  expect(stopped.result.status, stopped.result.stderr).toBe(0);
+  const decision = runHandoff(greenRoot, [
+    "decide",
+    "--state",
+    stopped.statePath,
+    "--root",
+    greenRoot,
+  ]);
+  expect(JSON.parse(decision.stdout).decision).toBe("STOP_BUDGET_EXHAUSTED");
+});
+
+it("requires explicit current-stage authority before pending work or rollover", () => {
+  const root = handoffRepository();
+  const input: any = handoffInput(root);
+  input.checkpoint.stage_status = "pending";
+  input.checkpoint.next_stage = "green";
+  input.checkpoint.next_skill = "tdd-green";
+  input.state.approval_refs = input.state.approval_refs.filter(
+    (entry: { gate: string }) => entry.gate !== "stage:ac-verification",
+  );
+  const prepared = prepareHandoff(root, input);
+  expect(prepared.result.status, prepared.result.stderr).toBe(0);
+  const stopped = runHandoff(root, ["decide", "--state", prepared.statePath, "--root", root]);
+  expect(JSON.parse(stopped.stdout).decision).toBe("STOP_APPROVAL_REQUIRED");
+
+  const approvedRoot = handoffRepository();
+  const approved: any = handoffInput(approvedRoot);
+  approved.checkpoint.stage_status = "pending";
+  approved.checkpoint.next_stage = "green";
+  approved.checkpoint.next_skill = "tdd-green";
+  approved.budgets.green.used = 2;
+  approved.state.approval_refs = approved.state.approval_refs.filter(
+    (entry: { gate: string }) => entry.gate !== "stage:ac-verification",
+  );
+  approved.state.approval_refs.push({
+    gate: "stage:green",
+    ...reference(approvedRoot, "next-stage.md"),
+    status: "approved",
+  });
+  const ready = prepareHandoff(approvedRoot, approved);
+  expect(ready.result.status, ready.result.stderr).toBe(0);
+  const decision = runHandoff(approvedRoot, [
+    "decide",
+    "--state",
+    ready.statePath,
+    "--root",
+    approvedRoot,
+  ]);
+  expect(JSON.parse(decision.stdout).decision).toBe("ROLLOVER_READY");
+});
+
+it("applies diagnostic budget through an explicit read-only action kind", () => {
+  const root = handoffRepository();
+  const input: any = handoffInput(root);
+  input.checkpoint.stage_status = "pending";
+  input.checkpoint.action_kind = "diagnostic";
+  input.checkpoint.next_stage = "green";
+  input.checkpoint.next_skill = "harness-cycle";
+  input.state.approval_refs = input.state.approval_refs.filter(
+    (entry: { gate: string }) => entry.gate !== "stage:ac-verification",
+  );
+  input.state.approval_refs.push({
+    gate: "stage:green",
+    ...reference(root, "next-stage.md"),
+    status: "approved",
+  });
+  input.budgets.diagnostic.used = 1;
+  const prepared = prepareHandoff(root, input);
+  expect(prepared.result.status, prepared.result.stderr).toBe(0);
+  const decision = runHandoff(root, ["decide", "--state", prepared.statePath, "--root", root]);
+  expect(JSON.parse(decision.stdout)).toMatchObject({
+    decision: "STOP_BUDGET_EXHAUSTED",
+    budget: "diagnostic",
+  });
+});
+
+it("requires new authenticated evidence to clear STOP and keeps limits immutable", () => {
+  const root = handoffRepository();
+  const stoppedInput: any = handoffInput(root);
+  stoppedInput.stop = {
+    active: true,
+    reason: "broken fixture",
+    resume_condition: "record verified repair",
+    resolution_ref: null,
+  };
+  const stopped = prepareHandoff(root, stoppedInput);
+  expect(stopped.result.status, stopped.result.stderr).toBe(0);
+
+  const unauthorized: any = handoffInput(root);
+  unauthorized.sequence = 2;
+  const rejected = prepareHandoff(root, unauthorized);
+  expect(rejected.result.status).toBe(1);
+  expect(rejected.result.stderr).toContain("cannot reset durable counters or STOP");
+
+  const recovery: any = handoffInput(root);
+  recovery.sequence = 2;
+  recovery.stop = {
+    active: false,
+    reason: "broken fixture",
+    resume_condition: "record verified repair",
+    resolution_ref: "resume.md",
+  };
+  recovery.state.approval_refs.push({
+    gate: `resume:${stopped.state.handoff_id}`,
+    ...reference(root, "resume.md"),
+    status: "approved",
+  });
+  recovery.state.evidence_refs.push({
+    ...reference(root, "resume.md"),
+    required: true,
+    validity: "valid",
+  });
+  const recovered = prepareHandoff(root, recovery);
+  expect(recovered.result.status, recovered.result.stderr).toBe(0);
+
+  const raised: any = handoffInput(root);
+  raised.sequence = 3;
+  raised.task.max_rollovers = 2;
+  const capChange = prepareHandoff(root, raised);
+  expect(capChange.result.status).toBe(1);
+  expect(capChange.result.stderr).toContain("limits are immutable");
+});
+
+it("claims once, requires reconciliation after ambiguity, and resumes only the receipted session", () => {
+  const root = handoffRepository();
+  const prepared = prepareHandoff(root);
+  expect(prepared.result.status, prepared.result.stderr).toBe(0);
+  const args = [
+    "claim",
+    "--state",
+    prepared.statePath,
+    "--handoff-id",
+    prepared.state.handoff_id,
+    "--executor-id",
+    "executor-1",
+  ];
+  const claimed = runHandoff(root, args);
+  expect(JSON.parse(claimed.stdout)).toMatchObject({ decision: "CLAIMED", idempotent: false });
+  expect(claimed.stdout).toContain("do not read or mutate project state");
+  expect(claimed.stdout).not.toContain("Use $harness-cycle");
+  const replay = JSON.parse(runHandoff(root, args).stdout);
+  expect(replay.decision).toBe("STOP_RECONCILIATION_REQUIRED");
+  expect(replay).not.toHaveProperty("launch_prompt");
+  expect(JSON.parse(runHandoff(root, [...args.slice(0, -1), "executor-2"]).stdout).decision).toBe(
+    "STOP_DUPLICATE_OR_STALE",
+  );
+  expect(
+    JSON.parse(runHandoff(root, ["decide", "--state", prepared.statePath, "--root", root]).stdout)
+      .decision,
+  ).toBe("STOP_RECONCILIATION_REQUIRED");
+
+  const receiptArgs = [
+    "receipt",
+    "--state",
+    prepared.statePath,
+    "--handoff-id",
+    prepared.state.handoff_id,
+    "--executor-id",
+    "executor-1",
+    "--session-id",
+    "session-real-1",
+  ];
+  const receipt = runHandoff(root, receiptArgs);
+  expect(JSON.parse(receipt.stdout).decision).toBe("RECEIPT_RECORDED");
+  expect(receipt.stdout).toContain("Use $harness-cycle in RESUME mode");
+  expect(receipt.stdout).toContain("decide --state");
+  expect(receipt.stdout).toContain("--session-id session-real-1");
+  expect(JSON.parse(runHandoff(root, receiptArgs).stdout).decision).toBe("RECEIPT_RECORDED");
+  const resumed = runHandoff(root, [
+    "decide",
+    "--state",
+    prepared.statePath,
+    "--root",
+    root,
+    "--session-id",
+    "session-real-1",
+  ]);
+  expect(JSON.parse(resumed.stdout)).toMatchObject({
+    decision: "CONTINUE_CURRENT",
+    transfer: "confirmed-receipt",
+  });
+  const wrongSession = runHandoff(root, [
+    "decide",
+    "--state",
+    prepared.statePath,
+    "--root",
+    root,
+    "--session-id",
+    "session-other",
+  ]);
+  expect(JSON.parse(wrongSession.stdout).decision).toBe("STOP_ALREADY_TRANSFERRED");
+
+  const progress: any = handoffInput(root);
+  progress.sequence = 2;
+  progress.task.used_rollovers = 1;
+  progress.checkpoint.stage = "ac-verification";
+  progress.checkpoint.next_stage = "refactor";
+  progress.checkpoint.next_skill = "tdd-refactor";
+  progress.checkpoint.next_action =
+    "Refactor the verified implementation without changing behavior.";
+  progress.rollover.requested = "continue-current";
+  progress.state.approval_refs.push({
+    gate: "stage:refactor",
+    ...reference(root, "resume.md"),
+    status: "approved",
+  });
+  const continued = prepareHandoff(root, progress);
+  expect(continued.result.status, continued.result.stderr).toBe(0);
+  const continuedDecision = runHandoff(root, [
+    "decide",
+    "--state",
+    continued.statePath,
+    "--root",
+    root,
+  ]);
+  expect(JSON.parse(continuedDecision.stdout)).toMatchObject({
+    decision: "PHASE_READY",
+    next_skill: "tdd-refactor",
+  });
+});
+
+it("freezes project identity after claim until receipt or reconciliation", () => {
+  const root = handoffRepository();
+  const prepared = prepareHandoff(root);
+  const claim = runHandoff(root, [
+    "claim",
+    "--state",
+    prepared.statePath,
+    "--handoff-id",
+    prepared.state.handoff_id,
+    "--executor-id",
+    "executor-1",
+  ]);
+  expect(JSON.parse(claim.stdout).decision).toBe("CLAIMED");
+  write(root, "tracked.txt", "mutation after claim\n");
+  const receipt = runHandoff(root, [
+    "receipt",
+    "--state",
+    prepared.statePath,
+    "--handoff-id",
+    prepared.state.handoff_id,
+    "--executor-id",
+    "executor-1",
+    "--session-id",
+    "session-real-1",
+  ]);
+  expect(JSON.parse(receipt.stdout).decision).toBe("STOP_DIRTY_STALE");
+  expect(receipt.stdout).not.toContain("resume_prompt");
+});
+
+it("disables automated decisions and claims when Git identity is unavailable", () => {
+  const root = handoffRepository();
+  const prepared = prepareHandoff(root);
+  expect(prepared.result.status, prepared.result.stderr).toBe(0);
+  rmSync(resolve(root, ".git"), { recursive: true, force: true });
+  const decision = runHandoff(root, ["decide", "--state", prepared.statePath, "--root", root]);
+  expect(decision.status, decision.stderr).toBe(0);
+  expect(JSON.parse(decision.stdout).decision).toBe("STOP_SOURCE_UNAVAILABLE");
+  const claim = runHandoff(root, [
+    "claim",
+    "--state",
+    prepared.statePath,
+    "--handoff-id",
+    prepared.state.handoff_id,
+    "--executor-id",
+    "executor-1",
+  ]);
+  expect(JSON.parse(claim.stdout).decision).toBe("STOP_SOURCE_UNAVAILABLE");
+});
+
+it("blocks repeated prepare from resetting rollover use or chaining the same checkpoint", () => {
+  const root = handoffRepository();
+  const prepared = prepareHandoff(root);
+  runHandoff(root, [
+    "claim",
+    "--state",
+    prepared.statePath,
+    "--handoff-id",
+    prepared.state.handoff_id,
+    "--executor-id",
+    "executor-1",
+  ]);
+  runHandoff(root, [
+    "receipt",
+    "--state",
+    prepared.statePath,
+    "--handoff-id",
+    prepared.state.handoff_id,
+    "--executor-id",
+    "executor-1",
+    "--session-id",
+    "session-real-1",
+  ]);
+  const replay = prepareHandoff(root);
+  expect(replay.result.status).toBe(1);
+  expect(replay.result.stderr).toContain("no-progress");
+  const persisted = JSON.parse(readFileSync(prepared.statePath, "utf8"));
+  expect(persisted.task.used_rollovers).toBe(1);
+});
+
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 it("validates a standalone distribution without npm, package, or product files", () => {
   const root = fixture();

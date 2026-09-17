@@ -5,7 +5,7 @@ description: 구현이 이슈의 Acceptance Criteria를 실제로 충족하는�
 
 # AC 독립 검토 계약
 
-`docs/methods/tdd.md`의 AC 검증 표를 사용한다. 입력은 이슈 AC 원문·PRD·변경 코드·실제 실행 증거다.
+`docs/methods/tdd.md`의 `### AC 검증 기록` 절만 읽는다(다음 같은/상위 수준 제목 직전까지). 입력은 이슈 AC 원문·PRD·변경 코드·실제 실행 증거다.
 
 1. 구현자의 완료 설명 대신 AC를 먼저 읽고 필요한 관찰을 정의한다.
 2. 각 AC를 구현 경로와 테스트/실행 증거에 대응시킨다. 없는 증거는 unverified로 둔다.

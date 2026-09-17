@@ -5,7 +5,7 @@ description: 실제 Red가 확인된 테스트를 계약과 디자인 기준을 
 
 # 최소 구현
 
-`docs/methods/tdd.md`의 Green 방법을 읽고 UI가 있으면 대상 design.md와 design-system 스킬을 읽는다.
+`docs/methods/tdd.md`의 `## Green은 테스트를 바꾸지 않는 최소 구현` 절만 읽고(다음 같은/상위 수준 제목 직전까지), UI가 있으면 대상 design.md와 design-system 스킬을 읽는다.
 
 1. 미구현 실패인 Red 증거와 승인된 시나리오를 확인한다.
 2. 실패 하나씩 필요한 동작만 구현한다. 테스트 기대값·계약·AC를 통과 편의상 바꾸지 않는다.

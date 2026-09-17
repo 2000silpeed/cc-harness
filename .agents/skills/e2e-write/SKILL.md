@@ -5,7 +5,7 @@ description: 통합된 기능의 주요 사용자 흐름을 실제 진입점에�
 
 # 기능 경계의 연결 확인
 
-`docs/methods/delivery-automation.md`의 E2E 방법을 읽는다.
+`docs/methods/delivery-automation.md`의 `## 최소한의 E2E로 연결 검증` 절만 읽는다(다음 같은/상위 수준 제목 직전까지).
 
 1. 승인된 사용자 흐름과 통합 상태, 대상 URL/환경, 기존 E2E 도구를 확인한다.
 2. 단위 테스트를 전부 복제하지 말고 주요 성공 흐름·저장 지속성·대표 실패 흐름을 위험 기반으로 선택한다.

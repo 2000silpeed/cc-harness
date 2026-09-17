@@ -94,5 +94,9 @@
     "docs/methods/testing-strategy.md"
   ],
   "supportFiles": [".agents/skills/mermaid-diagram/agents/openai.yaml"],
-  "distributionTools": ["scripts/check-harness.mjs", "scripts/install-harness.mjs"]
+  "distributionTools": [
+    "scripts/check-harness.mjs",
+    "scripts/install-harness.mjs",
+    "scripts/session-handoff.mjs"
+  ]
 }

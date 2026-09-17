@@ -5,7 +5,7 @@ description: 승인된 이슈 AC를 구현 전 함수/API 계약과 정상·경�
 
 # 계약과 시나리오
 
-`docs/methods/tdd.md`의 계약·시나리오 방법과 `docs/harness/templates.md`, `docs/methods/testing-strategy.md`를 읽는다.
+`docs/methods/tdd.md`의 `## 계약과 시나리오를 먼저`와 `docs/methods/testing-strategy.md`의 `## 테스트의 역할`만 읽는다. 실제 산출물을 작성할 때만 `docs/harness/templates.md`의 `## 테스트·검증`을 추가한다. 각 절은 다음 같은/상위 수준 제목 직전까지다.
 
 1. 대상 이슈·PRD·선행 이슈·기존 코드와 테스트 방식을 확인한다.
 2. 입력/출력·동기/비동기·오류·부작용 계약을 구현 없이 명시한다.
