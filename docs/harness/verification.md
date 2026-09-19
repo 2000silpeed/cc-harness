@@ -2,7 +2,7 @@
 
 ## 검증 대상
 
-이 저장소의 검사는 독립 하네스 자산을 대상으로 한다. 제품 앱은 포함하지 않는다. 과거 제품 검사 결과를 현재 하네스 검증 결과로 사용하지 않는다.
+이 저장소의 검사는 독립 하네스 자산만 검증하며 제품 앱은 검증하지 않습니다. 과거 제품의 검사 결과를 현재 하네스의 검증 결과로 대신 사용해서는 안 됩니다.
 
 | 검사             | 확인하는 것                                                                                                                              | 보장하지 않는 것                       |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
@@ -15,47 +15,49 @@
 
 ## 재현 절차
 
-Node가 설치된 원본에서 등록 검사를 실행한다. 등록·이식 스크립트는 Node 기본 모듈을 사용하므로 의존성 설치가 필요 없다.
+먼저 Node가 설치된 원본 저장소에서 등록 검사를 실행합니다. 등록·이식 스크립트는 Node 기본 모듈만 사용하므로 의존성을 설치할 필요가 없습니다.
 
 ```sh
 node scripts/check-harness.mjs
 ```
 
-빈 임시 제품 폴더에서 [reuse.md](reuse.md)의 dry-run → apply → 대상 check-harness → 다시 apply 순서를 수행한다. 허용된 등록 파일만 복사되고 package·AGENTS·훅·개인 데이터는 생성되지 않는지 확인한다. 동일 파일은 건너뛰고 내용 충돌은 보존해야 한다.
+그다음 빈 임시 제품 폴더에서 [reuse.md](reuse.md)의 사전 점검(dry-run) → 적용(apply) → 대상 `check-harness` → 재적용 순서로 실행합니다. 허용된 등록 파일만 복사되고 package, AGENTS, 훅, 개인 데이터는 생성되지 않는지 확인합니다. 내용이 같은 파일은 건너뛰고, 내용이 충돌하는 파일은 덮어쓰지 않고 보존해야 합니다.
 
-의존성이 설치된 원본에서는 관련 회귀 검사를 먼저 실행한다.
+원본에 의존성이 설치되어 있다면 관련 회귀 검사를 먼저 실행합니다.
 
 ```sh
 npx vitest run tests/unit/harness-portability.test.ts
 npm run design:check
 ```
 
-최종 통합 검사는 다음 명령이다.
+마지막 통합 검사는 다음 명령으로 실행합니다.
 
 ```sh
 npm run check
 ```
 
-실행 순서는 lint → design:check → harness:check → format:check → test → typecheck다. TypeScript는 이식 회귀와 타입 검사를 위해 유지한다. 앱 빌드·브라우저 테스트·개발 서버·미리보기는 포함하지 않는다.
+실행 순서는 lint → design:check → harness:check → format:check → test → typecheck입니다. TypeScript는 이식 회귀와 타입 검사를 위해 유지합니다. 앱 빌드, 브라우저 테스트, 개발 서버, 미리보기는 포함하지 않습니다.
 
-충돌·심볼릭 링크·손상 registry 실험은 폐기 가능한 임시 대상에서만 수행한다. 운영 제품에 실패 fixture를 주입하지 않는다. 검사마다 작업 경로·명령·종료 코드·대상 버전 또는 파일 상태·로그 위치를 남긴다.
+충돌, 심볼릭 링크, 손상된 등록 목록(registry)을 다루는 실험은 폐기 가능한 임시 대상에서만 수행합니다. 운영 제품에는 실패를 재현하는 시험 자료(fixture)를 넣지 않습니다. 각 검사에는 작업 경로, 명령, 종료 코드, 대상 버전이나 파일 상태, 로그 위치를 남깁니다.
 
-Adaptive Execution의 unit regression은 installer의 project-owned 보존과 canonical result JSON의 구조·unknown 관측값만 확인한다. profile 의미, blast radius 판정, Evidence Reuse, STOP 우선, 실제 worker/verifier 분리, backend model/usage는 문구나 JSON 파싱만으로 증명되지 않는다. 해당 부분은 실제 orchestration trace와 독립 verifier evidence에서 관찰하며, 제공되지 않은 metadata는 `unknown`으로 둔다.
+적응형 실행(Adaptive Execution)의 단위 회귀 검사는 설치 도구가 제품 소유 파일(project-owned)을 보존하는지, 표준 결과 JSON의 구조가 맞는지, 관찰할 수 없는 값을 `unknown`으로 남기는지만 확인합니다. 실행 수준(profile)의 의미, 영향 범위 판단, 증거 재사용, STOP 우선 처리, 실제 작업자·검증자 분리, 백엔드 모델과 사용량은 문구나 JSON 파싱만으로 증명할 수 없습니다.
+
+이 항목들은 실제 작업 배정 기록(orchestration trace)과 독립 검증자의 증거에서 확인합니다. 제공되지 않은 메타데이터는 `unknown`으로 둡니다.
 
 ## 2026-09-13 검증 상태
 
-macOS·Node 24.14.1에서 `npm ci --offline`과 문서 정리 후 `npm run check`가 exit 0으로 통과했다. lint·디자인·하네스·서식·이식 회귀 44개·타입 검사를 포함한다. 전체 실행 로그는 로컬 `/tmp/cc-harness-pm-removal-check.log`에 있다. 구조도 문구 변경의 브라우저 시각 검수와 새 환경의 실제 훅 발화는 수행하지 않았다.
+macOS·Node 24.14.1에서 `npm ci --offline`과 문서 정리 후 `npm run check`가 종료 코드 0으로 통과했습니다. lint, 디자인, 하네스, 서식, 이식 회귀 44개, 타입 검사를 포함합니다. 전체 실행 로그는 로컬 `/tmp/cc-harness-pm-removal-check.log`에 있습니다. 구조도 문구 변경의 브라우저 시각 검수와 새 환경의 실제 훅 작동 확인은 수행하지 않았습니다.
 
 ## 2026-09-15 Adaptive Execution 최종 검사
 
-독립 AC 검토 PASS 뒤 main이 배정한 작업자가 `npm run check`를 한 번 실행해 exit 0을 확인했다. lint, design 검사 84개 선언, harness 검사 15 skills/32 registered files, format, Vitest 47/47, typecheck를 포함한다. 전체 stdout/stderr는 feature-local `docs/features/model-routing/evidence/final-check.stdout-stderr.log`에 있으며 이 경로는 배포 하네스 자산이 아니다. 이 검사는 실제 agent routing, backend model/usage, 비용 절감을 검증하지 않는다.
+독립 인수 조건 검토가 통과(PASS)한 뒤, 메인이 배정한 작업자가 `npm run check`를 한 번 실행해 종료 코드 0을 확인했습니다. lint, 디자인 검사 선언 84개, 하네스 검사 15개 스킬·32개 등록 파일, format, Vitest 47/47, typecheck를 포함합니다. 전체 표준 출력과 오류 출력(stdout/stderr)은 기능별 경로인 `docs/features/model-routing/evidence/final-check.stdout-stderr.log`에 있으며 이 경로는 배포 하네스 자산이 아닙니다. 이 검사는 실제 에이전트 배정, 백엔드 모델·사용량, 비용 절감을 검증하지 않습니다.
 
 ## 검증 결과의 해석
 
-하네스 등록·이식 통과와 새 제품 생성·AC 충족·사용자 수락은 별개다. 구조도 정적 검사 통과는 넓은 화면·좁은 화면·키보드 포커스·Mermaid 로딩 성공 및 실패의 시각 검수를 대신하지 않는다.
+하네스 등록·이식 통과, 새 제품 생성, AC 충족, 사용자 수락은 서로 다른 결과입니다. 구조도의 정적 검사가 통과해도 넓은 화면과 좁은 화면, 키보드 포커스, Mermaid 로딩 성공·실패 상태를 눈으로 확인한 결과를 대신할 수 없습니다.
 
-Windows 실기기, 새 PC 계정 인증, 실제 Codex 훅 신뢰·발화, 플러그인/MCP, 외부 디자인 엔진, 원격 CI·배포는 별도 환경에서 확인해야 한다. 검증 결과가 없으면 미검증으로 남긴다. 로컬 로그와 임시 이식본은 배포 파일이 아니다.
+Windows 실기기, 새 PC 계정 인증, 실제 Codex 훅의 신뢰 승인과 작동, 플러그인/MCP, 외부 디자인 엔진, 원격 CI와 배포는 해당 환경에서 별도로 확인해야 합니다. 검증 결과가 없으면 미검증으로 남깁니다. 로컬 로그와 임시 이식본은 배포 파일이 아닙니다.
 
 ## 갱신 시 확인
 
-문서 이동 시 registry·스킬·AGENTS·README·구조도의 참조를 함께 갱신한다. 실행 가능한 기준과 중단 조건을 유지하고 테스트·승인·검증 기준을 약화하지 않는다. 신규 문서 배포 후 실제 빈 대상에서 이식 검사를 다시 수행한다.
+문서를 옮길 때는 registry, 스킬, AGENTS, README, 구조도에 있는 참조를 함께 갱신합니다. 실행 기준과 중단 조건은 유지하고 테스트·승인·검증 기준을 약화해서는 안 됩니다. 새 문서를 배포한 뒤에는 실제 빈 대상에서 이식 검사를 다시 수행합니다.

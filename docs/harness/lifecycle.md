@@ -2,9 +2,9 @@
 
 ## 먼저 구분할 것
 
-이 저장소는 독립형 **워크플로우·스킬·검사 도구 자산**이다. 스킬 등록은 제품 구현 완료가 아니다. 새 프로젝트의 제품 명세와 승인 기록은 해당 프로젝트에서 작성한다. 도구와 기능 예시는 대상 스택에 맞게 적용한다.
+이 문서는 아이디어를 검증된 프로젝트로 만드는 순서와 승인 지점을 안내합니다. 이 저장소는 독립형 **작업 흐름, 스킬, 검사 도구 자산**이며 제품 앱 자체가 아닙니다. 따라서 스킬이 등록됐다고 제품 구현이 끝난 것은 아닙니다. 새 프로젝트의 제품 명세와 승인 기록은 해당 프로젝트에 작성하고, 도구와 기능 예시는 대상 기술 구성에 맞게 적용합니다.
 
-tdd-loop와 tdd-auto-loop는 맨 끝 작업이 아니라 **이슈별 TDD 사이클을 감싸는 실행 방식**으로 선택한다.
+`tdd-loop`와 `tdd-auto-loop`는 맨 끝에 수행하는 별도 작업이 아닙니다. 각 이슈의 테스트 주도 개발(TDD) 사이클 전체를 운영하는 실행 방식 중 하나로 선택합니다.
 
 ## 1. 전체 실행 지도
 
@@ -27,11 +27,11 @@ tdd-loop와 tdd-auto-loop는 맨 끝 작업이 아니라 **이슈별 TDD 사이�
 | PR·CI·main     | create-pr                          | 검증한 변경·base/head           | PR·CI·머지·회고 기록               | 리뷰·필수 검사·머지 승인               |
 | 배포·운영 인계 | harness-cycle                      | 머지된 변경·운영 요구           | release-checklist.md               | 배포 대상·비용·데이터·되돌리기 승인    |
 
-한 프로젝트는 여러 feature로 구성될 수 있다. 첫 기능을 끝낸 뒤 회고와 공통 규칙을 정리하고 다음 기능을 같은 루프로 진행한다. API·CLI처럼 UI가 없는 대상은 디자인·브라우저 E2E를 이유와 함께 해당 없음으로 정리하고 실제 사용자 진입점의 통합 테스트로 바꾼다.
+한 프로젝트에는 여러 기능(feature)이 포함될 수 있습니다. 첫 기능을 마치면 회고와 공통 규칙을 정리하고, 다음 기능도 같은 순서로 진행합니다. API나 명령줄 인터페이스(CLI)처럼 사용자 화면(UI)이 없는 대상은 디자인·브라우저 전체 흐름(E2E) 검사가 해당하지 않는 이유를 기록하고, 실제 사용자 진입점의 통합 테스트로 바꿉니다.
 
 ## 2. 시작 명령
 
-아래는 Codex 대화 입력이며 셸 명령이 아니다.
+아래 문장은 셸이 아니라 Codex 대화창에 입력합니다.
 
 ```text
 $harness-cycle
@@ -43,51 +43,81 @@ $harness-cycle
 이미 결정한 내용은 다시 인터뷰하지 말고 승인 게이트를 지켜줘.
 ```
 
-이미 기획했다면 `$feature-planner [feature] PRD부터`, 한 이슈를 구현하려면 `$tdd-loop [issue]`, 준비된 여러 이슈를 명시적으로 맡기려면 `$tdd-auto-loop [issue 목록] 최대 3개, 수정 재시도 2회`처럼 범위와 상한을 정한다. 숫자는 사용자가 선택할 실행 범위이지 무제한 실행의 기본값이 아니다.
+이미 기획을 마쳤다면 `$feature-planner [feature] PRD부터`, 한 이슈를 구현하려면 `$tdd-loop [issue]`라고 입력합니다. 준비된 여러 이슈를 명시적으로 맡기려면 `$tdd-auto-loop [issue 목록] 최대 3개, 수정 재시도 2회`처럼 범위와 상한을 정합니다. 여기서 PRD는 제품 요구사항 문서입니다. 숫자는 사용자가 선택한 실행 범위이며 무제한 실행의 기본값이 아닙니다.
 
 ## 3. 대상과 하네스 위치
 
-- **하네스 원본**: 이 저장소. 스킬·방법론·설명서의 기준.
-- **대상 프로젝트**: 실제 제품 코드를 작성할 저장소. 모든 실행 명령은 대상 경로와 연결한다.
-- 스킬의 상대 문서 경로는 하네스 루트 기준이다. 대화 시작 때 하네스 위치와 대상 위치를 함께 확인한다. 같은 위치라고 가정하지 않는다.
-- 다른 저장소로 복사할 때는 [이식 절차](reuse.md)를 따른다. 스킬만 복사하면 참조 문서가 누락될 수 있다.
-- 전역 스킬에 동명이 있더라도 어느 경로가 선택됐는지 확인한다. 새 세션의 스킬 발견은 설치 검증이며 실제 기능 구현 성공과 다르다.
+- **하네스 원본**: 이 저장소이며, 스킬·방법론·설명서의 기준입니다.
+- **대상 프로젝트**: 실제 제품 코드를 작성할 저장소입니다. 모든 실행 명령은 대상 경로와 연결합니다.
+- 스킬의 상대 문서 경로는 하네스 루트 기준입니다. 대화 시작 때 하네스 위치와 대상 위치를 함께 확인합니다. 같은 위치라고 가정하지 않습니다.
+- 다른 저장소로 복사할 때는 [이식 절차](reuse.md)를 따릅니다. 스킬만 복사하면 참조 문서가 누락될 수 있습니다.
+- 전역 스킬에 같은 이름이 있더라도 어느 경로가 선택됐는지 확인합니다. 새 세션에서 스킬을 발견한 상태와 실제 기능 구현에 성공한 상태는 서로 다릅니다.
 
 ## 4. 재개 가능한 기록
 
-대상 프로젝트의 `docs/features/{feature}/progress.md`에 [산출물 템플릿](templates.md)의 진행 표를 사용한다. 날짜가 최신이라는 이유만으로 다음 단계로 넘어가지 않는다.
+대상 프로젝트의 `docs/features/{feature}/progress.md`에는 [산출물 템플릿](templates.md)의 진행 표를 사용합니다. 날짜가 최신이라는 이유만으로 다음 단계로 넘어가서는 안 됩니다.
 
-기록에는 현재 단계·이슈 ID·승인 대상/내용/근거·수정 파일·실행 명령/cwd/종료 코드·증거 경로·남은 문제·다음 행동을 둔다. 승인된 문서가 바뀌면 해당 문서에 의존하는 승인과 테스트가 여전히 유효한지 확인한다. AI가 스스로 `approved`를 채우지 않는다.
+기록에는 현재 단계, 이슈 ID, 승인 대상·내용·근거, 수정 파일, 실행 명령·작업 경로(cwd)·종료 코드, 증거 경로, 남은 문제, 다음 행동을 남깁니다. 승인된 문서가 바뀌면 그 문서에 의존하는 승인과 테스트가 여전히 유효한지 확인합니다. AI가 스스로 `approved`를 채워서는 안 됩니다.
 
-재개 시 실제 파일과 진행 기록을 대조한다. CI가 다른 커밋을 검사했거나 테스트 후 관련 코드·contract/AC·test·command·environment가 바뀌었다면 해당 pass를 재사용하지 않는다. global HEAD 차이만으로 전체 evidence를 폐기하지 않고 저비용 metadata/hash/command/checkpoint로 관련 입력을 먼저 대조한다. Git 커밋이 없다면 검사 당시 변경 파일의 해시 등 재현 가능한 식별 정보를 기록한다.
+재개할 때는 진행 기록보다 실제 파일을 먼저 확인합니다. 지속적 통합(CI)이 다른 커밋을 검사했거나 테스트 뒤 관련 코드·계약·인수 조건(AC)·테스트·명령·실행 환경이 바뀌었다면 이전 통과 결과를 재사용하지 않습니다.
+
+다만 저장소 전체의 현재 커밋(HEAD)이 다르다는 이유만으로 모든 검증 증거를 폐기하지는 않습니다. 먼저 버전, 파일 해시, 실행 명령, 작업 확인점(checkpoint)처럼 확인 비용이 낮은 정보로 관련 입력만 대조합니다. Git 커밋이 없다면 검사 당시 변경 파일의 해시처럼 다시 식별할 수 있는 정보를 기록합니다.
 
 ### NEW, ADOPT, RESUME과 Adaptive Execution
 
-NEW는 새 프로젝트, ADOPT는 하네스를 처음 적용하는 기존 프로젝트, RESUME은 기존 하네스 프로젝트의 재개/호환 갱신이다. ADOPT/RESUME은 기존 승인, spec, ADR, issue, progress, code, config, AGENTS와 evidence를 보존한다. source revision, relevant contract hashes, `policy_effective_checkpoint`, evidence valid/invalid와 이유를 기존 기록에 추가한다. routing field가 없는 과거 기록은 `legacy-unknown`으로 보존하며 새 policy를 소급 적용하지 않는다.
+세 실행 유형은 기존 작업의 존재 여부에 따라 나뉩니다.
 
-ADOPT discovery는 runtime, 구조, 경계, 검사, CI/CD, Git, 문서, 기존 결정, 현재 작업, 기술부채를 `CONFIRMED`/`DOCUMENTED`/`INFERRED`/`UNKNOWN`으로 표기한다. AI 추론은 과거 승인이나 ADR이 아니다. baseline은 사용자 승인 후에만 유효하고, legacy AC는 제안 → 사용자 확인 → 독립 검증 → 남은 lifecycle 순서를 따른다. 기술부채 자체는 adoption blocker가 아니지만 security/data-loss/Broken STOP, dirty auto-loop STOP, Refactor 전체 회귀 STOP은 baseline으로 완화하지 않는다.
+- NEW는 새 프로젝트를 시작하는 경우입니다.
+- ADOPT는 기존 프로젝트에 하네스를 처음 적용하는 경우입니다.
+- RESUME은 이미 하네스를 적용한 프로젝트를 재개하거나 호환되게 갱신하는 경우입니다.
 
-ADOPT ratchet는 count뿐 아니라 같은 입력의 failure identity(command, signature, tool version, scope)를 비교한다. count가 같아도 기존 identity A가 새 identity B로 바뀌면 regression이다. relevant code·contract/AC·test·command·environment가 같은지 먼저 대조하고, `unknown`은 해당 범위의 targeted investigation으로 남긴다. baseline은 어떤 mandatory STOP도 면제하지 않는다.
+ADOPT와 RESUME에서는 기존 승인, 명세(spec), 기술 결정 기록(ADR), 이슈, 진행 기록, 코드, 설정, AGENTS, 검증 증거를 보존합니다. 기존 기록에는 원본 버전(source revision), 관련 계약의 해시, 새 정책을 적용하기 시작한 확인점(`policy_effective_checkpoint`), 증거의 유효 여부와 그 이유를 추가합니다. 작업 배정 정보(routing field)가 없는 과거 기록은 `legacy-unknown`으로 보존하며 새 정책을 과거 작업에 소급 적용하지 않습니다.
 
-재개 시 profile과 역할 요청을 새 checkpoint 이후에만 기록한다. profile은 compact/standard/intensive 중 risk evidence로 정하며, known local blast radius가 아닌 경우 compact를 쓰지 않는다. MSC와 JIT 탐색·Evidence Reuse는 [공통 실행 정책](../methods/delivery-automation.md#adaptive-execution-process와-model의-분리)을 따른다.
+ADOPT 조사에서는 실행 환경, 구조, 경계, 검사, CI/CD, Git, 문서, 기존 결정, 현재 작업, 기술 부채를 확인합니다. 각 결과는 확인됨(`CONFIRMED`), 문서에만 있음(`DOCUMENTED`), 추론함(`INFERRED`), 알 수 없음(`UNKNOWN`)으로 표시합니다. AI의 추론은 과거 승인이나 ADR을 대신하지 않습니다.
+
+기존 상태의 기준선(baseline)은 사용자가 승인한 뒤에만 유효합니다. 과거 인수 조건(legacy AC)은 제안 → 사용자 확인 → 독립 검증 → 남은 생명주기 순서로 처리합니다. 기술 부채만으로 도입을 막지는 않지만, 보안·데이터 손실·고장 상태의 STOP, 변경이 남은 작업 트리에서의 자동 루프 STOP, 리팩터링 전체 회귀 STOP은 기준선으로 완화할 수 없습니다.
+
+ADOPT의 품질 저하 방지 규칙(ratchet)은 실패 개수와 실패의 식별 정보를 함께 비교합니다. 실패 식별 정보에는 명령, 오류 특징(signature), 도구 버전, 검사 범위가 포함됩니다. 실패 개수가 같아도 기존 실패 A가 새로운 실패 B로 바뀌었다면 회귀입니다.
+
+먼저 관련 코드·계약·인수 조건·테스트·명령·실행 환경이 같은지 대조합니다. `unknown`은 해당 범위만 집중 조사할 대상으로 남깁니다. 승인된 기준선도 필수 STOP 조건을 면제하지 않습니다.
+
+재개할 때 실행 수준(profile)과 역할 요청은 새 확인점 이후에만 기록합니다. 실행 수준은 위험 근거에 따라 `compact`, `standard`, `intensive` 중에서 정합니다. 영향이 해당 부분에만 한정된다는 근거가 없으면 `compact`를 선택하지 않습니다. 최소 충분 컨텍스트(MSC), 필요한 시점의 탐색(JIT), 증거 재사용(Evidence Reuse)은 [공통 실행 정책](../methods/delivery-automation.md#adaptive-execution-process와-model의-분리)을 따릅니다.
 
 ### 세션 checkpoint와 handoff
 
-의미 단계가 끝나 다음의 비싼 작업 묶음을 시작하기 전이나 runtime이 실제 context pressure를 알린 때 checkpoint를 만든다. 계정 quota나 임의 context 비율을 신호로 쓰지 않는다. native compaction은 현재 대화의 runtime 기능이고, durable handoff 및 새 세션 생성과 구분한다. 비동기 compaction은 `contextCompaction` 완료 뒤에만 끝난 것으로 기록하며 `resume`·`fork`는 과거 history를 유지하므로 fresh session이 아니다. 2026-09-17에 관찰한 Codex App surface에는 compact 호출과 정확한 thread별 context telemetry가 없었다. 실행 때마다 현재 callable capability를 다시 확인하고 지원을 추정하지 않는다. 관련 공식 사양은 [config reference](https://learn.chatgpt.com/docs/config-file/config-reference), [developer commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli), [App Server](https://learn.chatgpt.com/docs/app-server)를 따른다.
+작업 확인점(checkpoint)은 의미 있는 단계가 끝나 다음의 비용이 큰 작업 묶음을 시작하기 전, 또는 실행 환경이 실제로 컨텍스트 부족을 알렸을 때 만듭니다. 계정 사용량 한도나 임의로 계산한 컨텍스트 비율을 신호로 사용하지 않습니다.
 
-`docs/features/{feature}/session-handoff.json`에는 목표·승인 범위와 근거, source revision·dirty 소유/해시, 현재 checkpoint와 정확한 다음 행동, contract·evidence 참조/해시와 유효성, 실패 identity와 증거 참조, 실제 Green/diagnostic/rework/rollover 누계, 진행 중 worker·외부 작업, STOP·재개 조건만 보존한다. 대화 서사, 반복 계획, 긴 로그·도구 출력, 전체 저장소 목록, 폐기한 선택지와 evidence 본문은 다음 prompt에서 빼되 디스크에서는 삭제하지 않고 필요한 경로·해시·무효 이유를 남긴다.
+현재 대화를 압축하는 기능(native compaction)은 실행 환경의 기능입니다. 디스크에 남는 인계(durable handoff)나 새 세션 생성과는 구분합니다. 비동기 압축은 `contextCompaction` 완료 뒤에만 끝난 것으로 기록합니다. `resume`과 `fork`는 과거 대화 이력을 유지하므로 새로운 세션(fresh session)이 아닙니다.
 
-`node scripts/session-handoff.mjs --help`와 `template`로 필요할 때만 strict 입력 계약을 읽는다. `prepare --input <json> --state docs/features/{feature}/session-handoff.json`으로 record를 원자적으로 준비하고 `decide --state <path> --root <project> [--session-id <real-id>]`로 source·dirty·참조와 승인·증거·STOP·관련 다음 행동 예산·in-flight 상태를 다시 확인한다. 자동 decide/claim은 Git HEAD/status를 전제로 한다. Git이 없으면 `progress.md`와 동일한 참조/해시 manifest로 수동 인계하고 자동 claim은 사용하지 않는다. helper는 session을 만들지 않는다.
+2026-09-17에 확인한 Codex 앱 화면에는 압축 호출과 스레드별 정확한 컨텍스트 사용량 정보가 없었습니다. 실행할 때마다 현재 호출 가능한 기능을 다시 확인하고 지원 여부를 추정하지 않습니다. 관련 공식 사양은 [config reference](https://learn.chatgpt.com/docs/config-file/config-reference), [developer commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli), [App Server](https://learn.chatgpt.com/docs/app-server)를 따릅니다.
 
-`fresh-session`은 작업별 rollover 승인과 유한 cap이 남아 있을 때만 가능하며, 같은 checkpoint의 no-progress 연쇄와 누계 reset을 막는다. `action_kind=phase`인 다음 Green만 Green 예산을 쓰고, `action_kind=diagnostic`은 기존 정책의 bounded read-only 역할로 diagnostic 예산을 쓴다. 한 handoff chain의 rollover·Green·diagnostic limit은 불변이다. 새 limit이나 범위는 lifecycle 승인으로 새 chain을 열되 이전 task의 사용량·실패를 reset하지 않는다. active STOP 해제는 새 sequence에서 기존 reason/condition을 보존하고 `resume:<previous-handoff-id>` 승인과 같은 새 valid evidence를 `resolution_ref`로 연결할 때만 허용한다.
+`docs/features/{feature}/session-handoff.json`에는 다음 세션이 안전하게 이어받는 데 필요한 정보만 보존합니다. 목표와 승인 범위·근거, 원본 버전, 커밋하지 않은 변경의 소유자·해시, 현재 확인점과 정확한 다음 행동, 계약·증거의 참조·해시·유효성, 실패 식별 정보, 실제 Green·진단·재작업·세션 전환 누계, 진행 중인 작업자·외부 작업, STOP·재개 조건이 여기에 해당합니다.
 
-새 세션은 `claim --state <path> --handoff-id <id> --executor-id <id>` 성공 뒤 runtime에 startup-only prompt로 한 번만 생성한다. claim 직후 원 세션은 project/source 수정을 멈추고 생성·receipt 기록·prompt 전달만 한다. 같은 claim replay에는 launch prompt가 없으며 reconciliation에서 멈춘다. 새 thread는 제품 작업을 기다린다. caller가 real session ID를 받은 뒤 `receipt --state <path> --handoff-id <id> --executor-id <id> --session-id <real-id>`를 기록하고, 이때 처음 반환된 bounded resume prompt를 그 thread에 보낸다. consumer는 prompt 첫 명령으로 자신의 session ID를 넣은 `decide`에서 matching receipt를 확인한 뒤에만 다음 행동을 수행한다. pending client ID, timeout, claim 뒤 불명확한 생성은 재생성하지 않는다. executor/session ID는 runtime 영수증이지 실행 진실성의 독립 증거가 아니다.
+대화의 서사, 반복 계획, 긴 로그와 도구 출력, 전체 저장소 목록, 폐기한 선택지, 증거 본문은 다음 요청문에서 제외합니다. 디스크에서는 삭제하지 않고 필요한 경로, 해시, 무효가 된 이유를 남깁니다.
+
+엄격한 입력 계약은 필요할 때만 `node scripts/session-handoff.mjs --help`와 `template`로 확인합니다. `prepare --input <json> --state docs/features/{feature}/session-handoff.json`은 인계 기록(record)을 중간 상태가 노출되지 않도록 한 번에 준비합니다.
+
+`decide --state <path> --root <project> [--session-id <real-id>]`는 다음 항목을 다시 확인합니다. 원본 버전(source), 커밋하지 않은 변경(dirty), 참조, 승인, 증거, STOP 상태, 다음 행동에 남은 예산, 진행 중인 작업(in-flight)입니다. 자동 `decide`와 `claim`은 Git의 현재 커밋(HEAD)과 작업 트리 상태(status)를 확인할 수 있어야 사용합니다.
+
+Git이 없다면 `progress.md`와 동일한 참조·해시 목록(manifest)을 사용해 수동으로 인계하며 자동 `claim`은 사용하지 않습니다. 보조 도구(helper)는 세션을 직접 만들지 않습니다.
+
+`fresh-session`은 해당 작업의 세션 전환(rollover)이 승인됐고, 정해진 전환 횟수 상한(cap)이 남아 있을 때만 만들 수 있습니다. 같은 확인점에서 진전 없이 세션만 연달아 바꾸거나 사용 누계를 초기화해서는 안 됩니다.
+
+다음 Green 단계의 `action_kind=phase`만 Green 예산을 사용합니다. `action_kind=diagnostic`은 범위가 제한된 읽기 전용 진단이며 별도의 진단 예산을 사용합니다. 하나의 인계 연쇄(handoff chain)에 정한 세션 전환·Green·진단 상한은 바꿀 수 없습니다.
+
+새 상한이나 범위가 필요하면 생명주기 승인을 받아 새 인계 연쇄를 엽니다. 이때도 이전 작업의 사용량과 실패 기록은 초기화하지 않습니다. 활성 STOP은 새 실행 순서에서도 기존 사유(reason)와 해제 조건(condition)을 보존해야 합니다. 또한 `resume:<previous-handoff-id>` 승인처럼 새로 유효해진 증거(valid evidence)를 `resolution_ref`에 연결해야만 해제할 수 있습니다.
+
+새 세션은 `claim --state <path> --handoff-id <id> --executor-id <id>`가 성공한 뒤, 실행 환경에 시작 전용 요청문(startup-only prompt)을 전달하여 한 번만 생성합니다. claim 직후 원래 세션은 프로젝트와 소스 수정을 멈추고 세션 생성, 수신 기록(receipt), 요청문 전달만 수행합니다. 같은 claim을 다시 실행해도 시작 요청문은 나오지 않으며 상태 조정 단계(reconciliation)에서 멈춥니다. 새 스레드는 그동안 제품 작업을 시작하지 않고 기다립니다.
+
+호출자가 실제 세션 ID를 받으면 `receipt --state <path> --handoff-id <id> --executor-id <id> --session-id <real-id>`로 기록합니다. 이때 처음 반환된 범위 제한 재개 요청문(bounded resume prompt)을 새 스레드에 보냅니다. 인계받는 쪽은 요청문의 첫 명령인 `decide`에 자신의 세션 ID를 넣고, 일치하는 수신 기록을 확인한 뒤에만 다음 행동을 수행합니다.
+
+아직 확정되지 않은 클라이언트 ID(pending client ID), 시간 초과, claim 뒤 생성 여부가 불명확한 경우에는 세션을 다시 만들지 않습니다. 실행자 ID와 세션 ID는 실행 환경이 발급한 영수증일 뿐, 작업이 올바르게 수행됐다는 독립 증거는 아닙니다.
 
 ## 5. 승인과 외부 작업
 
-G1 요구사항, G2 기술안, G3 Out of Scope, G4 이슈 목록은 사용자 확정이 필요하다. 기술 선택을 위임받아도 세 안의 비교와 AI 추천을 먼저 제시하고 최종 선택을 확인한다. 기술 선택 위임은 요구사항 확정이 아니다. G5 시그니처·시나리오는 일반 모드에서 사용자 검토를 유지하며, 자동 모드에 한해 명시적 기술 판단 위임과 객관 STOP 조건을 적용한다. 위임 대상·범위·근거를 기록하고 이미 받은 승인을 반복 요구하지 않는다.
+G1 요구사항, G2 기술안, G3 Out of Scope, G4 이슈 목록은 사용자 확정이 필요합니다. 기술 선택을 위임받아도 세 안의 비교와 AI 추천을 먼저 제시하고 최종 선택을 확인합니다. 기술 선택 위임은 요구사항 확정이 아닙니다. G5 시그니처·시나리오는 일반 모드에서 사용자 검토를 유지하며, 자동 모드에 한해 명시적 기술 판단 위임과 객관 STOP 조건을 적용합니다. 위임 대상·범위·근거를 기록하고 이미 받은 승인을 반복 요구하지 않습니다.
 
-GitHub 이슈/보드 등록, 브랜치 생성, 커밋, 푸시, PR, 머지, 배포는 계획 문서 생성과 다른 행동이다. 사용자에게 받은 구체적 실행 범위 안에서만 수행한다. ‘스킬 등록’ 요청은 이 작업들의 허가가 아니다. 파괴적 복구, 강제 푸시, 운영 데이터 변경, 비용 발생은 실행 전에 별도 검토한다.
+GitHub 이슈/보드 등록, 브랜치 생성, 커밋, 푸시, PR, 머지, 배포는 계획 문서 생성과 다른 행동입니다. 사용자에게 받은 구체적 실행 범위 안에서만 수행합니다. ‘스킬 등록’ 요청은 이 작업들의 허가가 아닙니다. 파괴적 복구, 강제 푸시, 운영 데이터 변경, 비용 발생은 실행 전에 별도 검토합니다.
 
 ## 6. 이슈 한 개의 운영 루프
 
@@ -105,27 +135,27 @@ GitHub 이슈/보드 등록, 브랜치 생성, 커밋, 푸시, PR, 머지, 배�
   → 진행 기록 → 다음 준비된 이슈
 ```
 
-가급적 한 이슈에 사용자에게 보여줄 수 있는 수직 동작을 넣는다. 새 앱의 러너·빌드 준비처럼 필요한 기반 작업은 숨기지 말고 별도 준비 작업으로 표시한다. 이는 사용자 기능 슬라이스 완료로 계산하지 않는다.
+가급적 한 이슈에 사용자에게 보여줄 수 있는 수직 동작을 넣습니다. 새 앱의 러너·빌드 준비처럼 필요한 기반 작업은 숨기지 말고 별도 준비 작업으로 표시합니다. 이는 사용자 기능 슬라이스 완료로 계산하지 않습니다.
 
 ## 7. 스킬과 독립 판단 역할
 
-스킬은 읽어서 따르는 절차이며 자동으로 별도 프로세스를 생성하지 않는다. `$tdd-loop`가 호출되면 담당 에이전트는 필요한 하위 SKILL.md를 읽고 순서대로 수행한다. 문자열을 셸에 실행하지 않는다.
+스킬은 읽어서 따르는 절차이며 자동으로 별도 프로세스를 생성하지 않습니다. `$tdd-loop`가 호출되면 담당 에이전트는 필요한 하위 SKILL.md를 읽고 순서대로 수행합니다. 문자열을 셸에 실행하지 않습니다.
 
-`ac-verifier`는 AC 판단 계약을 담는다. 독립 검토가 허용되고 도구가 있으면 구현자가 아닌 서브에이전트에 AC·변경·증거를 전달한다. 없으면 동일 에이전트 검토임을 밝히고 독립 검토 완료라고 기록하지 않는다. 대상 정책상 독립 검토가 필수면 그 게이트는 미완료다.
+`ac-verifier`는 인수 조건(AC)을 판단하는 계약을 담습니다. 독립 검토가 허용되고 도구가 있으면 구현자가 아닌 서브에이전트에 AC·변경·증거를 전달합니다. 없으면 동일 에이전트 검토임을 밝히고 독립 검토 완료라고 기록하지 않습니다. 대상 정책상 독립 검토가 필수라면 해당 승인 관문은 미완료입니다.
 
-반복 모드는 `tdd-loop`(순서 자동화, 단계별 사람 검토 유지)와 `tdd-auto-loop`(격리된 단계 위임·JSON 증거·위임된 기술 판단·객관 STOP) 중 선택한다. 자동 모드도 한 이슈에 적용할 수 있으며 여러 이슈는 명시된 집합과 유한 상한 안에서만 반복한다. 기획의 사용자 결정을 건너뛰지 않는다. 승인 부재·Broken 환경·진전 없는 반복·새 범위·보안 차단·충돌·상한 도달 시 기록 후 정지한다.
+반복 모드는 `tdd-loop`(순서 자동화, 단계별 사람 검토 유지)와 `tdd-auto-loop`(격리된 단계 위임·JSON 증거·위임된 기술 판단·객관 STOP) 중 선택합니다. 자동 모드도 한 이슈에 적용할 수 있으며 여러 이슈는 명시된 집합과 유한 상한 안에서만 반복합니다. 기획의 사용자 결정을 건너뛰지 않습니다. 승인 부재·Broken 환경·진전 없는 반복·새 범위·보안 차단·충돌·상한 도달 시 기록 후 정지합니다.
 
 ## 8. 앱을 처음부터 만드는 경우
 
-빈 저장소에서는 요구사항/기술 선택 전에 React·DB·호스팅을 임의로 깔지 않는다. PRD와 준비 이슈가 정해진 뒤 선택한 스택의 최소 엔트리·의존성 잠금·실행 명령·테스트 러너를 구성한다.
+빈 저장소에서는 요구사항/기술 선택 전에 React·DB·호스팅을 임의로 깔지 않습니다. PRD와 준비 이슈가 정해진 뒤 선택한 스택의 최소 엔트리·의존성 잠금·실행 명령·테스트 러너를 구성합니다.
 
-기반 준비의 완료는 서버/CLI 실행과 테스트 수집이 가능하다는 뜻이다. 기능 구현 완료는 아니다. 이후 첫 수직 슬라이스를 Red부터 구현한다. 기존 프로젝트에선 이 단계를 중복 실행하거나 현재 도구를 새 도구로 교체하지 않는다.
+기반 준비의 완료는 서버/CLI 실행과 테스트 수집이 가능하다는 뜻입니다. 기능 구현 완료는 아닙니다. 이후 첫 수직 슬라이스를 Red부터 구현합니다. 기존 프로젝트에선 이 단계를 중복 실행하거나 현재 도구를 새 도구로 교체하지 않습니다.
 
 ## 9. 배포·운영 인계
 
-main 머지는 배포가 아니다. 실제 배포 요청이 들어오면 대상 플랫폼·환경·요금·도메인·비밀·데이터 마이그레이션·백업·롤백·상태 확인을 먼저 결정한다. 플랫폼별 현재 공식 문서와 기존 CI를 확인한 뒤 배포 절차를 만든다.
+main 머지는 배포가 아닙니다. 실제 배포 요청이 들어오면 대상 플랫폼·환경·요금·도메인·비밀·데이터 마이그레이션·백업·롤백·상태 확인을 먼저 결정합니다. 플랫폼별 현재 공식 문서와 기존 CI를 확인한 뒤 배포 절차를 만듭니다.
 
-배포 전 승인과 배포 후 smoke test·로그·모니터링·복구 담당자를 [release 템플릿](templates.md)에 기록한다. 배포를 실행하지 않았다면 URL이나 운영 완료를 만들어내지 않는다. 스킬 등록은 배포 자동화나 호스팅 설정의 완료를 의미하지 않는다.
+배포 전 승인과 배포 후 smoke test·로그·모니터링·복구 담당자를 [release 템플릿](templates.md)에 기록합니다. 배포를 실행하지 않았다면 URL이나 운영 완료를 만들어내지 않습니다. 스킬 등록은 배포 자동화나 호스팅 설정의 완료를 의미하지 않습니다.
 
 ## 10. 완성의 증거
 
@@ -140,4 +170,4 @@ main 머지는 배포가 아니다. 실제 배포 요청이 들어오면 대상 
 | 머지             | 실제 base/head·머지 결과    | 배포됨                      |
 | 배포             | 승인·URL·smoke·복구 준비    | 지속 운영 완료              |
 
-상세 단계는 [프로젝트 기반](../methods/project-foundation.md), [요구사항 인터뷰](../methods/requirements-interview.md), [디자인 시스템](../methods/design-system.md), [기획](../methods/planning.md), [테스트 전략](../methods/testing-strategy.md), [TDD](../methods/tdd.md), [전달·자동화](../methods/delivery-automation.md)를 참조한다. 준비 기록과 스킬을 실제 수행 결과로 혼동하지 않는 것이 이 하네스의 핵심이다.
+상세 단계는 [프로젝트 기반](../methods/project-foundation.md), [요구사항 인터뷰](../methods/requirements-interview.md), [디자인 시스템](../methods/design-system.md), [기획](../methods/planning.md), [테스트 전략](../methods/testing-strategy.md), [TDD](../methods/tdd.md), [전달·자동화](../methods/delivery-automation.md)를 참조합니다. 준비 기록과 스킬 자체를 실제 수행 결과로 혼동하지 않는 것이 이 하네스의 핵심입니다.
