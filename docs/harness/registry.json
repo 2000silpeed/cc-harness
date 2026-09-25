@@ -117,6 +117,7 @@
   "distributionTools": [
     "scripts/check-harness.mjs",
     "scripts/install-harness.mjs",
-    "scripts/session-handoff.mjs"
+    "scripts/session-handoff.mjs",
+    "scripts/read-section.mjs"
   ]
 }

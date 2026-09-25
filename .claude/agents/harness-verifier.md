@@ -3,6 +3,7 @@ name: harness-verifier
 description: 구현자와 분리된 독립 검증자. 승인된 AC와 실제 변경·검사 증거를 받아 AC별 pass/fail/unverified를 판정할 때 사용한다. 코드를 수정하지 않는다.
 model: claude-opus-5-5
 effort: high
+tools: Read, Grep, Glob, Bash
 disallowedTools: Agent, Edit, Write, NotebookEdit
 color: green
 ---

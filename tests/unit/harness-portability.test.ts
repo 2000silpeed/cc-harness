@@ -645,6 +645,31 @@ it("blocks repeated prepare from resetting rollover use or chaining the same che
 
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
+it("reads one section until the next same-or-higher heading, skipping fenced headings", () => {
+  const root = directory();
+  write(root, "doc.md", "# Title\n## A\na1\n### A.1\n```md\n## not a heading\n```\na2\n## B\nb1\n");
+  const result = spawnSync(
+    process.execPath,
+    [resolve(repository, "scripts/read-section.mjs"), resolve(root, "doc.md"), "## A"],
+    { encoding: "utf8" },
+  );
+  expect(result.status).toBe(0);
+  expect(result.stdout).toContain("### A.1\n```md\n## not a heading\n```\na2");
+  expect(result.stdout).not.toContain("b1");
+});
+
+it("lists available headings when the section is missing", () => {
+  const root = directory();
+  write(root, "doc.md", "# Title\n## A\n");
+  const result = spawnSync(
+    process.execPath,
+    [resolve(repository, "scripts/read-section.mjs"), resolve(root, "doc.md"), "## Missing"],
+    { encoding: "utf8" },
+  );
+  expect(result.status).toBe(1);
+  expect(result.stderr).toContain("## A");
+});
+
 it("validates a standalone distribution without npm, package, or product files", () => {
   const root = fixture();
   const result = run(root);
@@ -935,6 +960,7 @@ it("exports the actual registry into an empty target and validates without produ
     expect(existsSync(resolve(target, filename))).toBe(false);
   expect(existsSync(resolve(target, ".claude/skills/harness-cycle/SKILL.md"))).toBe(true);
   expect(existsSync(resolve(target, ".claude/agents/harness-verifier.md"))).toBe(true);
+  expect(existsSync(resolve(target, "scripts/read-section.mjs"))).toBe(true);
 });
 
 it("preserves project-owned files while applying registered harness files", () => {

@@ -3,6 +3,7 @@ name: harness-worker
 description: 메인이 배정한 유한 범위의 탐색·작성·수정·테스트를 직접 수행하는 하네스 작업자. 오케스트레이션 정책에서 실제 작업을 맡길 때 사용한다.
 model: claude-opus-5-5
 effort: medium
+tools: Read, Grep, Glob, Bash, Edit, Write
 disallowedTools: Agent
 color: blue
 ---

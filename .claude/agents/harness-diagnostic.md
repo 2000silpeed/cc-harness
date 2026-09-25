@@ -3,6 +3,7 @@ name: harness-diagnostic
 description: 반복 실패나 알 수 없는 실행 동작의 원인을 읽기 전용으로 진단하는 하네스 진단 역할. tdd-auto-loop의 이슈당 1회 진단 예산을 쓸 때 사용한다. 구현하지 않는다.
 model: claude-opus-5-5
 effort: xhigh
+tools: Read, Grep, Glob, Bash
 disallowedTools: Agent, Edit, Write, NotebookEdit
 color: orange
 ---
