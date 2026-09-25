@@ -167,7 +167,7 @@ docs/harness/lifecycle.md와 reuse.md를 읽어줘.
 
 ### Claude Code를 쓸 때
 
-Claude Code도 같은 스킬과 문서를 씁니다. 설치 스크립트가 복사하는 `.claude/skills/<이름>/SKILL.md`는 `.agents/skills`의 원본을 읽게 하는 진입점일 뿐이므로, 절차는 한 곳에서만 관리됩니다. Claude Code는 `AGENTS.md`를 직접 읽지 않으니 새 제품 루트에 아래 `CLAUDE.md`를 둡니다.
+Claude Code도 같은 스킬과 문서를 씁니다. 설치 스크립트가 복사하는 `.claude/skills/<이름>/SKILL.md`는 `.agents/skills`의 원본을 읽게 하는 진입점일 뿐이므로, 절차는 한 곳에서만 관리됩니다. Claude Code v2.1.277 이상은 `CLAUDE.md`가 없을 때 `AGENTS.md`를 직접 읽지만, `CLAUDE.md`가 있으면 그것만 읽습니다. 역할 배정 같은 Claude 전용 지침을 함께 쓰려면 새 제품 루트에 `@AGENTS.md`를 불러오는 아래 `CLAUDE.md`를 둡니다. import는 `AGENTS.md`를 두 번 읽게 하지 않으며, 직접 읽기를 지원하지 않는 이전 버전에서도 동작합니다.
 
 ```markdown
 # 프로젝트 협업 기준
