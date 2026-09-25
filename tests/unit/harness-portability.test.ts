@@ -785,6 +785,27 @@ it.each([
   expect(run(root).status).toBe(status);
 });
 
+it.each([
+  ["valid", "name: worker\ndescription: Worker\nmodel: claude-opus-5-5\ndisallowedTools: Agent", 0],
+  [
+    "renamed",
+    "name: other\ndescription: Worker\nmodel: claude-opus-5-5\ndisallowedTools: Agent",
+    1,
+  ],
+  ["no model", "name: worker\ndescription: Worker\ndisallowedTools: Agent", 1],
+  [
+    "can delegate",
+    "name: worker\ndescription: Worker\nmodel: claude-opus-5-5\ndisallowedTools: Edit",
+    1,
+  ],
+])("checks Claude subagent definition: %s", (_kind, header, status) => {
+  const root = fixture();
+  const agentPath = ".claude/agents/worker.md";
+  write(root, agentPath, `---\n${header}\n---\nBody\n`);
+  write(root, registryPath, JSON.stringify({ ...registry(), supportFiles: [agentPath] }));
+  expect(run(root).status).toBe(status);
+});
+
 it("requires Claude entry points for every skill once any is registered", () => {
   const root = fixture();
   const otherPath = ".agents/skills/other/SKILL.md";
@@ -913,6 +934,7 @@ it("exports the actual registry into an empty target and validates without produ
   ])
     expect(existsSync(resolve(target, filename))).toBe(false);
   expect(existsSync(resolve(target, ".claude/skills/harness-cycle/SKILL.md"))).toBe(true);
+  expect(existsSync(resolve(target, ".claude/agents/harness-verifier.md"))).toBe(true);
 });
 
 it("preserves project-owned files while applying registered harness files", () => {

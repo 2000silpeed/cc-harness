@@ -66,6 +66,8 @@ G1의 제품 목적·가치 충돌과 중요한 의도 누락은 사용자에게
 
 실행 도구가 모델 식별자(slug) 선택을 지원한다면 `gpt-5.6-sol`, `gpt-6-astra`처럼 지원되는 값을 명시적으로 요청하고 실행 환경이나 설정이 이를 덮어쓰는지 먼저 확인합니다. 역할 이름은 바꿀 수 있습니다. 모델 지원 여부, 설정 덮어쓰기, 독립 컨텍스트를 확인할 수 없다면 성공으로 추정하지 않고 `unavailable` 또는 `manual-handoff`로 기록합니다. 실제 지원 여부는 [Codex Subagents](https://learn.chatgpt.com/docs/subagents) 문서와 현재 실행 환경의 도움말에서 확인합니다.
 
+Claude Code에서는 `.claude/agents`의 세 역할을 씁니다. 기본 요청은 `harness-worker=claude-opus-5-5/medium`, `harness-diagnostic=claude-opus-5-5/xhigh`, `harness-verifier=claude-opus-5-5/high`입니다. Opus 5.5의 effort 기본값은 medium이며 xhigh·max는 품질 이득을 확인한 작업에만 씁니다. 진단에서 Opus 5.5로 부족하다는 증거가 쌓이면 Fable 5.1을 검토할 수 있지만, 그 선택과 이유는 따로 기록합니다. 세 역할 모두 `disallowedTools`로 Agent 도구를 막아 재귀 위임을 차단하고, 검증자와 진단 역할은 Edit·Write까지 막아 읽기 전용으로 둡니다. Agent 도구로 이름을 지정해 만든 서브에이전트는 메인 대화를 물려받지 않으므로 `fork_turns="none"`과 같은 새 컨텍스트로 봅니다. 대화를 복제하는 fork 방식은 이 정책에 쓰지 않습니다. 호출 시 `model` 인자는 정의의 값보다 우선하므로 역할 정의를 덮어쓸 때는 그 사실을 `requested`에 남깁니다. Claude Code가 실제 모델·사용량을 노출하지 않으면 `observed`는 `unknown`입니다. 실제 지원 여부는 [Claude Code Subagents](https://code.claude.com/docs/en/sub-agents) 문서에서 확인합니다.
+
 ## 아이디어부터 전달까지 연결하는 입력 계약
 
 전체 흐름은 `최초 요청 → 요구사항 인터뷰 → PRD/ADR → 이슈 분해 → Red/Green/Refactor → 보안 → E2E → CI/브랜치 보호 → main 머지`입니다. 앞단의 [기획](planning.md)과 [TDD](tdd.md)에서 확보한 승인 근거를 다음 단계로 인계합니다.

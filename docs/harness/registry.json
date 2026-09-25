@@ -109,7 +109,10 @@
     ".claude/skills/tdd-loop/SKILL.md",
     ".claude/skills/tdd-auto-loop/SKILL.md",
     ".claude/skills/design-system/SKILL.md",
-    ".claude/skills/mermaid-diagram/SKILL.md"
+    ".claude/skills/mermaid-diagram/SKILL.md",
+    ".claude/agents/harness-worker.md",
+    ".claude/agents/harness-verifier.md",
+    ".claude/agents/harness-diagnostic.md"
   ],
   "distributionTools": [
     "scripts/check-harness.mjs",

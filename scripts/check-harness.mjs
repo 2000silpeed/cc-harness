@@ -120,6 +120,18 @@ try {
   }
   if (claudeSkills.size)
     for (const name of names) check(claudeSkills.has(name), "Claude 진입점 누락: " + name);
+  for (const filename of registry.supportFiles) {
+    const agent = filename.match(/^\.claude\/agents\/([a-z0-9-]+)\.md$/)?.[1];
+    if (!agent) continue;
+    const header = contents.get(filename).match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1];
+    check(
+      header?.match(/^name:\s*([^\r\n]+)$/m)?.[1].trim() === agent &&
+        Boolean(header?.match(/^description:[ \t]*\S/m)) &&
+        Boolean(header?.match(/^model:[ \t]*\S/m)) &&
+        /\bAgent\b/.test(header?.match(/^disallowedTools:[ \t]*([^\r\n]*)$/m)?.[1] ?? ""),
+      "Claude 에이전트 불일치: " + filename,
+    );
+  }
   for (const [filename, content] of contents) {
     if (!filename.endsWith(".md")) continue;
     const links = [
