@@ -103,7 +103,7 @@
     ".claude/skills/tdd-green/SKILL.md",
     ".claude/skills/ac-verifier/SKILL.md",
     ".claude/skills/tdd-refactor/SKILL.md",
-    ".claude/skills/security-review/SKILL.md",
+    ".claude/skills/harness-security-review/SKILL.md",
     ".claude/skills/e2e-write/SKILL.md",
     ".claude/skills/create-pr/SKILL.md",
     ".claude/skills/tdd-loop/SKILL.md",

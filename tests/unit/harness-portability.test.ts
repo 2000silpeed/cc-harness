@@ -751,12 +751,35 @@ it.each([
 });
 
 it.each([
-  ["valid", "---\nname: example\ndescription: Example procedure\n---\n`" + skillPath + "`", 0],
-  ["drifted", "---\nname: example\ndescription: Changed\n---\n`" + skillPath + "`", 1],
-  ["unlinked", "---\nname: example\ndescription: Example procedure\n---\n", 1],
-])("checks Claude skill entry point: %s", (_kind, content, status) => {
+  [
+    "valid",
+    "example",
+    "---\nname: example\ndescription: Example procedure\n---\n`" + skillPath + "`",
+    0,
+  ],
+  [
+    "prefixed",
+    "harness-example",
+    "---\nname: harness-example\ndescription: Example procedure\n---\n`" + skillPath + "`",
+    0,
+  ],
+  [
+    "mismatched name",
+    "harness-example",
+    "---\nname: example\ndescription: Example procedure\n---\n`" + skillPath + "`",
+    1,
+  ],
+  [
+    "unknown prefix",
+    "my-example",
+    "---\nname: my-example\ndescription: Example procedure\n---\n`" + skillPath + "`",
+    1,
+  ],
+  ["drifted", "example", "---\nname: example\ndescription: Changed\n---\n`" + skillPath + "`", 1],
+  ["unlinked", "example", "---\nname: example\ndescription: Example procedure\n---\n", 1],
+])("checks Claude skill entry point: %s", (_kind, entry, content, status) => {
   const root = fixture();
-  const claudePath = ".claude/skills/example/SKILL.md";
+  const claudePath = `.claude/skills/${entry}/SKILL.md`;
   write(root, claudePath, content as string);
   write(root, registryPath, JSON.stringify({ ...registry(), supportFiles: [claudePath] }));
   expect(run(root).status).toBe(status);

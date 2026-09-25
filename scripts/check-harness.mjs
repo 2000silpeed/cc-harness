@@ -105,15 +105,16 @@ try {
     register(filename);
   const claudeSkills = new Set();
   for (const filename of registry.supportFiles) {
-    const name = filename.match(/^\.claude\/skills\/([^/]+)\/SKILL\.md$/)?.[1];
-    if (!name) continue;
+    const entry = filename.match(/^\.claude\/skills\/([^/]+)\/SKILL\.md$/)?.[1];
+    if (!entry) continue;
+    const name = contents.get(filename).match(/\.agents\/skills\/([a-z0-9-]+)\/SKILL\.md/)?.[1];
     claudeSkills.add(name);
     const header = contents.get(filename).match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1];
     check(
       names.has(name) &&
-        header?.match(/^name:\s*([^\r\n]+)$/m)?.[1].trim() === name &&
-        header?.match(/^description:[ \t]*([^\r\n]*)$/m)?.[1].trim() === descriptions.get(name) &&
-        contents.get(filename).includes(".agents/skills/" + name + "/SKILL.md"),
+        [name, "harness-" + name].includes(entry) &&
+        header?.match(/^name:\s*([^\r\n]+)$/m)?.[1].trim() === entry &&
+        header?.match(/^description:[ \t]*([^\r\n]*)$/m)?.[1].trim() === descriptions.get(name),
       "Claude 진입점 불일치: " + filename,
     );
   }

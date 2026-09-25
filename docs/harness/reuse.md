@@ -175,6 +175,7 @@ Claude Code도 같은 스킬과 문서를 씁니다. 설치 스크립트가 복�
 @AGENTS.md
 
 - 스킬은 /harness-cycle처럼 호출한다. 문서의 `$스킬명`은 `/스킬명`으로 읽는다.
+- security-review는 기본 명령과 겹치지 않도록 /harness-security-review로 호출한다.
 - 작업자와 검증자는 Agent 도구로 만든 서로 다른 서브에이전트다. 서브에이전트 안에서 다시 위임하지 않는다.
 ```
 
