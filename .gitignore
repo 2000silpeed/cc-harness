@@ -16,3 +16,5 @@ tmp/
 *.p12
 
 /*.pdf
+
+.claude/settings.local.json

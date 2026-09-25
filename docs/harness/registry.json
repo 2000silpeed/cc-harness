@@ -93,7 +93,24 @@
     "docs/methods/delivery-automation.md",
     "docs/methods/testing-strategy.md"
   ],
-  "supportFiles": [".agents/skills/mermaid-diagram/agents/openai.yaml"],
+  "supportFiles": [
+    ".agents/skills/mermaid-diagram/agents/openai.yaml",
+    ".claude/skills/harness-cycle/SKILL.md",
+    ".claude/skills/project-bootstrap/SKILL.md",
+    ".claude/skills/feature-planner/SKILL.md",
+    ".claude/skills/test-scenarios/SKILL.md",
+    ".claude/skills/tdd-red/SKILL.md",
+    ".claude/skills/tdd-green/SKILL.md",
+    ".claude/skills/ac-verifier/SKILL.md",
+    ".claude/skills/tdd-refactor/SKILL.md",
+    ".claude/skills/security-review/SKILL.md",
+    ".claude/skills/e2e-write/SKILL.md",
+    ".claude/skills/create-pr/SKILL.md",
+    ".claude/skills/tdd-loop/SKILL.md",
+    ".claude/skills/tdd-auto-loop/SKILL.md",
+    ".claude/skills/design-system/SKILL.md",
+    ".claude/skills/mermaid-diagram/SKILL.md"
+  ],
   "distributionTools": [
     "scripts/check-harness.mjs",
     "scripts/install-harness.mjs",

@@ -751,6 +751,40 @@ it.each([
 });
 
 it.each([
+  ["valid", "---\nname: example\ndescription: Example procedure\n---\n`" + skillPath + "`", 0],
+  ["drifted", "---\nname: example\ndescription: Changed\n---\n`" + skillPath + "`", 1],
+  ["unlinked", "---\nname: example\ndescription: Example procedure\n---\n", 1],
+])("checks Claude skill entry point: %s", (_kind, content, status) => {
+  const root = fixture();
+  const claudePath = ".claude/skills/example/SKILL.md";
+  write(root, claudePath, content as string);
+  write(root, registryPath, JSON.stringify({ ...registry(), supportFiles: [claudePath] }));
+  expect(run(root).status).toBe(status);
+});
+
+it("requires Claude entry points for every skill once any is registered", () => {
+  const root = fixture();
+  const otherPath = ".agents/skills/other/SKILL.md";
+  const claudePath = ".claude/skills/example/SKILL.md";
+  write(root, otherPath, "---\nname: other\ndescription: Other procedure\n---\n");
+  write(
+    root,
+    claudePath,
+    "---\nname: example\ndescription: Example procedure\n---\n`" + skillPath + "`",
+  );
+  write(
+    root,
+    registryPath,
+    JSON.stringify({
+      ...registry(),
+      skills: [...registry().skills, { name: "other", path: otherPath, kind: "procedure" }],
+      supportFiles: [claudePath],
+    }),
+  );
+  expect(run(root).stderr).toContain("Claude 진입점 누락: other");
+});
+
+it.each([
   "`docs/methods/missing.md`",
   "[missing](missing.md)",
   "[outside](../../../../outside.md)",
@@ -847,12 +881,15 @@ it("exports the actual registry into an empty target and validates without produ
   for (const filename of [
     "package.json",
     "AGENTS.md",
+    "CLAUDE.md",
+    ".claude/settings.json",
     ".husky",
     "docs/features",
     "node_modules",
     "docs/lessons",
   ])
     expect(existsSync(resolve(target, filename))).toBe(false);
+  expect(existsSync(resolve(target, ".claude/skills/harness-cycle/SKILL.md"))).toBe(true);
 });
 
 it("preserves project-owned files while applying registered harness files", () => {

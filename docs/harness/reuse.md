@@ -8,29 +8,32 @@
 ai-projects/
 ├── cc-harness/                 GitHub에서 clone한 재사용 원본
 │   ├── .agents/skills/         스킬 15개
+│   ├── .claude/skills/         Claude Code 진입점 15개
 │   ├── docs/harness/           실행 순서·이식·양식·등록 목록
 │   ├── docs/methods/           독립적인 실무 방법론
 │   └── scripts/install-harness.mjs
 └── my-new-project/             실제 제품: 별도 Git 저장소
     ├── .agents/skills/         설치 스크립트가 복사
+    ├── .claude/skills/         설치 스크립트가 복사
     ├── docs/harness/           설치 스크립트가 복사
     ├── docs/methods/           설치 스크립트가 복사
     ├── docs/design-system/authoring-guide.md
     ├── scripts/               설치·등록 검사 도구
     ├── AGENTS.md              대상에서 새로 작성
+    ├── CLAUDE.md              Claude Code를 쓰면 대상에서 작성
     ├── docs/features/<기능명>/ 인터뷰·명세·설계·이슈·진행 기록
     └── src/, tests/           기술안 승인 후 해당 스택에 맞게 생성
 ```
 
 `my-new-project`는 실제 제품 이름으로 바꿉니다. **새 제품을 cc-harness 안에 만들지 마십시오.** 하네스와 제품의 지침, Git 이력, 검사 범위가 섞이는 것을 막기 위해서입니다.
 
-| 작업                          | 실행 위치                                    |
-| ----------------------------- | -------------------------------------------- |
-| 하네스 다운로드·업데이트      | ai-projects/cc-harness                       |
-| 설치 dry-run·apply            | 원본의 스크립트에서 새 제품의 절대 경로 지정 |
-| Codex 실행·인터뷰·코딩·테스트 | ai-projects/my-new-project                   |
-| 제품 커밋·원격 연결·푸시      | my-new-project의 별도 Git 저장소             |
-| 공통 하네스 개선              | cc-harness에서 검토 후 각 제품에 선택 반영   |
+| 작업                        | 실행 위치                                    |
+| --------------------------- | -------------------------------------------- |
+| 하네스 다운로드·업데이트    | ai-projects/cc-harness                       |
+| 설치 dry-run·apply          | 원본의 스크립트에서 새 제품의 절대 경로 지정 |
+| Codex·Claude Code 실행·코딩 | ai-projects/my-new-project                   |
+| 제품 커밋·원격 연결·푸시    | my-new-project의 별도 Git 저장소             |
+| 공통 하네스 개선            | cc-harness에서 검토 후 각 제품에 선택 반영   |
 
 ## 2. 새 PC 준비
 
@@ -108,13 +111,13 @@ codex
 
 복사 범위의 기준은 `docs/harness/registry.json`입니다. 설치 도구는 이 등록 목록에 포함된 파일만 복사합니다.
 
-| 복사함                              | 복사하지 않음                              |
-| ----------------------------------- | ------------------------------------------ |
-| 등록 스킬과 보조 설정               | 원본 AGENTS·README·package.json·lock       |
-| docs/harness·docs/methods 등록 문서 | 원본 테스트·검증 로그·개인 데이터          |
-| 디자인 authoring-guide              | 구조도 HTML·구조도용 색상·간격·검사기      |
-| 설치·등록 검사 스크립트             | Git/Codex 훅·CI·배포·전역 설정             |
-| registry                            | .git·node_modules·dist·tmp·브라우저 데이터 |
+| 복사함                              | 복사하지 않음                               |
+| ----------------------------------- | ------------------------------------------- |
+| 등록 스킬과 보조 설정               | 원본 AGENTS·CLAUDE·README·package.json·lock |
+| docs/harness·docs/methods 등록 문서 | 원본 테스트·검증 로그·개인 데이터           |
+| 디자인 authoring-guide              | 구조도 HTML·구조도용 색상·간격·검사기       |
+| 설치·등록 검사 스크립트             | Git/Codex/Claude 훅·CI·배포·전역 설정       |
+| registry                            | .git·node_modules·dist·tmp·브라우저 데이터  |
 
 내용이 같은 파일은 `same`으로 표시하고 건너뜁니다. 기존 파일과 내용이 다르면 어떤 파일도 쓰기 전에 충돌로 중단합니다. 강제 덮어쓰기 옵션은 없으며, 심볼릭 링크나 대상 폴더 밖으로 쓰는 작업도 거부합니다. 이 결과물은 자동으로 동기화되는 복제본이 아니라 **독립 사본**입니다.
 
@@ -161,6 +164,21 @@ docs/harness/lifecycle.md와 reuse.md를 읽어줘.
 - 실제 검사 명령은 구성이 생긴 뒤 README와 이 파일에 기록한다.
 - 별도 요청 없이 커밋·푸시·배포하지 않는다.
 ```
+
+### Claude Code를 쓸 때
+
+Claude Code도 같은 스킬과 문서를 씁니다. 설치 스크립트가 복사하는 `.claude/skills/<이름>/SKILL.md`는 `.agents/skills`의 원본을 읽게 하는 진입점일 뿐이므로, 절차는 한 곳에서만 관리됩니다. Claude Code는 `AGENTS.md`를 직접 읽지 않으니 새 제품 루트에 아래 `CLAUDE.md`를 둡니다.
+
+```markdown
+# 프로젝트 협업 기준
+
+@AGENTS.md
+
+- 스킬은 /harness-cycle처럼 호출한다. 문서의 `$스킬명`은 `/스킬명`으로 읽는다.
+- 작업자와 검증자는 Agent 도구로 만든 서로 다른 서브에이전트다. 서브에이전트 안에서 다시 위임하지 않는다.
+```
+
+제품 폴더에서 `claude`를 실행하고, 위 첫 입력의 `$harness-cycle`을 `/harness-cycle`로 바꿔 붙여넣습니다. `/` 목록에 스킬이 보이지 않으면 작업 루트와 `.claude/skills` 파일을 확인한 뒤 Claude Code를 다시 시작합니다. 원본의 `.claude/settings.json` 훅은 구조도 전용이라 복사하지 않습니다.
 
 전역 AGENTS와 제품 AGENTS는 별개입니다. 개인 규칙이 필요하면 검토 후 따로 설정하고 인증 폴더를 통째로 복사하지 않습니다. [공식 AGENTS 적용 범위](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
 
@@ -219,7 +237,7 @@ UI에는 새 제품의 design.md·공통 기준을 읽는 검사기를 만들고
 구조도 전용 색상·검사기·절대 경로를 복사하지 마.
 ```
 
-Git 훅은 Git 시점, Codex 훅은 지원되는 도구 이벤트 시점에 실행됩니다. 원본 hooks.json은 구조도 경로와 셸 문법에 묶여 있어 이식하지 않습니다. 버전·Windows 셸·신뢰를 새 환경에서 검증합니다. 원본 npm run check는 lint·디자인 정적 검사·하네스·서식·이식 회귀·타입 검사만 포함하므로 새 제품은 자체 검사 묶음을 만듭니다.
+Git 훅은 Git 시점, Codex·Claude Code 훅은 지원되는 도구 이벤트 시점에 실행됩니다. 원본 hooks.json과 .claude/settings.json은 구조도 경로와 셸 문법에 묶여 있어 이식하지 않습니다. 버전·Windows 셸·신뢰를 새 환경에서 검증합니다. 원본 npm run check는 lint·디자인 정적 검사·하네스·서식·이식 회귀·타입 검사만 포함하므로 새 제품은 자체 검사 묶음을 만듭니다.
 
 ## 8. 매일 재개하고 끝내기
 
@@ -275,7 +293,7 @@ progress.md와 실제 변경을 대조해 마지막 미완료 단계부터 이�
 | Repository not found               | URL·권한·GitHub 인증 확인                            |
 | 대상 디렉터리 오류                 | 폴더 먼저 생성, 절대 경로 따옴표, 링크 폴더 제외     |
 | 충돌                               | 기존 파일 보존 후 비교·병합. 억지로 삭제하지 않음    |
-| 셸이 $harness-cycle을 못 찾음      | Codex 대화창에 입력                                  |
+| 셸이 $harness-cycle을 못 찾음      | Codex 대화창에 입력(Claude Code는 /harness-cycle)    |
 | 스킬이 안 보임                     | 작업 루트·숨김 폴더·동명 전역 스킬·Codex 재시작 확인 |
 | npm run dev나 디자인 검사기 없음   | 이식만 완료한 상태. 승인 후 앱 기반·제품별 검사 구성 |
 | 등록 검사는 통과했는데 제품이 없음 | 인터뷰·PRD·이슈 사이클부터 진행                      |

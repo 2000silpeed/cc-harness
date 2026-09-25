@@ -57,6 +57,7 @@ try {
   const names = new Set();
   const paths = new Set(["docs/harness/registry.json"]);
   const contents = new Map();
+  const descriptions = new Map();
   const register = (filename) => {
     check(!paths.has(filename), "중복 경로: " + filename);
     paths.add(filename);
@@ -94,6 +95,7 @@ try {
       Boolean(description) && !/^(['"])\s*\1(?:\s+#.*)?$/.test(description),
       "설명 없음: " + skill.path,
     );
+    descriptions.set(skill.name, description);
   }
   for (const filename of [
     ...registry.documents,
@@ -101,6 +103,22 @@ try {
     ...registry.distributionTools,
   ])
     register(filename);
+  const claudeSkills = new Set();
+  for (const filename of registry.supportFiles) {
+    const name = filename.match(/^\.claude\/skills\/([^/]+)\/SKILL\.md$/)?.[1];
+    if (!name) continue;
+    claudeSkills.add(name);
+    const header = contents.get(filename).match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1];
+    check(
+      names.has(name) &&
+        header?.match(/^name:\s*([^\r\n]+)$/m)?.[1].trim() === name &&
+        header?.match(/^description:[ \t]*([^\r\n]*)$/m)?.[1].trim() === descriptions.get(name) &&
+        contents.get(filename).includes(".agents/skills/" + name + "/SKILL.md"),
+      "Claude 진입점 불일치: " + filename,
+    );
+  }
+  if (claudeSkills.size)
+    for (const name of names) check(claudeSkills.has(name), "Claude 진입점 누락: " + name);
   for (const [filename, content] of contents) {
     if (!filename.endsWith(".md")) continue;
     const links = [
