@@ -127,9 +127,37 @@ try {
     check(
       header?.match(/^name:\s*([^\r\n]+)$/m)?.[1].trim() === agent &&
         Boolean(header?.match(/^description:[ \t]*\S/m)) &&
-        Boolean(header?.match(/^model:[ \t]*\S/m)) &&
+        header?.match(/^model:[ \t]*([^\r\n]+)$/m)?.[1].trim() === "claude-opus-5-5" &&
+        header?.match(/^effort:[ \t]*([^\r\n]+)$/m)?.[1].trim() === "low" &&
         /\bAgent\b/.test(header?.match(/^disallowedTools:[ \t]*([^\r\n]*)$/m)?.[1] ?? ""),
       "Claude 에이전트 불일치: " + filename,
+    );
+  }
+  const codexAgents = new Map([
+    ["harness-worker-low", "low"],
+    ["harness-worker", "medium"],
+    ["harness-worker-high", "medium"],
+    ["harness-verifier", "medium"],
+    ["harness-diagnostic", "medium"],
+  ]);
+  const allowedCodexModel = /^gpt-(?:6-(?:sol|luna)|5\.6-(?:sol|terra|luna))$/;
+  for (const filename of registry.supportFiles) {
+    const agent = filename.match(/^\.codex\/agents\/([a-z0-9-]+)\.toml$/)?.[1];
+    if (!agent) continue;
+    const content = contents.get(filename);
+    const field = (name) => content.match(new RegExp(`^${name} = "([^"]+)"$`, "m"))?.[1];
+    const expected = codexAgents.get(agent);
+    check(
+      expected &&
+        field("name") === agent &&
+        Boolean(field("description")) &&
+        allowedCodexModel.test(field("model") ?? "") &&
+        field("model_reasoning_effort") === expected &&
+        /^developer_instructions = """\r?\n[\s\S]+\r?\n"""$/m.test(content) &&
+        /다시 위임하지 않는다|재귀 위임/.test(content) &&
+        ((agent !== "harness-verifier" && agent !== "harness-diagnostic") ||
+          /읽기 전용/.test(content)),
+      "Codex 에이전트 불일치: " + filename,
     );
   }
   for (const [filename, content] of contents) {

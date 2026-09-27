@@ -49,7 +49,7 @@ G1의 제품 목적·가치 충돌과 중요한 의도 누락은 사용자에게
 
 파일 수나 변경분(diff)의 크기는 프로필을 고르는 주된 기준이 아닙니다. 보안, 데이터, 권한, 파괴적 작업이나 운영 환경, 사용자 게이트, STOP 계약이 관련되면 변경분이 작아도 `compact`로 보지 않으며 사용자 게이트를 우선합니다. 프로필은 안전 계약의 면제 수단이 아닙니다. 실제 실행 기록이 없다면 프로필 선택만으로 에이전트가 올바르게 행동했음을 증명할 수 없습니다.
 
-기본 역할 요청은 `default_worker=Sol/medium`, `diagnostic=Astra/high`, `verifier=Sol/high`입니다. 환경이 제공하는 모델로 바꿀 수 있지만, 요청한 `requested` 값과 실행 메타데이터에서 관찰한 `observed` 값은 분리합니다. 메타데이터가 없으면 `unknown`으로 기록하며, 모델 요청이 성공했다는 사실만으로 역할의 독립성이나 실제 백엔드 모델을 주장하지 않습니다. 진단 역할(diagnostic)은 읽기 전용으로 원인, 가설, 권고 계획만 반환하고 이후 구현은 새 작업자가 수행합니다.
+기본 역할 요청은 `default_worker=Sol/medium`, `diagnostic=Sol/medium`, `verifier=Sol/medium`입니다. 환경이 제공하는 모델로 바꿀 수 있지만, 요청한 `requested` 값과 실행 메타데이터에서 관찰한 `observed` 값은 분리합니다. 메타데이터가 없으면 `unknown`으로 기록하며, 모델 요청이 성공했다는 사실만으로 역할의 독립성이나 실제 백엔드 모델을 주장하지 않습니다. 진단 역할(diagnostic)은 읽기 전용으로 원인, 가설, 권고 계획만 반환하고 이후 구현은 새 작업자가 수행합니다.
 
 `tdd-auto-loop`의 Green 총예산은 `min(3, 1 + user_approved_retry)`이고 진단 예산은 이슈마다 1회입니다. 진단 실패도 예산을 소비하며, 새 컨텍스트, 모델 교체, 재개(RESUME)는 횟수를 초기화하지 않습니다. 진전 없음(`no-progress`) 또는 Green 3회 실패 뒤에는 상향 처리하지 않고 STOP합니다. 수동 `tdd-loop` 유지보수에는 이 자동 상한을 묵시적으로 적용하지 않으며, 승인된 유한 범위와 실제 누적 시도를 기록합니다. 같은 실패인지 판단할 때는 분류뿐 아니라 명령, 실패 특징, 도구 버전, 범위를 함께 비교합니다. `LOCAL_IMPLEMENTATION_ERROR`, `ARCHITECTURE_UNCERTAINTY`, `CROSS_MODULE_DEPENDENCY`, `UNKNOWN_RUNTIME_BEHAVIOR`, `REQUIREMENT_AMBIGUITY`, `BROKEN_ENVIRONMENT`, `EXTERNAL_TOOL_FAILURE`, `SECURITY_BLOCK` 가운데 증거에 맞는 값을 기록하고, 요구사항의 모호성과 새 권한은 사용자 승인 단계로 보냅니다.
 
@@ -65,9 +65,13 @@ G1의 제품 목적·가치 충돌과 중요한 의도 누락은 사용자에게
 
 지원되는 Codex CLI에서 `exec --json`이 내보내는 `turn.completed` 사용량과 App Server 스레드의 토큰 사용량 알림은 관찰 가능한 실행 메타데이터 후보입니다. 이 하네스는 별도의 수집기를 추가하지 않습니다. 현재 협업 도구에서 모델이나 사용량 정보를 제공하지 않는다면 `unknown`으로 남깁니다.
 
-실행 도구가 모델 식별자(slug) 선택을 지원한다면 `gpt-5.6-sol`, `gpt-6-astra`처럼 지원되는 값을 명시적으로 요청하고 실행 환경이나 설정이 이를 덮어쓰는지 먼저 확인합니다. 역할 이름은 바꿀 수 있습니다. 모델 지원 여부, 설정 덮어쓰기, 독립 컨텍스트를 확인할 수 없다면 성공으로 추정하지 않고 `unavailable` 또는 `manual-handoff`로 기록합니다. 실제 지원 여부는 [Codex Subagents](https://learn.chatgpt.com/docs/subagents) 문서와 현재 실행 환경의 도움말에서 확인합니다.
+실행 도구가 모델 식별자(slug) 선택을 지원한다면 `gpt-6-sol`처럼 지원되는 값을 명시적으로 요청하고 실행 환경이나 설정이 이를 덮어쓰는지 먼저 확인합니다. 역할 이름은 바꿀 수 있습니다. 모델 지원 여부, 설정 덮어쓰기, 독립 컨텍스트를 확인할 수 없다면 성공으로 추정하지 않고 `unavailable` 또는 `manual-handoff`로 기록합니다. 실제 지원 여부는 [Codex Subagents](https://learn.chatgpt.com/docs/subagents) 문서와 현재 실행 환경의 도움말에서 확인합니다.
 
-Claude Code에서는 `.claude/agents`의 세 역할을 씁니다. 기본 요청은 `harness-worker=claude-opus-5-5/medium`, `harness-diagnostic=claude-opus-5-5/xhigh`, `harness-verifier=claude-opus-5-5/high`입니다. Opus 5.5의 effort 기본값은 medium이며 xhigh·max는 품질 이득을 확인한 작업에만 씁니다. 진단에서 Opus 5.5로 부족하다는 증거가 쌓이면 Fable 5.1을 검토할 수 있지만, 그 선택과 이유는 따로 기록합니다. 세 역할 모두 `disallowedTools`로 Agent 도구를 막아 재귀 위임을 차단하고, 검증자와 진단 역할은 Edit·Write까지 막아 읽기 전용으로 둡니다. Agent 도구로 이름을 지정해 만든 서브에이전트는 메인 대화를 물려받지 않으므로 `fork_turns="none"`과 같은 새 컨텍스트로 봅니다. 대화를 복제하는 fork 방식은 이 정책에 쓰지 않습니다. 호출 시 `model` 인자는 정의의 값보다 우선하므로 역할 정의를 덮어쓸 때는 그 사실을 `requested`에 남깁니다. Claude Code가 실제 모델·사용량을 노출하지 않으면 `observed`는 `unknown`입니다. 실제 지원 여부는 [Claude Code Subagents](https://code.claude.com/docs/en/sub-agents) 문서에서 확인합니다.
+Codex에서는 프로젝트의 `.codex/agents`에 등록된 다섯 역할을 사용합니다. `harness-worker-low=gpt-6-sol/low`, 나머지 작업자·독립 검증자·읽기 전용 진단은 모두 `gpt-6-sol/medium`으로 요청합니다. `harness-worker-high`는 더 높은 effort가 아니라 경계가 많은 범위를 표시하는 역할 이름입니다. 보안·데이터·권한·파괴적 작업·운영 환경·사용자 게이트·STOP 계약은 작아도 low로 배정하지 않습니다. 역할 파일의 모델·effort 요청값과 실행 메타데이터에서 확인한 관찰값을 분리하며, 확인할 수 없으면 `unknown`으로 기록합니다. 역할 파일은 도구 수준의 쓰기 차단을 보장하지 않으므로 메인은 검증자·진단자에게 읽기 전용 작업만 배정하고 결과를 확인합니다. 작업자와 검증자는 별도 새 컨텍스트에서 호출하며 작업자는 재귀 위임하지 않습니다. 실제 지원 범위는 [Codex custom agents](https://learn.chatgpt.com/docs/agent-configuration/subagents)와 [설정 참조](https://learn.chatgpt.com/docs/config-file/config-reference)를 확인합니다.
+
+Claude Code에서는 `.claude/agents`의 다섯 역할 모두 `claude-opus-5-5/low`로 요청합니다. `harness-worker-high`는 경계가 많은 범위를 나타내는 이름이며 더 높은 effort를 뜻하지 않습니다. 보안·데이터·권한·파괴적 작업·운영 환경·사용자 게이트·STOP 계약에 관련된 구현·진단·검증은 Claude low에 배정하지 않습니다. 가능한 Codex medium 역할로 맡기고, 이를 확인하거나 사용할 수 없으면 STOP하고 수동 인계합니다. 기존 승인·게이트·STOP 조건은 그대로 적용합니다. 다섯 역할 모두 `disallowedTools`로 Agent 도구를 막아 재귀 위임을 차단하고 검증자·진단은 Edit·Write도 막습니다. 이름을 지정한 Agent 호출은 새 컨텍스트로 만들고 구현자와 검증자를 분리합니다. 호출 시 `model` 덮어쓰기는 `requested`에 남기고 실제 모델·effort·사용량을 확인할 수 없으면 `observed`는 `unknown`입니다. 실제 지원 여부는 [Claude Code Subagents](https://code.claude.com/docs/en/sub-agents) 문서와 현재 실행 환경에서 확인합니다.
+
+첫 설정에서 기존 `docs/features/{feature}/progress.md`의 모델 질문 여부·답변·선택한 역할별 ID를 먼저 확인합니다. 답변이 있으면 재사용하고 다시 묻지 않습니다. 기록이 없을 때 현재 역할 파일의 모델 ID를 사용자에게 보여 주고, 현재 실행 환경의 선택 모델과 사용 가능한 모델을 확인할 수 있으면 함께 알립니다. 확인할 수 없으면 `unknown`이라고 밝히고 정확한 모델 ID를 요청합니다. 역할 모델 ID를 재설정할지 한 번만 묻고, 질문 여부·사용자 답변·선택한 역할별 ID를 같은 progress에 기록합니다. Claude 역할은 `claude-opus-5-5`로 유지하고 Codex 역할은 확인된 Sol 이하 모델 ID에서 고릅니다. 모델 재설정은 effort 상한이나 역할 분리·게이트·STOP 계약을 바꾸지 않습니다.
 
 ## 아이디어부터 전달까지 연결하는 입력 계약
 

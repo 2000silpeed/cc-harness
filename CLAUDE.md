@@ -16,17 +16,22 @@
 
 오케스트레이션 정책의 역할은 `.claude/agents`의 서브에이전트에 배정한다. Agent 도구를 호출할 때 `subagent_type`에 아래 이름을 지정한다.
 
-| 역할      | subagent_type      | 모델·effort            | 도구                           |
-| --------- | ------------------ | ---------------------- | ------------------------------ |
-| 작업자    | harness-worker     | claude-opus-5-5 medium | Read·Grep·Glob·Bash·Edit·Write |
-| 검증자    | harness-verifier   | claude-opus-5-5 high   | Read·Grep·Glob·Bash            |
-| 진단 역할 | harness-diagnostic | claude-opus-5-5 xhigh  | Read·Grep·Glob·Bash            |
+| 역할                  | subagent_type       | 모델·effort         | 도구                           |
+| --------------------- | ------------------- | ------------------- | ------------------------------ |
+| 명확한 작은 작업      | harness-worker-low  | claude-opus-5-5 low | Read·Grep·Glob·Bash·Edit·Write |
+| 일반 작업             | harness-worker      | claude-opus-5-5 low | Read·Grep·Glob·Bash·Edit·Write |
+| 경계 많은 비민감 구현 | harness-worker-high | claude-opus-5-5 low | Read·Grep·Glob·Bash·Edit·Write |
+| 독립 검증자           | harness-verifier    | claude-opus-5-5 low | Read·Grep·Glob·Bash            |
+| 진단 역할             | harness-diagnostic  | claude-opus-5-5 low | Read·Grep·Glob·Bash            |
 
-- 세 역할은 위 도구만 쓴다. 도구를 허용 목록으로 제한해야 MCP 도구 정의가 서브에이전트마다 다시 실리지 않는다.
-- 소형 변경 예외(`docs/methods/delivery-automation.md`의 `## 필수 오케스트레이션 정책`)를 충족한 `compact` 변경은 harness-worker를 만들지 않고 메인이 직접 고치고 관련 검사를 돌린다. 근거를 진행 기록에 남기고, 검증은 그대로 harness-verifier에 맡긴다.- 작업자와 검증자는 항상 서로 다른 호출로 만든다. 검증자가 구현자의 대화를 보지 않아야 독립 검증이 성립한다.
+- 각 역할은 위 도구만 쓴다. 도구를 허용 목록으로 제한해야 MCP 도구 정의가 서브에이전트마다 다시 실리지 않는다.
+- 영향과 종료 조건이 명확한 비민감 작업에는 범위에 맞춰 `harness-worker-low` 또는 `harness-worker`를 배정한다. 보안·데이터·권한·파괴적 작업·운영 환경·사용자 게이트·STOP 계약과 관련된 작업은 Claude의 low 역할에 배정하지 않는다. 가능한 Codex medium 역할로 새 컨텍스트를 구성하거나 사용할 수 없으면 STOP하고 수동 인계한다. 독립 검증·게이트·STOP을 생략하지 않는다.
+- 소형 변경 예외(`docs/methods/delivery-automation.md`의 `## 필수 오케스트레이션 정책`)를 충족한 `compact` 변경은 작업자를 만들지 않고 메인이 직접 고치고 관련 검사를 돌릴 수 있다. 근거를 진행 기록에 남기고, 검증은 그대로 `harness-verifier`에 맡긴다.
+- 작업자와 검증자는 항상 서로 다른 호출로 만든다. 검증자가 구현자의 대화를 보지 않아야 독립 검증이 성립한다.
+- 진단과 검증도 Claude에서는 low로만 요청한다. 민감 범위의 진단·검증은 가능한 Codex medium 역할로 넘기고, 사용할 수 없으면 STOP하고 수동 인계한다.
 - 대화를 복제하는 fork 방식은 쓰지 않는다. 이름을 지정한 서브에이전트는 메인 대화를 물려받지 않으므로 최소 입력 계약을 그대로 지킬 수 있다.
 - 서로 의존하지 않는 작업자는 한 응답에서 병렬로 호출한다. 의존 관계가 있거나 같은 파일을 건드리면 순서대로 호출한다.
-- 호출할 때 `model`을 넘기면 정의의 값보다 우선한다. 덮어썼다면 결과 기록의 `requested`에 남기고, 실제 실행 모델을 확인할 수 없으면 `observed`는 `unknown`으로 둔다.
+- 호출할 때 `model`을 넘기면 정의의 값보다 우선한다. 역할의 설정 모델은 `claude-opus-5-5`이고 effort는 모두 low다. 호출별 effort 덮어쓰기는 전제하지 않는다. 요청값은 `requested`에, 실제 실행 모델·effort를 확인할 수 없으면 `observed`에는 `unknown`을 기록한다.
 
 ## 완료 판정
 

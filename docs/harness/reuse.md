@@ -8,12 +8,14 @@
 ai-projects/
 ├── cc-harness/                 GitHub에서 clone한 재사용 원본
 │   ├── .agents/skills/         스킬 15개
+│   ├── .codex/agents/          Codex 역할 5개
 │   ├── .claude/skills/         Claude Code 진입점 15개
 │   ├── docs/harness/           실행 순서·이식·양식·등록 목록
 │   ├── docs/methods/           독립적인 실무 방법론
 │   └── scripts/install-harness.mjs
 └── my-new-project/             실제 제품: 별도 Git 저장소
     ├── .agents/skills/         설치 스크립트가 복사
+    ├── .codex/agents/          설치 스크립트가 복사
     ├── .claude/skills/         설치 스크립트가 복사
     ├── docs/harness/           설치 스크립트가 복사
     ├── docs/methods/           설치 스크립트가 복사
@@ -145,6 +147,7 @@ docs/harness/lifecycle.md와 reuse.md를 읽어줘.
 기술안 승인 전 앱 스택을 설치하지 마.
 커밋·푸시·배포는 별도 요청 전 실행하지 마.
 하네스 원본 커밋 [3절에서 확인한 SHA]도 진행 기록에 남겨줘.
+첫 설정에서는 기존 progress.md의 모델 질문·답변·선택 ID를 먼저 읽고, 답변이 있으면 재사용하며 다시 묻지 마. 기록이 없으면 현재 역할 파일의 모델 ID와 확인 가능한 현재 선택 모델·사용 가능한 모델을 알려주고 역할 모델 ID를 재설정할지 한 번만 물어줘. 확인 불가하면 unknown이라고 밝히고 정확한 ID를 요청해줘. Claude는 claude-opus-5-5로 유지하고 Codex는 확인된 Sol 이하 모델만 선택해줘. 질문·답변·선택 ID를 progress.md에 기록해줘.
 ```
 
 다음은 AGENTS의 최소 예시입니다. [필수 오케스트레이션 정책](../methods/delivery-automation.md#필수-오케스트레이션-정책)을 대상에 함께 유지합니다. 아직 없는 검사 명령을 작동한다고 기록하지 않습니다.
@@ -165,6 +168,8 @@ docs/harness/lifecycle.md와 reuse.md를 읽어줘.
 - 별도 요청 없이 커밋·푸시·배포하지 않는다.
 ```
 
+Codex에서 위 첫 입력을 사용하면 설치된 `.codex/agents`의 다섯 역할을 배정할 수 있습니다. `harness-worker-low`는 `gpt-6-sol/low`, 나머지 네 역할은 `gpt-6-sol/medium`으로 설정됩니다. `harness-worker-high`는 고난도 범위용 이름이며 effort 상향을 뜻하지 않습니다. 보안·데이터·권한·파괴적 작업·운영 환경·사용자 게이트·STOP 계약은 low로 배정하지 않습니다. 작업자와 검증자는 별도 호출로 만들고 실제 모델·effort·사용량을 확인할 수 없으면 `unknown`으로 기록합니다.
+
 ### Claude Code를 쓸 때
 
 Claude Code도 같은 스킬과 문서를 씁니다. 설치 스크립트가 복사하는 `.claude/skills/<이름>/SKILL.md`는 `.agents/skills`의 원본을 읽게 하는 진입점일 뿐이므로, 절차는 한 곳에서만 관리됩니다. Claude Code v2.1.277 이상은 `CLAUDE.md`가 없을 때 `AGENTS.md`를 직접 읽지만, `CLAUDE.md`가 있으면 그것만 읽습니다. 역할 배정 같은 Claude 전용 지침을 함께 쓰려면 새 제품 루트에 `@AGENTS.md`를 불러오는 아래 `CLAUDE.md`를 둡니다. import는 `AGENTS.md`를 두 번 읽게 하지 않으며, 직접 읽기를 지원하지 않는 이전 버전에서도 동작합니다.
@@ -176,11 +181,11 @@ Claude Code도 같은 스킬과 문서를 씁니다. 설치 스크립트가 복�
 
 - 스킬은 /harness-cycle처럼 호출한다. 문서의 `$스킬명`은 `/스킬명`으로 읽는다.
 - security-review는 기본 명령과 겹치지 않도록 /harness-security-review로 호출한다.
-- 역할 배정: 작업자는 harness-worker, 독립 검증자는 harness-verifier, 읽기 전용 진단은 harness-diagnostic 서브에이전트에 맡긴다. 작업자와 검증자는 서로 다른 호출로 만든다.
+- 역할 배정: 명확한 작은 비민감 작업은 harness-worker-low, 일반 비민감 구현은 harness-worker, 경계가 많은 비민감 구현은 harness-worker-high, 독립 검증은 harness-verifier, 읽기 전용 진단은 harness-diagnostic에 맡긴다. Claude 역할의 effort는 모두 low다. 보안·데이터·권한·파괴적 작업·운영 환경·사용자 게이트·STOP 계약 관련 작업은 Claude low 대신 가능한 Codex medium 역할로 배정하고 사용할 수 없으면 STOP·수동 인계한다. 작업자와 검증자는 별도 호출로 만든다.
 - 서브에이전트가 응답을 끝냈다는 사실만으로 완료로 보지 않는다. 반환된 증거를 AC와 대조한 뒤 완료로 기록한다.
 ```
 
-제품 폴더에서 `claude`를 실행하고, 위 첫 입력의 `$harness-cycle`을 `/harness-cycle`로 바꿔 붙여넣습니다. `/` 목록에 스킬이 보이지 않으면 작업 루트와 `.claude/skills` 파일을 확인한 뒤 Claude Code를 다시 시작합니다. `.claude/agents`의 세 역할도 함께 복사되며, 기본값은 모두 `claude-opus-5-5`이고 effort만 작업자 medium, 검증자 high, 진단 xhigh로 다릅니다. 원본의 `.claude/settings.json` 훅은 구조도 전용이라 복사하지 않습니다.
+제품 폴더에서 `claude`를 실행하고, 위 첫 입력의 `$harness-cycle`을 `/harness-cycle`로 바꿔 붙여넣습니다. `/` 목록에 스킬이 보이지 않으면 작업 루트와 `.claude/skills` 파일을 확인한 뒤 Claude Code를 다시 시작합니다. `.claude/agents`의 다섯 역할도 함께 복사되며 모두 `claude-opus-5-5/low`입니다. 원본의 `.claude/settings.json` 훅은 구조도 전용이라 복사하지 않습니다.
 
 전역 AGENTS와 제품 AGENTS는 별개입니다. 개인 규칙이 필요하면 검토 후 따로 설정하고 인증 폴더를 통째로 복사하지 않습니다. [공식 AGENTS 적용 범위](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
 

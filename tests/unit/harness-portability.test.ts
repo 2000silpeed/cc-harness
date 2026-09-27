@@ -811,22 +811,44 @@ it.each([
 });
 
 it.each([
-  ["valid", "name: worker\ndescription: Worker\nmodel: claude-opus-5-5\ndisallowedTools: Agent", 0],
+  [
+    "valid",
+    "name: worker\ndescription: Worker\nmodel: claude-opus-5-5\neffort: low\ndisallowedTools: Agent",
+    0,
+  ],
   [
     "renamed",
-    "name: other\ndescription: Worker\nmodel: claude-opus-5-5\ndisallowedTools: Agent",
+    "name: other\ndescription: Worker\nmodel: claude-opus-5-5\neffort: low\ndisallowedTools: Agent",
     1,
   ],
   ["no model", "name: worker\ndescription: Worker\ndisallowedTools: Agent", 1],
   [
     "can delegate",
-    "name: worker\ndescription: Worker\nmodel: claude-opus-5-5\ndisallowedTools: Edit",
+    "name: worker\ndescription: Worker\nmodel: claude-opus-5-5\neffort: low\ndisallowedTools: Edit",
     1,
   ],
 ])("checks Claude subagent definition: %s", (_kind, header, status) => {
   const root = fixture();
   const agentPath = ".claude/agents/worker.md";
   write(root, agentPath, `---\n${header}\n---\nBody\n`);
+  write(root, registryPath, JSON.stringify({ ...registry(), supportFiles: [agentPath] }));
+  expect(run(root).status).toBe(status);
+});
+
+it.each([
+  ["valid", "gpt-6-sol", "low", true, 0],
+  ["approved alternate model", "gpt-6-luna", "low", true, 0],
+  ["wrong model", "gpt-6-astra", "low", true, 1],
+  ["wrong effort", "gpt-6-sol", "medium", true, 1],
+  ["missing guardrail", "gpt-6-sol", "low", false, 1],
+])("checks Codex subagent definition: %s", (_kind, model, effort, guarded, status) => {
+  const root = fixture();
+  const agentPath = ".codex/agents/harness-worker-low.toml";
+  write(
+    root,
+    agentPath,
+    `name = "harness-worker-low"\ndescription = "Worker"\nmodel = "${model}"\nmodel_reasoning_effort = "${effort}"\ndeveloper_instructions = """\n${guarded ? "다시 위임하지 않는다" : "작업을 수행한다"}\n"""\n`,
+  );
   write(root, registryPath, JSON.stringify({ ...registry(), supportFiles: [agentPath] }));
   expect(run(root).status).toBe(status);
 });
@@ -960,6 +982,14 @@ it("exports the actual registry into an empty target and validates without produ
     expect(existsSync(resolve(target, filename))).toBe(false);
   expect(existsSync(resolve(target, ".claude/skills/harness-cycle/SKILL.md"))).toBe(true);
   expect(existsSync(resolve(target, ".claude/agents/harness-verifier.md"))).toBe(true);
+  for (const role of [
+    "harness-worker-low",
+    "harness-worker",
+    "harness-worker-high",
+    "harness-verifier",
+    "harness-diagnostic",
+  ])
+    expect(existsSync(resolve(target, `.codex/agents/${role}.toml`))).toBe(true);
   expect(existsSync(resolve(target, "scripts/read-section.mjs"))).toBe(true);
 });
 

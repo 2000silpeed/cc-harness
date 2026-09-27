@@ -95,6 +95,11 @@
   ],
   "supportFiles": [
     ".agents/skills/mermaid-diagram/agents/openai.yaml",
+    ".codex/agents/harness-worker-low.toml",
+    ".codex/agents/harness-worker.toml",
+    ".codex/agents/harness-worker-high.toml",
+    ".codex/agents/harness-verifier.toml",
+    ".codex/agents/harness-diagnostic.toml",
     ".claude/skills/harness-cycle/SKILL.md",
     ".claude/skills/project-bootstrap/SKILL.md",
     ".claude/skills/feature-planner/SKILL.md",
@@ -111,6 +116,8 @@
     ".claude/skills/design-system/SKILL.md",
     ".claude/skills/mermaid-diagram/SKILL.md",
     ".claude/agents/harness-worker.md",
+    ".claude/agents/harness-worker-low.md",
+    ".claude/agents/harness-worker-high.md",
     ".claude/agents/harness-verifier.md",
     ".claude/agents/harness-diagnostic.md"
   ],
