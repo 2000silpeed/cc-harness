@@ -17,7 +17,7 @@ MSC에는 승인 목표/범위, revision·dirty hash, 직접 관련 contract/AC/
 
 ## 실행과 증거
 
-격리된 단계별 작업자, 구조화 결과, Green 직후 독립 AC 검증, 객관 STOP, 사람의 PR 리뷰를 사용한다. 메인은 passed 표기가 아니라 source revision, contract hash, 실제 명령·종료 코드·실패 결과와 증거를 대조한다. Evidence Reuse는 관련 code·contract/AC·test·command·environment가 같은지 version/hash/checkpoint로 먼저 확인하며, 명령과 실제 결과 확인을 생략하는 뜻이 아니다. 불일치·UNKNOWN만 재탐색/재검증하고 global HEAD 차이만으로 모든 증거를 폐기하지 않는다.
+격리된 작업자(Red·Green은 작업 단위 규칙대로 한 작업자), 구조화 결과, Green 직후 독립 AC 검증, 객관 STOP, 사람의 PR 리뷰를 사용한다. 메인은 passed 표기가 아니라 source revision, contract hash, 실제 명령·종료 코드·실패 결과와 증거를 대조한다. Evidence Reuse는 관련 code·contract/AC·test·command·environment가 같은지 version/hash/checkpoint로 먼저 확인하며, 명령과 실제 결과 확인을 생략하는 뜻이 아니다. 불일치·UNKNOWN만 재탐색/재검증하고 global HEAD 차이만으로 모든 증거를 폐기하지 않는다.
 
 준비된 이슈를 tdd-loop 순서로 수행한다. 실패를 Broken/구현 결함/요구사항 불명확/외부 도구 실패로 분류하고 필수 STOP을 복구 반복보다 먼저 적용한다. 승인 범위의 국소 결함만 남은 예산 안에서 고치며 테스트·AC를 완화하거나 원격 작업을 중복 생성하지 않는다.
 

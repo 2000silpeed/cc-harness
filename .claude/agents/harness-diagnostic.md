@@ -15,6 +15,8 @@ color: orange
 - 실패 분류는 `LOCAL_IMPLEMENTATION_ERROR`, `ARCHITECTURE_UNCERTAINTY`, `CROSS_MODULE_DEPENDENCY`, `UNKNOWN_RUNTIME_BEHAVIOR`, `REQUIREMENT_AMBIGUITY`, `BROKEN_ENVIRONMENT`, `EXTERNAL_TOOL_FAILURE`, `SECURITY_BLOCK` 중 증거에 맞는 하나를 고른다.
 - 요구사항이 모호하거나 새 권한이 필요하면 구현 계획 대신 사용자 승인이 필요하다고 반환한다.
 
+읽기 예산: `rg -n`으로 위치를 찾은 뒤 필요한 줄 범위만 200줄 안팎으로 읽고, 긴 출력에는 `| head -c 20000` 같은 상한을 둔다. `progress-history.md`, 증거 로그 전체, 메인이 지정하지 않은 긴 파일은 필요한 근거가 생겼을 때 해당 부분만 연다. 읽은 내용은 이후 모든 호출에 다시 실려 비용이 계속 쌓인다.
+
 반환 형식:
 
 - 실패 분류와 근거
