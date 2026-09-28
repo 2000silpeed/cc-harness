@@ -823,6 +823,11 @@ it.each([
   ],
   ["no model", "name: worker\ndescription: Worker\ndisallowedTools: Agent", 1],
   [
+    "unknown model",
+    "name: worker\ndescription: Worker\nmodel: claude-opus-4-1\neffort: low\ndisallowedTools: Agent",
+    1,
+  ],
+  [
     "can delegate",
     "name: worker\ndescription: Worker\nmodel: claude-opus-5-5\neffort: low\ndisallowedTools: Edit",
     1,
@@ -831,6 +836,24 @@ it.each([
   const root = fixture();
   const agentPath = ".claude/agents/worker.md";
   write(root, agentPath, `---\n${header}\n---\nBody\n`);
+  write(root, registryPath, JSON.stringify({ ...registry(), supportFiles: [agentPath] }));
+  expect(run(root).status).toBe(status);
+});
+
+it.each([
+  ["harness-verifier", "claude-opus-5-5", "medium", 0],
+  ["harness-verifier", "claude-opus-5-5", "high", 1],
+  ["harness-verifier", "claude-sonnet-5-5", "medium", 1],
+  ["harness-worker", "claude-sonnet-5-5", "medium", 0],
+  ["harness-worker", "claude-opus-5-5", "low", 1],
+])("pins Claude role %s to its model and effort (%s/%s)", (name, model, effort, status) => {
+  const root = fixture();
+  const agentPath = `.claude/agents/${name}.md`;
+  write(
+    root,
+    agentPath,
+    `---\nname: ${name}\ndescription: Role\nmodel: ${model}\neffort: ${effort}\ndisallowedTools: Agent\n---\nBody\n`,
+  );
   write(root, registryPath, JSON.stringify({ ...registry(), supportFiles: [agentPath] }));
   expect(run(root).status).toBe(status);
 });

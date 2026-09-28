@@ -120,15 +120,29 @@ try {
   }
   if (claudeSkills.size)
     for (const name of names) check(claudeSkills.has(name), "Claude 진입점 누락: " + name);
+  const claudeAgents = new Map([
+    ["harness-worker-low", "claude-sonnet-5-5 low"],
+    ["harness-worker", "claude-sonnet-5-5 medium"],
+    ["harness-worker-high", "claude-opus-5-5 medium"],
+    ["harness-verifier", "claude-opus-5-5 medium"],
+    ["harness-diagnostic", "claude-opus-5-5 medium"],
+  ]);
+  const allowedClaudeRoute =
+    /^claude-(?:sonnet-5-5|opus-5-5|fable-5-1) (?:low|medium|high|xhigh|max)$/;
   for (const filename of registry.supportFiles) {
     const agent = filename.match(/^\.claude\/agents\/([a-z0-9-]+)\.md$/)?.[1];
     if (!agent) continue;
     const header = contents.get(filename).match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1];
+    const route = [
+      header?.match(/^model:[ \t]*([^\r\n]+)$/m)?.[1].trim(),
+      header?.match(/^effort:[ \t]*([^\r\n]+)$/m)?.[1].trim(),
+    ].join(" ");
     check(
       header?.match(/^name:\s*([^\r\n]+)$/m)?.[1].trim() === agent &&
         Boolean(header?.match(/^description:[ \t]*\S/m)) &&
-        header?.match(/^model:[ \t]*([^\r\n]+)$/m)?.[1].trim() === "claude-opus-5-5" &&
-        header?.match(/^effort:[ \t]*([^\r\n]+)$/m)?.[1].trim() === "low" &&
+        (claudeAgents.has(agent)
+          ? route === claudeAgents.get(agent)
+          : allowedClaudeRoute.test(route)) &&
         /\bAgent\b/.test(header?.match(/^disallowedTools:[ \t]*([^\r\n]*)$/m)?.[1] ?? ""),
       "Claude 에이전트 불일치: " + filename,
     );

@@ -181,11 +181,11 @@ Claude Code도 같은 스킬과 문서를 씁니다. 설치 스크립트가 복�
 
 - 스킬은 /harness-cycle처럼 호출한다. 문서의 `$스킬명`은 `/스킬명`으로 읽는다.
 - security-review는 기본 명령과 겹치지 않도록 /harness-security-review로 호출한다.
-- 역할 배정: 명확한 작은 비민감 작업은 harness-worker-low, 일반 비민감 구현은 harness-worker, 경계가 많은 비민감 구현은 harness-worker-high, 독립 검증은 harness-verifier, 읽기 전용 진단은 harness-diagnostic에 맡긴다. Claude 역할의 effort는 모두 low다. 보안·데이터·권한·파괴적 작업·운영 환경·사용자 게이트·STOP 계약 관련 작업은 Claude low 대신 가능한 Codex medium 역할로 배정하고 사용할 수 없으면 STOP·수동 인계한다. 작업자와 검증자는 별도 호출로 만든다.
+- 역할 배정: 비민감 작업은 harness-worker-low(Sonnet 5.5 low)나 harness-worker(Sonnet 5.5 medium), 보안·데이터·권한·파괴적 작업·운영 환경·사용자 게이트·STOP 계약이 관련된 구현은 harness-worker-high(Opus 5.5 medium), 독립 검증은 harness-verifier, 읽기 전용 진단은 harness-diagnostic(둘 다 Opus 5.5 medium)에 맡긴다. Claude 세션은 Codex 역할로 인계하지 않는다. 작업자와 검증자는 별도 호출로 만든다.
 - 서브에이전트가 응답을 끝냈다는 사실만으로 완료로 보지 않는다. 반환된 증거를 AC와 대조한 뒤 완료로 기록한다.
 ```
 
-제품 폴더에서 `claude`를 실행하고, 위 첫 입력의 `$harness-cycle`을 `/harness-cycle`로 바꿔 붙여넣습니다. `/` 목록에 스킬이 보이지 않으면 작업 루트와 `.claude/skills` 파일을 확인한 뒤 Claude Code를 다시 시작합니다. `.claude/agents`의 다섯 역할도 함께 복사되며 모두 `claude-opus-5-5/low`입니다. 원본의 `.claude/settings.json` 훅은 구조도 전용이라 복사하지 않습니다.
+제품 폴더에서 `claude`를 실행하고, 위 첫 입력의 `$harness-cycle`을 `/harness-cycle`로 바꿔 붙여넣습니다. `/` 목록에 스킬이 보이지 않으면 작업 루트와 `.claude/skills` 파일을 확인한 뒤 Claude Code를 다시 시작합니다. `.claude/agents`의 다섯 역할도 함께 복사됩니다. 비민감 작업자는 `claude-sonnet-5-5`(low·medium), 민감 구현자·검증자·진단은 `claude-opus-5-5` medium입니다. 원본의 `.claude/settings.json` 훅은 구조도 전용이라 복사하지 않습니다.
 
 전역 AGENTS와 제품 AGENTS는 별개입니다. 개인 규칙이 필요하면 검토 후 따로 설정하고 인증 폴더를 통째로 복사하지 않습니다. [공식 AGENTS 적용 범위](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
 
