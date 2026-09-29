@@ -87,6 +87,8 @@ ADOPT의 품질 저하 방지 규칙(ratchet)은 실패 개수와 실패의 식�
 
 작업 확인점(checkpoint)은 의미 있는 단계가 끝나 다음의 비용이 큰 작업 묶음을 시작하기 전, 또는 실행 환경이 실제로 컨텍스트 부족을 알렸을 때 만듭니다. 계정 사용량 한도나 임의로 계산한 컨텍스트 비율을 신호로 사용하지 않습니다.
 
+이슈 하나가 독립 검증까지 끝나면 메인은 같은 대화에서 다음 이슈를 시작하지 않습니다. checkpoint와 인계를 남기고 새 세션에서 이어 갑니다. 메인 대화에 쌓인 추론과 작업자 보고는 이후 모든 호출에 다시 실리므로, 이슈 여러 개를 한 대화에서 이어 가면 호출마다 비용이 누적됩니다. 사용자가 같은 대화에서 계속하라고 명시하면 그 선택과 이유를 진행 기록에 남깁니다. 이 전환은 이슈 경계에서 사용자가 새 대화를 여는 것이며, 한 작업 안에서 승인·상한을 따르는 `fresh-session` rollover가 아닙니다. `tdd-auto-loop`처럼 여러 이슈를 위임받은 실행은 그 스킬의 STOP·예산·RESUME 계약을 따릅니다.
+
 현재 대화를 압축하는 기능(native compaction)은 실행 환경의 기능입니다. 디스크에 남는 인계(durable handoff)나 새 세션 생성과는 구분합니다. 비동기 압축은 `contextCompaction` 완료 뒤에만 끝난 것으로 기록합니다. `resume`과 `fork`는 과거 대화 이력을 유지하므로 새로운 세션(fresh session)이 아닙니다.
 
 2026-09-17에 확인한 Codex 앱 화면에는 압축 호출과 스레드별 정확한 컨텍스트 사용량 정보가 없었습니다. 실행할 때마다 현재 호출 가능한 기능을 다시 확인하고 지원 여부를 추정하지 않습니다. 관련 공식 사양은 [config reference](https://learn.chatgpt.com/docs/config-file/config-reference), [developer commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli), [App Server](https://learn.chatgpt.com/docs/app-server)를 따릅니다.
