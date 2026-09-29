@@ -7,8 +7,8 @@ description: 승인된 이슈 하나를 실행 권한에 맞는 단계별 검토
 
 [필수 오케스트레이션 정책](../../../docs/methods/delivery-automation.md#필수-오케스트레이션-정책), [단계별 진입·재개 계약](../../../docs/methods/delivery-automation.md#tdd-loop는-순서-자동화-승인은-유지), `docs/harness/lifecycle.md`의 `## 5. 승인과 외부 작업`부터 `## 7. 스킬과 독립 판단 역할`까지를 읽는다. 제목 절은 다음 같은/상위 수준 제목 직전까지만 선택한다. 전달 단계에서만 delivery의 `## PR, CI, 보호 규칙, 최종 머지`를 추가한다.
 
-1. 이슈·선행 의존성·기획 승인·대상 경로·실행 범위를 확인한다. 미완료 선행 작업을 건너뛰지 않는다.
-2. test-scenarios → tdd-red → tdd-green → ac-verifier → tdd-refactor → security-review 순서로 배정한다. tdd-red와 tdd-green은 delivery 정책의 작업 단위에 따라 한 작업자가 이어서 수행한다. 각 작업자는 맡은 단계의 SKILL.md와 그 단계에 필요한 참조만 읽는다.
+1. 이슈·선행 의존성·기획 승인·대상 경로·실행 범위를 확인한다. 미완료 선행 작업을 건너뛰지 않는다. `docs/methods/tdd.md`의 `## TDD 적용 판단`으로 사이클 범위를 정하고 이유를 기록한다.
+2. 1단계에서 정한 범위 안에서 test-scenarios → tdd-red → tdd-green → ac-verifier → tdd-refactor → security-review 순서로 배정한다. tdd-red와 tdd-green은 delivery 정책의 작업 단위에 따라 한 작업자가 이어서 수행한다. 각 작업자는 맡은 단계의 SKILL.md와 그 단계에 필요한 참조만 읽는다.
 3. lifecycle §5에 따라 G5 계약·시나리오의 사용자 검토 또는 결과·구현 승인 범위의 독립 검토를 기록한다. 유효한 구현 승인이 있으면 통상적인 단계마다 재승인을 요구하지 않고 로컬 구현·검증을 계속한다. 단계 증거와 독립 AC 검증, 별도 PR 권한은 유지한다. 명시적으로 제한된 승인과 STOP을 넘지 않는다.
 4. AC 누락은 시나리오/Red로 돌아가고, Refactor 회귀는 자신의 마지막 변경부터 복구한다.
 5. Broken 환경·새 요구사항·승인 부재·차단 발견·진전 없는 반복은 정지 이유와 다음 결정을 기록한다.
