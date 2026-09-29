@@ -15,7 +15,7 @@ mode 판별에는 lifecycle의 `## 4. 재개 가능한 기록`만 추가한다. 
 2. NEW는 원본 요청·목적·사용자·성공 조건을 보존한다. ADOPT/RESUME은 기존 승인·spec·ADR·issue·progress·code/config/AGENTS·evidence를 보존하고 인터뷰를 임의로 반복하지 않는다.
 3. RESUME은 progress/manifest/snapshot 존재와 source revision·dirty hash·변경 소유·contract hash·effective checkpoint를 먼저 대조한다. 요약만 신뢰하지 않고 유효성 판정에 필요한 evidence의 version/hash/command와 실제 result를 읽어 확인한다. 그 뒤 불일치·UNKNOWN에 직접 연결된 본문만 추가로 읽는다. 장문 로그는 파일 경로와 요약으로 전달한다. 과거 로그를 전수 적재하거나 `legacy-unknown`에 새 policy를 소급하지 않는다.
 4. ADOPT는 runtime/구조/경계/검사/CI/CD/Git/문서/결정/현재 작업/기술부채를 CONFIRMED/DOCUMENTED/INFERRED/UNKNOWN으로 구분한다. known previous hash만 managed로 보고 customized/unknown source는 diff와 user gate로 보낸다. 승인된 baseline도 security/data/Broken, dirty auto-loop, Refactor 전체 회귀 STOP을 완화하지 않는다.
-5. 환경은 project-bootstrap, 기획은 feature-planner, UI는 design-system, 준비된 단일 이슈는 tdd-loop로 연결한다. tdd-auto-loop는 사용자가 유한 이슈와 상한을 명시적으로 위임했을 때만 쓴다.
+5. 환경은 project-bootstrap, 기획은 feature-planner, UI는 design-system, 준비된 단일 이슈는 tdd-loop로 연결한다. 첫 이슈 착수 전에 lifecycle §5의 이슈 PR 권한(저장소·base·이슈별 브랜치·커밋·push·PR)을 한 번 묻고 progress에 기록한다. tdd-auto-loop는 사용자가 유한 이슈와 상한을 명시적으로 위임했을 때만 쓴다.
 6. 통합 뒤 e2e-write와 create-pr로 인계한다. 배포·운영은 별도 승인 단계다. 수행 단계·승인·증거·미검증·다음 행동은 progress에 기록하고, README/흐름 화면은 영향을 받을 때만 갱신한다.
 
 요구사항·기술안·범위·이슈·시나리오 게이트를 자동 승인하거나 근거 없는 완료 상태를 만들지 않는다.
