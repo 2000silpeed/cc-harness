@@ -8,6 +8,7 @@ description: 새 기능의 아이디어를 인터뷰·디자인 연계·PRD/ADR�
 현재 게이트의 절만 읽는다. 절은 지정 제목부터 다음 같은/상위 수준 제목 직전까지 선택한다.
 
 - G1: `docs/methods/requirements-interview.md`의 `## 결정의 원칙`, `## 인터뷰 실행`, `## 검증과 인계`; `docs/methods/planning.md`의 `## 단계 1: 요구사항 인터뷰 계약`.
+- 가상 인물 인터뷰로 에이전트를 만드는 대회 요청에만 `docs/methods/ax-competition.md`의 현재 필요한 절을 추가로 참조한다.
 - G2·G3: planning의 `## 단계 2: PRD와 기술 결정`.
 - G4: planning의 `## 단계 3: 수직 슬라이스와 AC`.
 - 외부 등록 요청이 있을 때만 planning의 `## GitHub·프로젝트 보드 등록 계약`.

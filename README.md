@@ -80,6 +80,7 @@ Claude Code를 쓴다면 새 제품 루트에 `@AGENTS.md`를 불러오는 `CLAU
 - 이식 대상 파일은 [등록 목록](docs/harness/registry.json), 실제 검사 범위와 한계는 [검증 범위](docs/harness/verification.md)에서 확인합니다.
 - 검사 체계를 설계할 때는 [테스트 전략](docs/methods/testing-strategy.md), 저장소의 실행·품질 기반을 마련할 때는 [프로젝트 기반](docs/methods/project-foundation.md)을 읽습니다.
 - 요구사항을 확정할 때는 [요구사항 인터뷰](docs/methods/requirements-interview.md), 제품 문서와 작업 단위를 만들 때는 [PRD·ADR·이슈](docs/methods/planning.md)를 따릅니다.
+- 가상 인물 인터뷰로 에이전트를 만드는 대회에서는 선택적으로 [AX 대회용 운영안](docs/methods/ax-competition.md)을 참조합니다.
 - 화면 기준을 적용할 때는 [디자인 적용](docs/methods/design-system.md), 새 디자인 문서를 작성할 때는 [디자인 문서 작성법](docs/design-system/authoring-guide.md)을 사용합니다.
 - 이슈를 구현하고 검증할 때는 [TDD·독립 AC·보안](docs/methods/tdd.md), 전체 흐름을 검증하고 전달할 때는 [E2E·전달·자동화](docs/methods/delivery-automation.md)를 따릅니다.
 - 실행 관계를 한눈에 보려면 [시각적 실행 지도](docs/architecture/index.html)를 엽니다.

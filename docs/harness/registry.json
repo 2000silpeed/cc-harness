@@ -87,6 +87,7 @@
     "docs/design-system/authoring-guide.md",
     "docs/methods/project-foundation.md",
     "docs/methods/requirements-interview.md",
+    "docs/methods/ax-competition.md",
     "docs/methods/design-system.md",
     "docs/methods/planning.md",
     "docs/methods/tdd.md",
@@ -125,6 +126,7 @@
     "scripts/check-harness.mjs",
     "scripts/install-harness.mjs",
     "scripts/session-handoff.mjs",
-    "scripts/read-section.mjs"
+    "scripts/read-section.mjs",
+    "scripts/ax-session.mjs"
   ]
 }
