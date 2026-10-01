@@ -104,7 +104,7 @@ function validateSemantic(input) {
     ],
     "handoff",
   );
-  if (input.schema_version !== 1) throw new Error("unsupported schema_version");
+  if (![1, 2].includes(input.schema_version)) throw new Error("unsupported schema_version");
   integer(input.sequence, "sequence");
   if (input.sequence < 1) throw new Error("sequence must be positive");
 
@@ -170,6 +170,7 @@ function validateSemantic(input) {
       "approval_refs",
       "evidence_refs",
       "evidence_validity",
+      ...(input.schema_version === 2 ? ["predecessor_handoff_id", "retired_refs"] : []),
     ],
     "state",
   );
@@ -226,6 +227,43 @@ function validateSemantic(input) {
     input.state.evidence_refs.length
   )
     throw new Error("evidence_refs contains duplicate paths");
+  if (input.schema_version === 2) {
+    if (
+      input.state.predecessor_handoff_id !== null &&
+      !HASH.test(input.state.predecessor_handoff_id)
+    )
+      throw new Error("predecessor_handoff_id is invalid");
+    if (!Array.isArray(input.state.retired_refs)) throw new Error("retired_refs must be an array");
+    for (const [index, entry] of input.state.retired_refs.entries()) {
+      const label = `retired_refs[${index}]`;
+      if (entry?.kind === "approval") {
+        exactKeys(
+          entry,
+          ["kind", "gate", "path", "sha256", "status", "retired_from_handoff_id", "reason"],
+          label,
+        );
+        text(entry.gate, `${label}.gate`, 128);
+        if (entry.status !== "approved") throw new Error(`${label}.status is invalid`);
+      } else if (entry?.kind === "evidence") {
+        exactKeys(
+          entry,
+          ["kind", "path", "sha256", "required", "validity", "retired_from_handoff_id", "reason"],
+          label,
+        );
+        if (
+          typeof entry.required !== "boolean" ||
+          !["valid", "invalid", "unknown"].includes(entry.validity)
+        )
+          throw new Error(`${label} evidence flags are invalid`);
+      } else throw new Error(`${label}.kind is invalid`);
+      localReference(entry.path, `${label}.path`);
+      if (!HASH.test(entry.sha256) || !HASH.test(entry.retired_from_handoff_id))
+        throw new Error(`${label} hash is invalid`);
+      text(entry.reason, `${label}.reason`, 1000);
+    }
+    if (new Set(input.state.retired_refs.map(canonical)).size !== input.state.retired_refs.length)
+      throw new Error("retired_refs contains duplicates");
+  }
 
   exactKeys(input.budgets, ["green", "diagnostic", "rework_count"], "budgets");
   for (const kind of ["green", "diagnostic"]) {
@@ -583,6 +621,59 @@ function readiness(record, location, sessionId) {
   return { decision: "CONTINUE_CURRENT", instruction: prompt(record, location) };
 }
 
+function checkReferenceLineage(previous, input) {
+  if (input.schema_version !== 2) throw new Error("successor prepare requires schema_version 2");
+  if (input.state.predecessor_handoff_id !== previous.handoff_id)
+    throw new Error("predecessor_handoff_id does not match previous handoff_id");
+  const historical = previous.schema_version === 2 ? previous.state.retired_refs : [];
+  const retired = input.state.retired_refs;
+  if (canonical(retired.slice(0, historical.length)) !== canonical(historical))
+    throw new Error("retired_refs history changed");
+  const newlyRetired = retired.slice(historical.length);
+  const previousActive = [
+    ...previous.state.approval_refs.map((entry) => ({ kind: "approval", ...entry })),
+    ...previous.state.evidence_refs.map((entry) => ({ kind: "evidence", ...entry })),
+  ];
+  const currentActive = [
+    ...input.state.approval_refs.map((entry) => ({ kind: "approval", ...entry })),
+    ...input.state.evidence_refs.map((entry) => ({ kind: "evidence", ...entry })),
+  ];
+  if (
+    currentActive.some((current) =>
+      retired.some(
+        (old) =>
+          old.kind === current.kind && old.path === current.path && old.sha256 === current.sha256,
+      ),
+    )
+  )
+    throw new Error("retired reference bytes cannot become active again");
+  const expectedRetirements = [];
+  for (const entry of previousActive) {
+    const active = currentActive.some((current) => canonical(current) === canonical(entry));
+    const retiredEntry = newlyRetired.filter((candidate) => {
+      const original = { ...candidate };
+      delete original.retired_from_handoff_id;
+      delete original.reason;
+      return (
+        candidate.retired_from_handoff_id === previous.handoff_id &&
+        canonical(original) === canonical(entry)
+      );
+    });
+    if (Number(active) + retiredEntry.length !== 1)
+      throw new Error("previous active reference must remain or retire exactly once");
+    if (retiredEntry.length) expectedRetirements.push(retiredEntry[0]);
+  }
+  if (expectedRetirements.length !== newlyRetired.length)
+    throw new Error("retired_refs contains a fabricated retirement");
+  for (const failure of previous.failures) {
+    const priorEvidence = previous.state.evidence_refs.find(
+      (entry) => entry.path === failure.evidence_ref,
+    );
+    if (!input.state.evidence_refs.some((entry) => canonical(entry) === canonical(priorEvidence)))
+      throw new Error("failure evidence cannot retire or change");
+  }
+}
+
 function prepare() {
   const inputPath = option("--input");
   const stateValue = option("--state");
@@ -610,6 +701,7 @@ function prepare() {
         input.budgets.diagnostic.limit !== previous.budgets.diagnostic.limit
       )
         throw new Error("limits are immutable within a handoff chain");
+      checkReferenceLineage(previous, input);
       const resumeGate = `resume:${previous.handoff_id}`;
       const resumeApproval = input.state.approval_refs.find((entry) => entry.gate === resumeGate);
       const resumeEvidence = input.state.evidence_refs.find(
@@ -619,6 +711,9 @@ function prepare() {
       const previousReferencePaths = new Set([
         ...previous.state.approval_refs.map((entry) => entry.path),
         ...previous.state.evidence_refs.map((entry) => entry.path),
+        ...(previous.schema_version === 2
+          ? previous.state.retired_refs.map((entry) => entry.path)
+          : []),
       ]);
       const authorizedStopRecovery =
         previous.stop.active &&
@@ -637,9 +732,17 @@ function prepare() {
         previous.failures.some(
           (failure) => !input.failures.some((entry) => canonical(entry) === canonical(failure)),
         ) ||
+        (previous.stop.active &&
+          (input.stop.reason !== previous.stop.reason ||
+            input.stop.resume_condition !== previous.stop.resume_condition)) ||
         (previous.stop.active && !input.stop.active && !authorizedStopRecovery)
       )
         throw new Error("prepare cannot reset durable counters or STOP");
+    } else if (
+      input.schema_version === 2 &&
+      (input.state.predecessor_handoff_id !== null || input.state.retired_refs.length)
+    ) {
+      throw new Error("genesis handoff cannot have predecessor or retired_refs");
     }
     const record = { ...input, handoff_id: handoffId, status: "prepared" };
     const currentProblem = checkCurrent(record, location);
@@ -740,7 +843,7 @@ function receipt() {
 
 function inputTemplate() {
   return {
-    schema_version: 1,
+    schema_version: 2,
     sequence: 1,
     task: {
       objective: "<bounded-objective>",
@@ -781,6 +884,8 @@ function inputTemplate() {
         },
       ],
       evidence_validity: "valid|invalid|unknown",
+      predecessor_handoff_id: null,
+      retired_refs: [],
     },
     budgets: {
       green: { limit: 3, used: 0 },

@@ -189,11 +189,400 @@ it("exposes compact help and a machine-readable input template", () => {
   const template = runHandoff(repository, ["template"]);
   expect(template.status, template.stderr).toBe(0);
   expect(JSON.parse(template.stdout)).toMatchObject({
-    schema_version: 1,
+    schema_version: 2,
     task: { approved_scope_ref: "<project-relative-path>" },
     checkpoint: { mode: "RESUME" },
     failures: [],
+    state: { predecessor_handoff_id: null, retired_refs: [] },
   });
+});
+
+it("preserves v1 genesis identity while requiring v2 for its successor", () => {
+  const root = handoffRepository();
+  const first = prepareHandoff(root);
+  expect(first.result.status, first.result.stderr).toBe(0);
+  expect(first.state.schema_version).toBe(1);
+  const v1: any = handoffInput(root);
+  v1.sequence = 2;
+  expect(prepareHandoff(root, v1).result.status).toBe(1);
+  const next: any = handoffInput(root);
+  next.schema_version = 2;
+  next.sequence = 2;
+  next.state.predecessor_handoff_id = first.state.handoff_id;
+  next.state.retired_refs = [];
+  const second = prepareHandoff(root, next);
+  expect(second.result.status, second.result.stderr).toBe(0);
+  expect(second.state.state.predecessor_handoff_id).toBe(first.state.handoff_id);
+});
+
+it("keeps cumulative retired references while allowing old files to change or disappear", () => {
+  const root = handoffRepository();
+  write(root, "old-approval.md", "old approval\n");
+  write(root, "old-evidence.json", "old evidence\n");
+  git(root, "add", "old-approval.md", "old-evidence.json");
+  git(root, "commit", "-qm", "add old references");
+  const firstInput: any = handoffInput(root);
+  firstInput.schema_version = 2;
+  firstInput.state.predecessor_handoff_id = null;
+  firstInput.state.retired_refs = [];
+  firstInput.state.approval_refs.push({
+    gate: "stage:old",
+    ...reference(root, "old-approval.md"),
+    status: "approved",
+  });
+  firstInput.state.evidence_refs.push({
+    ...reference(root, "old-evidence.json"),
+    required: false,
+    validity: "valid",
+  });
+  const first = prepareHandoff(root, firstInput);
+  expect(first.result.status, first.result.stderr).toBe(0);
+  const retired = [
+    {
+      kind: "approval",
+      ...firstInput.state.approval_refs.at(-1),
+      retired_from_handoff_id: first.state.handoff_id,
+      reason: "superseded stage",
+    },
+    {
+      kind: "evidence",
+      ...firstInput.state.evidence_refs.at(-1),
+      retired_from_handoff_id: first.state.handoff_id,
+      reason: "superseded evidence",
+    },
+  ];
+  write(root, "old-approval.md", "changed\n");
+  rmSync(resolve(root, "old-evidence.json"));
+  git(root, "add", "old-approval.md", "old-evidence.json");
+  git(root, "commit", "-qm", "replace old references");
+  const next: any = handoffInput(root);
+  next.schema_version = 2;
+  next.sequence = 2;
+  next.state.predecessor_handoff_id = first.state.handoff_id;
+  next.state.retired_refs = retired;
+  const second = prepareHandoff(root, next);
+  expect(second.result.status, second.result.stderr).toBe(0);
+  const decision = runHandoff(root, ["decide", "--state", second.statePath, "--root", root]);
+  expect(JSON.parse(decision.stdout).decision).toBe("ROLLOVER_READY");
+  const third: any = handoffInput(root);
+  third.schema_version = 2;
+  third.sequence = 3;
+  third.state.predecessor_handoff_id = second.state.handoff_id;
+  third.state.retired_refs = retired;
+  const cumulative = prepareHandoff(root, third);
+  expect(cumulative.result.status, cumulative.result.stderr).toBe(0);
+  expect(cumulative.state.state.retired_refs).toEqual(retired);
+});
+
+it.each([
+  "dropped",
+  "altered",
+  "fabricated",
+  "duplicate",
+  "wrong predecessor",
+  "empty reason",
+  "oversize reason",
+  "changed active",
+])("rejects %s reference lineage without changing durable state", (scenario) => {
+  const root = handoffRepository();
+  write(root, "extra.md", "extra\n");
+  git(root, "add", "extra.md");
+  git(root, "commit", "-qm", "add extra reference");
+  const firstInput: any = handoffInput(root);
+  firstInput.schema_version = 2;
+  firstInput.state.predecessor_handoff_id = null;
+  firstInput.state.retired_refs = [];
+  firstInput.state.approval_refs.push({
+    gate: "extra",
+    ...reference(root, "extra.md"),
+    status: "approved",
+  });
+  const first = prepareHandoff(root, firstInput);
+  expect(first.result.status, first.result.stderr).toBe(0);
+  const next: any = handoffInput(root);
+  next.schema_version = 2;
+  next.sequence = 2;
+  next.state.predecessor_handoff_id = first.state.handoff_id;
+  next.state.retired_refs = [
+    {
+      kind: "approval",
+      ...firstInput.state.approval_refs.at(-1),
+      retired_from_handoff_id: first.state.handoff_id,
+      reason: "completed stage",
+    },
+  ];
+  if (scenario === "dropped") next.state.retired_refs = [];
+  if (scenario === "altered") next.state.retired_refs[0].sha256 = "a".repeat(64);
+  if (scenario === "fabricated")
+    next.state.retired_refs.push({ ...next.state.retired_refs[0], gate: "invented" });
+  if (scenario === "duplicate") next.state.retired_refs.push({ ...next.state.retired_refs[0] });
+  if (scenario === "wrong predecessor") next.state.predecessor_handoff_id = "b".repeat(64);
+  if (scenario === "empty reason") next.state.retired_refs[0].reason = " ";
+  if (scenario === "oversize reason") next.state.retired_refs[0].reason = "x".repeat(1001);
+  if (scenario === "changed active") {
+    next.state.approval_refs[0].sha256 = "a".repeat(64);
+    next.state.retired_refs = [];
+  }
+  const rejected = prepareHandoff(root, next);
+  expect(rejected.result.status).toBe(1);
+  expect(rejected.state).toEqual(first.state);
+});
+
+it("does not retire or replace evidence attached to an existing failure", () => {
+  const root = handoffRepository();
+  const firstInput: any = handoffInput(root);
+  firstInput.schema_version = 2;
+  firstInput.state.predecessor_handoff_id = null;
+  firstInput.state.retired_refs = [];
+  firstInput.failures = [{ identity: "F-1", evidence_ref: "evidence.json" }];
+  const first = prepareHandoff(root, firstInput);
+  expect(first.result.status, first.result.stderr).toBe(0);
+  const next: any = handoffInput(root);
+  next.schema_version = 2;
+  next.sequence = 2;
+  next.failures = firstInput.failures;
+  next.state.predecessor_handoff_id = first.state.handoff_id;
+  next.state.retired_refs = [
+    {
+      kind: "evidence",
+      ...firstInput.state.evidence_refs[0],
+      retired_from_handoff_id: first.state.handoff_id,
+      reason: "new result",
+    },
+  ];
+  next.state.evidence_refs = [];
+  const rejected = prepareHandoff(root, next);
+  expect(rejected.result.status).toBe(1);
+  expect(rejected.state).toEqual(first.state);
+});
+
+it("requires retirement and a fresh source when reference metadata changes", () => {
+  const root = handoffRepository();
+  const initial: any = handoffInput(root);
+  initial.schema_version = 2;
+  initial.state.predecessor_handoff_id = null;
+  initial.state.retired_refs = [];
+  const first = prepareHandoff(root, initial);
+  expect(first.result.status, first.result.stderr).toBe(0);
+  const next: any = handoffInput(root);
+  next.schema_version = 2;
+  next.sequence = 2;
+  next.state.predecessor_handoff_id = first.state.handoff_id;
+  next.state.retired_refs = [];
+  next.state.approval_refs[1] = {
+    ...next.state.approval_refs[1],
+    gate: "rollover",
+    ...reference(root, "resume.md"),
+  };
+  next.state.evidence_refs[0] = {
+    ...next.state.evidence_refs[0],
+    ...reference(root, "resume.md"),
+    required: false,
+  };
+  const rejected = prepareHandoff(root, next);
+  expect(rejected.result.status).toBe(1);
+  expect(rejected.state).toEqual(first.state);
+  next.state.retired_refs = [
+    {
+      kind: "approval",
+      ...initial.state.approval_refs[1],
+      retired_from_handoff_id: first.state.handoff_id,
+      reason: "new approval file",
+    },
+    {
+      kind: "evidence",
+      ...initial.state.evidence_refs[0],
+      retired_from_handoff_id: first.state.handoff_id,
+      reason: "optional evidence",
+    },
+  ];
+  const accepted = prepareHandoff(root, next);
+  expect(accepted.result.status, accepted.result.stderr).toBe(0);
+});
+
+it.each(["approval", "evidence"])(
+  "rejects same-prepare %s retirement followed by relabel of identical bytes",
+  (kind) => {
+    const root = handoffRepository();
+    const firstInput: any = handoffInput(root);
+    firstInput.schema_version = 2;
+    firstInput.state.predecessor_handoff_id = null;
+    firstInput.state.retired_refs = [];
+    const first = prepareHandoff(root, firstInput);
+    expect(first.result.status, first.result.stderr).toBe(0);
+    const next: any = handoffInput(root);
+    next.schema_version = 2;
+    next.sequence = 2;
+    next.state.predecessor_handoff_id = first.state.handoff_id;
+    const old =
+      kind === "approval"
+        ? firstInput.state.approval_refs.at(-1)
+        : firstInput.state.evidence_refs[0];
+    next.state.retired_refs = [
+      {
+        kind,
+        ...old,
+        retired_from_handoff_id: first.state.handoff_id,
+        reason: "replaced reference",
+      },
+    ];
+    if (kind === "approval") next.state.approval_refs.at(-1).gate = "stage:relabelled";
+    else next.state.evidence_refs[0].required = false;
+    const rejected = prepareHandoff(root, next);
+    expect(rejected.result.status).toBe(1);
+    expect(rejected.state).toEqual(first.state);
+  },
+);
+
+it("rejects altered retired history and still checks the current reference hash", () => {
+  const root = handoffRepository();
+  const initial: any = handoffInput(root);
+  initial.schema_version = 2;
+  initial.state.predecessor_handoff_id = null;
+  initial.state.retired_refs = [];
+  const first = prepareHandoff(root, initial);
+  expect(first.result.status, first.result.stderr).toBe(0);
+  const next: any = handoffInput(root);
+  next.schema_version = 2;
+  next.sequence = 2;
+  next.state.predecessor_handoff_id = first.state.handoff_id;
+  next.state.approval_refs.pop();
+  next.state.retired_refs = [
+    {
+      kind: "approval",
+      ...initial.state.approval_refs.at(-1),
+      retired_from_handoff_id: first.state.handoff_id,
+      reason: "stage ended",
+    },
+  ];
+  const second = prepareHandoff(root, next);
+  expect(second.result.status, second.result.stderr).toBe(0);
+  const changed: any = handoffInput(root);
+  changed.schema_version = 2;
+  changed.sequence = 3;
+  changed.state.predecessor_handoff_id = second.state.handoff_id;
+  changed.state.retired_refs = [{ ...next.state.retired_refs[0], reason: "rewritten history" }];
+  const rejected = prepareHandoff(root, changed);
+  expect(rejected.result.status).toBe(1);
+  expect(rejected.state).toEqual(second.state);
+  git(root, "update-index", "--assume-unchanged", "scope.md");
+  write(root, "scope.md", "stale scope\n");
+  const decision = runHandoff(root, ["decide", "--state", second.statePath, "--root", root]);
+  expect(JSON.parse(decision.stdout).decision).toBe("STOP_APPROVAL_STALE");
+});
+
+it.each(["approval", "evidence"])(
+  "rejects replay of retired %s bytes under changed metadata while allowing a fresh path",
+  (kind) => {
+    const root = handoffRepository();
+    const firstInput: any = handoffInput(root);
+    firstInput.schema_version = 2;
+    firstInput.state.predecessor_handoff_id = null;
+    firstInput.state.retired_refs = [];
+    const first = prepareHandoff(root, firstInput);
+    expect(first.result.status, first.result.stderr).toBe(0);
+    const old =
+      kind === "approval"
+        ? firstInput.state.approval_refs.at(-1)
+        : firstInput.state.evidence_refs[0];
+    const secondInput: any = handoffInput(root);
+    secondInput.schema_version = 2;
+    secondInput.sequence = 2;
+    secondInput.state.predecessor_handoff_id = first.state.handoff_id;
+    secondInput.state.retired_refs = [
+      { kind, ...old, retired_from_handoff_id: first.state.handoff_id, reason: "superseded" },
+    ];
+    if (kind === "approval") secondInput.state.approval_refs.pop();
+    else secondInput.state.evidence_refs = [];
+    const second = prepareHandoff(root, secondInput);
+    expect(second.result.status, second.result.stderr).toBe(0);
+    const replay: any = handoffInput(root);
+    replay.schema_version = 2;
+    replay.sequence = 3;
+    replay.state.predecessor_handoff_id = second.state.handoff_id;
+    replay.state.retired_refs = secondInput.state.retired_refs;
+    if (kind === "approval") replay.state.approval_refs.at(-1).gate = "stage:relabelled";
+    else replay.state.evidence_refs[0].required = false;
+    const rejected = prepareHandoff(root, replay);
+    expect(rejected.result.status).toBe(1);
+    expect(rejected.state).toEqual(second.state);
+    if (kind === "approval") replay.state.approval_refs.at(-1).path = "resume.md";
+    else replay.state.evidence_refs[0].path = "resume.md";
+    const fresh =
+      kind === "approval" ? replay.state.approval_refs.at(-1) : replay.state.evidence_refs[0];
+    fresh.sha256 = reference(root, "resume.md").sha256;
+    const accepted = prepareHandoff(root, replay);
+    expect(accepted.result.status, accepted.result.stderr).toBe(0);
+  },
+);
+
+it("does not clear STOP with a previously retired resolution path", () => {
+  const root = handoffRepository();
+  const firstInput: any = handoffInput(root);
+  firstInput.schema_version = 2;
+  firstInput.state.predecessor_handoff_id = null;
+  firstInput.state.retired_refs = [];
+  firstInput.state.approval_refs.push({
+    gate: "historic",
+    ...reference(root, "resume.md"),
+    status: "approved",
+  });
+  firstInput.state.evidence_refs.push({
+    ...reference(root, "resume.md"),
+    required: true,
+    validity: "valid",
+  });
+  firstInput.stop = {
+    active: true,
+    reason: "broken fixture",
+    resume_condition: "verified repair",
+    resolution_ref: null,
+  };
+  const first = prepareHandoff(root, firstInput);
+  expect(first.result.status, first.result.stderr).toBe(0);
+  const secondInput: any = handoffInput(root);
+  secondInput.schema_version = 2;
+  secondInput.sequence = 2;
+  secondInput.state.predecessor_handoff_id = first.state.handoff_id;
+  secondInput.state.retired_refs = [
+    {
+      kind: "approval",
+      ...firstInput.state.approval_refs.at(-1),
+      retired_from_handoff_id: first.state.handoff_id,
+      reason: "old authorization",
+    },
+    {
+      kind: "evidence",
+      ...firstInput.state.evidence_refs.at(-1),
+      retired_from_handoff_id: first.state.handoff_id,
+      reason: "old evidence",
+    },
+  ];
+  secondInput.stop = firstInput.stop;
+  const second = prepareHandoff(root, secondInput);
+  expect(second.result.status, second.result.stderr).toBe(0);
+  write(root, "resume.md", "new evidence bytes\n");
+  git(root, "add", "resume.md");
+  git(root, "commit", "-qm", "new resolution bytes");
+  const recovery: any = handoffInput(root);
+  recovery.schema_version = 2;
+  recovery.sequence = 3;
+  recovery.state.predecessor_handoff_id = second.state.handoff_id;
+  recovery.state.retired_refs = secondInput.state.retired_refs;
+  recovery.stop = { ...firstInput.stop, active: false, resolution_ref: "resume.md" };
+  recovery.state.approval_refs.push({
+    gate: `resume:${second.state.handoff_id}`,
+    ...reference(root, "resume.md"),
+    status: "approved",
+  });
+  recovery.state.evidence_refs.push({
+    ...reference(root, "resume.md"),
+    required: true,
+    validity: "valid",
+  });
+  const rejected = prepareHandoff(root, recovery);
+  expect(rejected.result.status).toBe(1);
+  expect(rejected.state).toEqual(second.state);
 });
 
 it("prepares a stable record and distinguishes phase continuation from fresh rollover", () => {
@@ -432,12 +821,18 @@ it("requires new authenticated evidence to clear STOP and keeps limits immutable
   expect(stopped.result.status, stopped.result.stderr).toBe(0);
 
   const unauthorized: any = handoffInput(root);
+  unauthorized.schema_version = 2;
+  unauthorized.state.predecessor_handoff_id = stopped.state.handoff_id;
+  unauthorized.state.retired_refs = [];
   unauthorized.sequence = 2;
   const rejected = prepareHandoff(root, unauthorized);
   expect(rejected.result.status).toBe(1);
   expect(rejected.result.stderr).toContain("cannot reset durable counters or STOP");
 
   const recovery: any = handoffInput(root);
+  recovery.schema_version = 2;
+  recovery.state.predecessor_handoff_id = stopped.state.handoff_id;
+  recovery.state.retired_refs = [];
   recovery.sequence = 2;
   recovery.stop = {
     active: false,
@@ -459,11 +854,89 @@ it("requires new authenticated evidence to clear STOP and keeps limits immutable
   expect(recovered.result.status, recovered.result.stderr).toBe(0);
 
   const raised: any = handoffInput(root);
+  raised.schema_version = 2;
+  raised.state.predecessor_handoff_id = recovered.state.handoff_id;
+  raised.state.retired_refs = [];
   raised.sequence = 3;
   raised.task.max_rollovers = 2;
   const capChange = prepareHandoff(root, raised);
   expect(capChange.result.status).toBe(1);
   expect(capChange.result.stderr).toContain("limits are immutable");
+});
+
+it.each([
+  ["reason", (stop: any) => (stop.reason = "different blocker")],
+  ["resume condition", (stop: any) => (stop.resume_condition = "different repair")],
+])("preserves an active STOP across prepare when %s changes", (_field, mutate) => {
+  const root = handoffRepository();
+  const initial: any = handoffInput(root);
+  initial.stop = {
+    active: true,
+    reason: "broken fixture",
+    resume_condition: "record verified repair",
+    resolution_ref: null,
+  };
+  const prepared = prepareHandoff(root, initial);
+  expect(prepared.result.status, prepared.result.stderr).toBe(0);
+
+  const next: any = handoffInput(root);
+  next.schema_version = 2;
+  next.state.predecessor_handoff_id = prepared.state.handoff_id;
+  next.state.retired_refs = [];
+  next.sequence = 2;
+  next.stop = { ...initial.stop };
+  mutate(next.stop);
+  const rejected = prepareHandoff(root, next);
+  expect(rejected.result.status).toBe(1);
+  expect(rejected.result.stderr).toContain("cannot reset durable counters or STOP");
+  expect(rejected.state).toEqual(prepared.state);
+
+  const unchanged: any = handoffInput(root);
+  unchanged.schema_version = 2;
+  unchanged.state.predecessor_handoff_id = prepared.state.handoff_id;
+  unchanged.state.retired_refs = [];
+  unchanged.sequence = 2;
+  unchanged.stop = { ...initial.stop };
+  const continued = prepareHandoff(root, unchanged);
+  expect(continued.result.status, continued.result.stderr).toBe(0);
+});
+
+it.each([
+  ["reason", (stop: any) => (stop.reason = "different blocker")],
+  ["resume condition", (stop: any) => (stop.resume_condition = "different repair")],
+])("rejects STOP recovery when %s changes despite authorized evidence", (_field, mutate) => {
+  const root = handoffRepository();
+  const initial: any = handoffInput(root);
+  initial.stop = {
+    active: true,
+    reason: "broken fixture",
+    resume_condition: "record verified repair",
+    resolution_ref: null,
+  };
+  const prepared = prepareHandoff(root, initial);
+  expect(prepared.result.status, prepared.result.stderr).toBe(0);
+
+  const recovery: any = handoffInput(root);
+  recovery.schema_version = 2;
+  recovery.state.predecessor_handoff_id = prepared.state.handoff_id;
+  recovery.state.retired_refs = [];
+  recovery.sequence = 2;
+  recovery.stop = { ...initial.stop, active: false, resolution_ref: "resume.md" };
+  mutate(recovery.stop);
+  recovery.state.approval_refs.push({
+    gate: `resume:${prepared.state.handoff_id}`,
+    ...reference(root, "resume.md"),
+    status: "approved",
+  });
+  recovery.state.evidence_refs.push({
+    ...reference(root, "resume.md"),
+    required: true,
+    validity: "valid",
+  });
+  const rejected = prepareHandoff(root, recovery);
+  expect(rejected.result.status).toBe(1);
+  expect(rejected.result.stderr).toContain("cannot reset durable counters or STOP");
+  expect(rejected.state).toEqual(prepared.state);
 });
 
 it("claims once, requires reconciliation after ambiguity, and resumes only the receipted session", () => {
@@ -536,6 +1009,9 @@ it("claims once, requires reconciliation after ambiguity, and resumes only the r
   expect(JSON.parse(wrongSession.stdout).decision).toBe("STOP_ALREADY_TRANSFERRED");
 
   const progress: any = handoffInput(root);
+  progress.schema_version = 2;
+  progress.state.predecessor_handoff_id = prepared.state.handoff_id;
+  progress.state.retired_refs = [];
   progress.sequence = 2;
   progress.task.used_rollovers = 1;
   progress.checkpoint.stage = "ac-verification";

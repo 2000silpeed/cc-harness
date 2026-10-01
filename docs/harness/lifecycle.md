@@ -95,6 +95,10 @@ ADOPT의 품질 저하 방지 규칙(ratchet)은 실패 개수와 실패의 식�
 
 `docs/features/{feature}/session-handoff.json`에는 다음 세션이 안전하게 이어받는 데 필요한 정보만 보존합니다. 목표와 승인 범위·근거, 원본 버전, 커밋하지 않은 변경의 소유자·해시, 현재 확인점과 정확한 다음 행동, 계약·증거의 참조·해시·유효성, 실패 식별 정보, 실제 Green·진단·재작업·세션 전환 누계, 진행 중인 작업자·외부 작업, STOP·재개 조건이 여기에 해당합니다.
 
+기존 v1 인계 기록은 계속 읽을 수 있으며 계보의 시작점(legacy genesis)이 될 수 있습니다. 후속 `prepare` 입력은 v2이고 `predecessor_handoff_id`가 직전 기록의 정확한 `handoff_id`여야 합니다. v2의 `retired_refs`는 퇴역한 승인·증거 참조의 종류(`kind`), 원래 필드, 직전 인계 ID(`retired_from_handoff_id`), 퇴역 이유(`reason`)를 누적 보존합니다. 이전 활성 참조는 그대로 유지하거나 정확히 한 번 퇴역시켜야 하므로, 같은 gate 또는 path의 해시를 말없이 교체할 수 없습니다. 동일한 `kind`·`path`·`sha256`의 바이트를 퇴역시킨 뒤에는 같은 전환이나 이후 전환에서 새 gate·required·validity를 붙여 다시 활성화할 수 없습니다. 기존 실패(`failures`)가 가리키는 증거 참조는 활성 목록에서 내용 변경 없이 유지합니다.
+
+현재 `approval_refs`·`evidence_refs`만 파일 해시와 재개 가능 여부를 판단하는 활성 참조입니다. `retired_refs`는 과거 참조의 메타데이터이며 승인·증거의 현재 효력이나 원본 바이트 보존을 보증하지 않습니다. 사용자 결정에 따라 이 계보는 메타데이터만 보존하고 원본을 자동으로 바이트 단위 보관하지 않습니다. `progress-history.md`와 원본 승인·증거 파일 및 로그의 본문은 기존 보존 정책에 따라 유지합니다.
+
 대화의 서사, 반복 계획, 긴 로그와 도구 출력, 전체 저장소 목록, 폐기한 선택지, 증거 본문은 다음 요청문에서 제외합니다. 디스크에서는 삭제하지 않고 필요한 경로, 해시, 무효가 된 이유를 남깁니다.
 
 엄격한 입력 계약은 필요할 때만 `node scripts/session-handoff.mjs --help`와 `template`로 확인합니다. `prepare --input <json> --state docs/features/{feature}/session-handoff.json`은 인계 기록(record)을 중간 상태가 노출되지 않도록 한 번에 준비합니다.
@@ -107,7 +111,7 @@ Git이 없다면 `progress.md`와 동일한 참조·해시 목록(manifest)을 �
 
 다음 Green 단계의 `action_kind=phase`만 Green 예산을 사용합니다. `action_kind=diagnostic`은 범위가 제한된 읽기 전용 진단이며 별도의 진단 예산을 사용합니다. 하나의 인계 연쇄(handoff chain)에 정한 세션 전환·Green·진단 상한은 바꿀 수 없습니다.
 
-새 상한이나 범위가 필요하면 생명주기 승인을 받아 새 인계 연쇄를 엽니다. 이때도 이전 작업의 사용량과 실패 기록은 초기화하지 않습니다. 활성 STOP은 새 실행 순서에서도 기존 사유(reason)와 해제 조건(condition)을 보존해야 합니다. 또한 `resume:<previous-handoff-id>` 승인처럼 새로 유효해진 증거(valid evidence)를 `resolution_ref`에 연결해야만 해제할 수 있습니다.
+새 상한이나 범위가 필요하면 생명주기 승인을 받아 새 인계 연쇄를 엽니다. 이때도 이전 작업의 사용량과 실패 기록은 초기화하지 않습니다. 활성 STOP은 새 실행 순서에서도 기존 사유(reason)와 해제 조건(condition)을 보존해야 합니다. 또한 `resume:<previous-handoff-id>` 승인처럼 새로 유효해진 증거(valid evidence)를 `resolution_ref`에 연결해야만 해제할 수 있습니다. STOP 복구의 승인·증거 경로는 이전의 활성 참조와 과거 퇴역 참조 어느 경로와도 달라야 합니다.
 
 새 세션은 `claim --state <path> --handoff-id <id> --executor-id <id>`가 성공한 뒤, 실행 환경에 시작 전용 요청문(startup-only prompt)을 전달하여 한 번만 생성합니다. claim 직후 원래 세션은 프로젝트와 소스 수정을 멈추고 세션 생성, 수신 기록(receipt), 요청문 전달만 수행합니다. 같은 claim을 다시 실행해도 시작 요청문은 나오지 않으며 상태 조정 단계(reconciliation)에서 멈춥니다. 새 스레드는 그동안 제품 작업을 시작하지 않고 기다립니다.
 
