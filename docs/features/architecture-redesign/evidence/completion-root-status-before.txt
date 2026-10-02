@@ -1,0 +1,6 @@
+?? docs/features/architecture-redesign/evidence/completion-root-head.txt
+?? docs/features/architecture-redesign/evidence/completion-root-start.utc
+?? docs/features/architecture-redesign/evidence/completion-root-status-before.txt
+?? docs/features/trusted-approval/spec-fixed.md
+?? docs/features/trusted-approval/spec-original.md
+?? harness-map/

@@ -1,0 +1,17 @@
+2026-10-02T13:47:05.676231Z  WARN codex_skills::interface: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-10-02T13:47:05.676309Z  WARN codex_skills::interface: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-10-02T13:47:05.698629Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-02T13:47:05.710608Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-02T13:47:05.719172Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-02T13:47:05.728578Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-02T13:47:05.737200Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-02T13:47:05.748327Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-02T13:47:05.757104Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-02T13:47:05.766148Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-10-02T13:47:06.284461Z  WARN codex_core_plugins::manifest: ignoring interface.defaultPrompt: maximum of 3 prompts is supported path=file:///Users/sungwoon/.codex/.tmp/marketplaces/lazyweb/plugins/lazyweb/.codex-plugin/plugin.json
+2026-10-02T13:47:06.715930Z  WARN codex_skills::interface: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
+2026-10-02T13:47:06.715957Z  WARN codex_skills::interface: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
+2026-10-02T13:47:09.096120Z  WARN codex_core_plugins::manager: failed to auto-upgrade configured marketplace marketplace="lazyweb" error=failed to validate upgraded marketplace root: invalid marketplace file `/Users/sungwoon/.codex/.tmp/marketplaces/.staging/marketplace-upgrade-JpSk6H`: marketplace root does not contain a supported manifest
+real 14.39
+user 2.60
+sys 1.99

@@ -1,0 +1,1 @@
+{"decision":"RECEIPT_RECORDED","idempotent":true,"used_rollovers_delta":0,"state_json_rewritten":false,"evidence":[{"path":"src/handoff-core.mjs","function":"receiptHandoff","lines":"614-640"},{"path":"src/session-handoff.mjs","function":"receipt","lines":"260-280"}]}

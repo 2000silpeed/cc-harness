@@ -1242,29 +1242,25 @@
             <h3>이번 작업의 실제 상태</h3>
             <ul>
               <li>
-                <span class="pill fact">2026-10-02 잔여 구현</span> AR-04 규범·구조도 AC1–3은 독립
-                PASS입니다. AR-05는 중복 검사 호출을 추가하지 않고 깨진 앵커를 검출하도록
-                수정했습니다. 성공 snapshot cache는 같은 workload 실험 후보였으나 운영 채택하지 않아
-                현행 디자인 검사는 full로 유지합니다. AR-05 AC1–5와 AR-06 AC1/AC1b/AC2는 독립
-                PASS입니다. 루트 <code>npm run check</code>는 다른 작업의 미추적
-                <code>harness-map/</code> ESLint 오류로 종료 1이었고, 같은 의존성의 재설계 source
-                격리 snapshot 검사는 종료 0·Vitest 176/176이었습니다. 검사 후 이 보고서의 과거
-                라벨과 상태 문구를 갱신해 후행 바이트는 별도 정적 검사로 확인합니다. AR-06 AC3도
-                별도 독립 PASS를 받아 원래 5단계의 가역적 로컬 구현·검증이 완료됐습니다. Git
-                커밋·푸시는 당시 실행 전이었고, 이후 완료분은 <code>0c96b80</code>으로
-                <code>master</code>와 <code>origin/master</code>에 전달됐습니다(2026-10-02 원격 SHA
-                대조). 이번
-                <a href="../features/architecture-redesign/quality-hardening.md"
-                  >R10–R12 품질 보완</a
-                >은 평가 schema v2·고정 역사 CLI baseline·14개 corpus를 구현했고, 같은
-                <code>STOP_ACTIVE</code> 결정을 유지한 <code>result.reason</code> drift가 종료 1의
-                <code>candidate_mismatch</code> 정확 경로로 검출됨을 보완했습니다. 관련 Vitest는 6/6
-                통과했고 이 STOP 회귀 추가에서는 평가기 실행 코드를 추가로 수정하지 않았습니다.
-                <code>.git</code> 없는 소유 파일 격리 snapshot의 최종 <code>npm run check</code>는
-                종료 0, Vitest 178/178, 평가 14/14·변화 0이었습니다. 현재 root 전체 검사는 실행하지
-                않았습니다. AR-07 AC1·AC2·AC3는 독립 PASS이며 후행 Git 전달은 실행 후 로컬·원격
-                SHA로 확인합니다. 당시 보고서의 실제 넓은/400px 화면 렌더는 미확인입니다.
-                <a href="../features/architecture-redesign/progress.md">현재 진행 기록</a>
+                <span class="pill fact">2026-10-02 완료 단계</span> AR-04~07의 승인된 로컬 구현과 각
+                AC 독립 PASS를 기록했습니다. 성공 snapshot cache는 같은 workload 실험 뒤 운영
+                불채택해 현행 디자인 검사를 full로 유지합니다. 기존 완료분은
+                <code>0c96b80</code>으로 <code>master</code>와 <code>origin/master</code>에
+                전달됐습니다(2026-10-02 원격 SHA 대조). 이번 R10–R12 품질 보완은 평가 schema v2·고정
+                역사 CLI baseline·14개 corpus와 STOP 결정의 <code>result.reason</code> drift 검출을
+                포함합니다. AR-07 격리 snapshot 검사는 종료 0·Vitest 178/178·평가 14/14·변화
+                0이었습니다. 현재 HEAD <code>58b8e6e6</code>의 root <code>npm run check</code>도
+                별도 Git <code>harness-map/**</code>의 루트 검사 경계를 조정한 뒤 종료 0·Vitest
+                178/178·평가 실패 0이었습니다. 선행 검사 실패는 보존했고 별도 Git 자체 ESLint
+                28오류는 수정하지 않았습니다. 이전 보고서 바이트의 넓은 1280px·좁은 400px 실제
+                Chrome 렌더는 내부 앵커·표·구조도 스크롤·error/warn 없음까지 확인했습니다. 이 상태
+                문구를 반영한 최종 바이트의 재렌더는
+                <a href="../features/architecture-redesign/evidence/completion-final-render.md"
+                  >최종 렌더 증거</a
+                >에 별도로 기록합니다. 후행 Git 전달은 실행 후 로컬·원격 SHA로 확인합니다.
+                <a href="../features/architecture-redesign/evidence/completion-summary.md"
+                  >완료 요약</a
+                >
               </li>
               <li>
                 <span class="pill fact">같은 workload의 직접 CLI 실험</span> 기준 12회는 모두 full,
@@ -1321,9 +1317,23 @@
                 <code>npm run check</code>는 종료 코드 0, Vitest 2개 파일 140/140 통과였습니다.
               </li>
               <li>
-                <span class="pill limit">현재 미관찰</span> native 훅의 신뢰 승인·실제 발화,
-                토큰·비용 telemetry, 외부 모델 사용. 직접 <code>--hook</code> 측정은 native 발화
-                증거가 아닙니다.
+                <span class="pill fact">완료 단계의 한정 측정</span> 실제 CLI 168회(준비 28·본 측정
+                140)의 70쌍은 의미 결과가 모두 같았습니다. 현행판−역사판 대응 쌍 벽시계 중앙값은
+                +0.563ms여서 시간 개선은 입증되지 않았습니다. 로컬 출력 byte는 6.24% 줄었지만 모델
+                토큰은 아닙니다. 승인된 단일 소스 읽기 질문의 ChatGPT CLI 6회는 답과 oracle이 모두
+                일치했고, 각 3회 평균 input은 역사판 95,591·현행판 91,082토큰, wall은
+                18.41·18.04초였습니다. 대응 3쌍 중 2쌍은 현행판의 input과 wall이 더 컸고, 표본과
+                cache 편차 때문에 절감을 입증하거나 전체 프로젝트로 일반화할 수 없습니다.
+                <a href="../features/architecture-redesign/evidence/completion-metrics-report.md"
+                  >CLI 측정</a
+                >·<a href="../features/architecture-redesign/evidence/completion-ai-usage-result.md"
+                  >AI 사용량</a
+                >
+              </li>
+              <li>
+                <span class="pill limit">현재 미관찰</span> native 훅 신뢰 승인·실제 발화, AI 실행의
+                실제 model/effort ID, 전체 프로젝트 토큰 효과와 실제 청구 비용 비교. 직접
+                <code>--hook</code> 측정은 native 발화 증거가 아닙니다.
               </li>
               <li>
                 <span class="pill limit">2026-09-30 기준</span> B안 도메인 코어와 새 평가

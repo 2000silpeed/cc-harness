@@ -1,0 +1,4 @@
+command=npx --no-install prettier --file-info docs/features/architecture-redesign/evidence/completion-ai-usage-trial-01.answer.json
+exit=0
+stdout={ "ignored": true, "inferredParser": null }
+stderr=

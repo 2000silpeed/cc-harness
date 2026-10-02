@@ -1,0 +1,26 @@
+utc=2026-10-02T14:04:20.292616+00:00
+head=58b8e6e6d3479f84404dfc5f41403c2ee85e63f0
+baseline_files=103
+baseline_changed=['.prettierignore']
+baseline_missing=[]
+raw_result_sha_match=6/6
+nested_manifest_sha_match=17/17
+staged=''
+format_exit=exit=0
+check_exit=exit=0
+prettierignore_sha256=f29973fa767da0be626335d69cd5646a655016d49bc2a1b4da3eb7ecca76c81f
+html_sha256=5499eda7f21b964aa34b0859f95667a21588956fb9c362ffd15a9eb12d8e50e6
+core_sha256=824c40fa8c7a677125945f8188a1e3bb8d57f9c110286ce607f80b2e82e8e283
+cli_sha256=b9c64fb48edf85a94eb42a2cc5698f8854431c596db485fd087bc79f7dab031b
+raw_answers:
+0423aa70b9148f3fbcba4179250c397dfc1c611d58c489783f43a6bf5d83efd9  completion-ai-usage-trial-01.answer.json
+43ff08e07ccdbff1292967bca5fa3058171562564d3ec0982f49f8939f676419  completion-ai-usage-trial-02.answer.json
+162894a745ec1a83e64cdc632e317f277e034ec2d41e844781f6edce3a58d6c2  completion-ai-usage-trial-03.answer.json
+5814eba09133f1a803582dd43c6b2e3bd3b06ac171f063e591dc24a959c92882  completion-ai-usage-trial-04.answer.json
+47c3143832c6bd584946a59b48437be827b6363a9807593f9d4d4b12607b19c6  completion-ai-usage-trial-05.answer.json
+162894a745ec1a83e64cdc632e317f277e034ec2d41e844781f6edce3a58d6c2  completion-ai-usage-trial-06.answer.json
+tracked_status:
+ M .prettierignore
+ M docs/architecture/redesign-review-2026-09-30.html
+ M docs/features/architecture-redesign/progress.md
+ M eslint.config.mjs

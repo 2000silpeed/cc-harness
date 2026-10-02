@@ -1,0 +1,8 @@
+독립 검증 기록
+reviewer=/root/completion_raw_verify
+전달 기록자=/root/completion_git_delivery
+검증 시점=Git stage 및 commit hook 실행 전
+후행 hook 실행과 commit/push 결과는 별도 확인 대상
+
+AC1 PASS(정적/Prettier 경로): .prettierignore SHA f29973fa… 정확 `completion-ai-usage-trial-*.answer.json`만 추가, 기존 harness-map/ 유지. 6개 `prettier --file-info` 모두 ignored=true, result JSON ignored=false. result.json의 raw_files 36/36 SHA·size 일치, answer 6/6; 103 baseline 현재 재계산 변경은 .prettierignore 단 1개. `.husky/pre-commit`은 `npm run lint-staged`, package.json JSON 규칙은 `prettier --write`; 실제 stage/hook 실행은 없으므로 hook 런타임은 unverified, 정적 연결만 확인.
+AC2 PASS: HEAD 58b8e6e6d3479f84404dfc5f41403c2ee85e63f0, tracked dirty diff SHA256 91b036157754a0c133de2dc6e0713fee37f8e13a3c4c507245c8dbcff07300eb; final HTML 5499eda7…, CLI b9c64fb4…, core824c40fa… 동일. `completion-raw-guard-format-exit.txt` exit0, `completion-raw-guard-check-exit.txt` exit0 UTC 14:02:09~14:04:06; log SHA f88f1a42… lint/design84/harness15·62/Prettier/Vitest178·178/eval14 failures[]/typecheck. before 103 파일 baseline 재계산에서 ignore만 변화, 선행 로그·raw·nested 보존. 범위 밖 actual native hook, 청구비용/token효과 계속 미검증.

@@ -1,0 +1,40 @@
+{
+  "status": "inputs-ready-no-ai-trials-run",
+  "source_head_at_start": "58b8e6e6d3479f84404dfc5f41403c2ee85e63f0",
+  "isolated_root": "/tmp/completion-ai-usage.tNH9tf",
+  "variants": {
+    "case-1": {
+      "source_revision": "ae9ff54c33518b77fc0de18feb217660303ac739",
+      "sources": {
+        "src/session-handoff.mjs": "19823e889fa3e3db7a74b98610f8efbe8fd4412248860d7cf313b4176b84aefe"
+      }
+    },
+    "case-2": {
+      "source_revision": "working-tree-at-setup",
+      "sources": {
+        "src/session-handoff.mjs": "b9c64fb48edf85a94eb42a2cc5698f8854431c596db485fd087bc79f7dab031b",
+        "src/handoff-core.mjs": "824c40fa8c7a677125945f8188a1e3bb8d57f9c110286ce607f80b2e82e8e283"
+      }
+    }
+  },
+  "identical_inputs": {
+    "prompt.txt": "ff7cac15c759a2bb7a3ff1a606346fa73b0c393f6dd84dd14ad31c79fe81ae11",
+    "AGENTS.md": "78512337694d432765f89f64ccbbbf8d0f5b7ab6f4079cc8bbdd7d7692a2a05d"
+  },
+  "response_schema": {
+    "path": "/tmp/completion-ai-usage.tNH9tf/response.schema.json",
+    "sha256": "be50515f1e04615754facbe9065609630a581a15bd35e8ecaa5240a5b096dba9"
+  },
+  "trial_order": ["case-1", "case-2", "case-2", "case-1", "case-1", "case-2"],
+  "oracle": {
+    "decision": "RECEIPT_RECORDED",
+    "idempotent": true,
+    "used_rollovers_delta": 0,
+    "state_json_rewritten": false
+  },
+  "oracle_basis": {
+    "case-1": ["src/session-handoff.mjs:814-860"],
+    "case-2": ["src/session-handoff.mjs:260-292", "src/handoff-core.mjs:614-649"]
+  },
+  "measurement_boundary": "One source-reading question; no whole-project speed, token, or provider-billing cost inference."
+}

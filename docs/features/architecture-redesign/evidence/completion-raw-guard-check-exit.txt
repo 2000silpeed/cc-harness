@@ -1,0 +1,4 @@
+command=npm run check
+start_utc=2026-10-02T14:02:09.284160+00:00
+end_utc=2026-10-02T14:04:06.955152+00:00
+exit=0

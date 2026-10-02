@@ -1,3 +1,7 @@
 dist/
 test-results/
 playwright-report/
+# Separate nested Git project; the root check owns only this repository.
+harness-map/
+# Preserve byte-for-byte raw answers from the AI usage experiment.
+docs/features/architecture-redesign/evidence/completion-ai-usage-trial-*.answer.json

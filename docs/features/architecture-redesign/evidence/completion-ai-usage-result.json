@@ -1,0 +1,805 @@
+{
+  "source_head_at_setup": "58b8e6e6d3479f84404dfc5f41403c2ee85e63f0",
+  "trial_order": ["case-1", "case-2", "case-2", "case-1", "case-1", "case-2"],
+  "installed_cli_version_observed": "codex-cli 0.157.0",
+  "requested_model": "gpt-5.6-sol",
+  "requested_reasoning_effort": "medium",
+  "observed_model": null,
+  "observed_reasoning_effort": null,
+  "observed_model_note": "CLI JSONL emitted no actual model or effort field; request flags are recorded separately.",
+  "auth_class": "ChatGPT subscription login, verified by dispatcher before trial; no API key billing used",
+  "auth_class_evidence": "dispatcher observation; no credential copied into trial evidence",
+  "environment": {
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "python": "3.12.11",
+    "isolated_root": "/tmp/completion-ai-usage.tNH9tf",
+    "sandbox": "read-only",
+    "sessions": "fresh sequential --ephemeral",
+    "repo_root": "/Users/sungwoon/ai-projects/cc-harness"
+  },
+  "input_hashes": {
+    "variants": {
+      "case-1": {
+        "source_revision": "ae9ff54c33518b77fc0de18feb217660303ac739",
+        "sources": {
+          "src/session-handoff.mjs": "19823e889fa3e3db7a74b98610f8efbe8fd4412248860d7cf313b4176b84aefe"
+        }
+      },
+      "case-2": {
+        "source_revision": "working-tree-at-setup",
+        "sources": {
+          "src/session-handoff.mjs": "b9c64fb48edf85a94eb42a2cc5698f8854431c596db485fd087bc79f7dab031b",
+          "src/handoff-core.mjs": "824c40fa8c7a677125945f8188a1e3bb8d57f9c110286ce607f80b2e82e8e283"
+        }
+      }
+    },
+    "identical_inputs": {
+      "prompt.txt": "ff7cac15c759a2bb7a3ff1a606346fa73b0c393f6dd84dd14ad31c79fe81ae11",
+      "AGENTS.md": "78512337694d432765f89f64ccbbbf8d0f5b7ab6f4079cc8bbdd7d7692a2a05d"
+    },
+    "response_schema": {
+      "path": "/tmp/completion-ai-usage.tNH9tf/response.schema.json",
+      "sha256": "be50515f1e04615754facbe9065609630a581a15bd35e8ecaa5240a5b096dba9"
+    }
+  },
+  "preflight_failure": {
+    "status": "invalid, excluded from six model samples",
+    "reported_exit_code": 1,
+    "reported_wall_seconds": 0.26,
+    "events_count": 0,
+    "reason": "sandbox prevented state DB write and app-server initialization (EPERM); exact raw stdout/stderr preserved",
+    "raw_files": {
+      "stdout.jsonl": {
+        "path": "completion-ai-usage-trial-00-preflight.stdout.jsonl",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr.log": {
+        "path": "completion-ai-usage-trial-00-preflight.stderr.log",
+        "sha256": "8592533c89c85c9f4bdb66b5a546934e39f58ca018792af07255e63043c315e7",
+        "bytes": 919
+      }
+    }
+  },
+  "trials": [
+    {
+      "number": "01",
+      "variant": "case-1",
+      "source_revision": "ae9ff54c33518b77fc0de18feb217660303ac739",
+      "start_utc": "2026-10-02T13:46:01Z",
+      "end_utc": "2026-10-02T13:46:22Z",
+      "exit_code": 0,
+      "wall_seconds": 21.41,
+      "turn_completed_count": 1,
+      "usage": [
+        {
+          "input_tokens": 106205,
+          "cached_input_tokens": 75776,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 610,
+          "reasoning_output_tokens": 282
+        }
+      ],
+      "command_count": 3,
+      "command_exit_codes": [0, 0, 0],
+      "answer": {
+        "decision": "RECEIPT_RECORDED",
+        "idempotent": true,
+        "used_rollovers_delta": 0,
+        "state_json_rewritten": false,
+        "evidence": [
+          {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "814-848"
+          },
+          {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "850-859"
+          }
+        ]
+      },
+      "oracle_values_match": true,
+      "evidence_checks": [
+        {
+          "citation": {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "814-848"
+          },
+          "path_and_line_range_valid": true
+        },
+        {
+          "citation": {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "850-859"
+          },
+          "path_and_line_range_valid": true
+        }
+      ],
+      "raw_files": {
+        "stdout.jsonl": {
+          "path": "completion-ai-usage-trial-01.stdout.jsonl",
+          "sha256": "b251cd6b562c8dbde539641bc30bdac80cc863e48048424442691feeb447a4e8",
+          "bytes": 23858
+        },
+        "stderr.log": {
+          "path": "completion-ai-usage-trial-01.stderr.log",
+          "sha256": "27093598eaeda1eb7748d8fc71832731f7b10498a940ab8ad936457898f88d00",
+          "bytes": 2256
+        },
+        "answer.json": {
+          "path": "completion-ai-usage-trial-01.answer.json",
+          "sha256": "0423aa70b9148f3fbcba4179250c397dfc1c611d58c489783f43a6bf5d83efd9",
+          "bytes": 264
+        },
+        "start.utc": {
+          "path": "completion-ai-usage-trial-01.start.utc",
+          "sha256": "48e4d22234333a4ca5a131291ea81225bef898139ee35d764cad5092f4c752a0",
+          "bytes": 21
+        },
+        "end.utc": {
+          "path": "completion-ai-usage-trial-01.end.utc",
+          "sha256": "6f1ab723632e4984da6509becf51c9b5c13d7dbab881a8c176a68f0275ba9ce2",
+          "bytes": 21
+        },
+        "exit.txt": {
+          "path": "completion-ai-usage-trial-01.exit.txt",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "bytes": 2
+        }
+      },
+      "valid_sample": true,
+      "invocation_argv": [
+        "/usr/bin/time",
+        "-p",
+        "codex",
+        "exec",
+        "-C",
+        "/tmp/completion-ai-usage.tNH9tf/case-1",
+        "--ephemeral",
+        "--sandbox",
+        "read-only",
+        "--model",
+        "gpt-5.6-sol",
+        "-c",
+        "model_reasoning_effort=\"medium\"",
+        "--json",
+        "--skip-git-repo-check",
+        "--output-schema",
+        "/tmp/completion-ai-usage.tNH9tf/response.schema.json",
+        "--output-last-message",
+        "/tmp/completion-ai-usage.tNH9tf/trial-01.answer.json",
+        "-"
+      ],
+      "stdin_path": "/tmp/completion-ai-usage.tNH9tf/case-1/prompt.txt",
+      "stdout_path_at_execution": "/tmp/completion-ai-usage.tNH9tf/trial-01.stdout.jsonl",
+      "stderr_path_at_execution": "/tmp/completion-ai-usage.tNH9tf/trial-01.run.stderr.log"
+    },
+    {
+      "number": "02",
+      "variant": "case-2",
+      "source_revision": "working-tree-at-setup",
+      "start_utc": "2026-10-02T13:46:45Z",
+      "end_utc": "2026-10-02T13:47:05Z",
+      "exit_code": 0,
+      "wall_seconds": 19.85,
+      "turn_completed_count": 1,
+      "usage": [
+        {
+          "input_tokens": 78711,
+          "cached_input_tokens": 49024,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 537,
+          "reasoning_output_tokens": 251
+        }
+      ],
+      "command_count": 2,
+      "command_exit_codes": [0, 0],
+      "answer": {
+        "decision": "RECEIPT_RECORDED",
+        "idempotent": true,
+        "used_rollovers_delta": 0,
+        "state_json_rewritten": false,
+        "evidence": [
+          {
+            "path": "src/handoff-core.mjs",
+            "function": "receiptHandoff",
+            "lines": "614-640"
+          },
+          {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "260-280"
+          }
+        ]
+      },
+      "oracle_values_match": true,
+      "evidence_checks": [
+        {
+          "citation": {
+            "path": "src/handoff-core.mjs",
+            "function": "receiptHandoff",
+            "lines": "614-640"
+          },
+          "path_and_line_range_valid": true
+        },
+        {
+          "citation": {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "260-280"
+          },
+          "path_and_line_range_valid": true
+        }
+      ],
+      "raw_files": {
+        "stdout.jsonl": {
+          "path": "completion-ai-usage-trial-02.stdout.jsonl",
+          "sha256": "81271bb1a20476113504ef9fe1e06349fabd12574ac0f01216f1670438e10bd7",
+          "bytes": 21307
+        },
+        "stderr.log": {
+          "path": "completion-ai-usage-trial-02.stderr.log",
+          "sha256": "437bfb089ea3b2e97416eb39b33a8ee455bd900e6a01f946a8bdf6028fdfc20f",
+          "bytes": 2256
+        },
+        "answer.json": {
+          "path": "completion-ai-usage-trial-02.answer.json",
+          "sha256": "43ff08e07ccdbff1292967bca5fa3058171562564d3ec0982f49f8939f676419",
+          "bytes": 268
+        },
+        "start.utc": {
+          "path": "completion-ai-usage-trial-02.start.utc",
+          "sha256": "2c00892950d2bd49912b207b82d8189ba3f30dd3c083cdc29c7c06cc5be08ef3",
+          "bytes": 21
+        },
+        "end.utc": {
+          "path": "completion-ai-usage-trial-02.end.utc",
+          "sha256": "0333ac855ebda672f894f0da284acabae8951589420cbf915f3ca74838a0d2cf",
+          "bytes": 21
+        },
+        "exit.txt": {
+          "path": "completion-ai-usage-trial-02.exit.txt",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "bytes": 2
+        }
+      },
+      "valid_sample": true,
+      "invocation_argv": [
+        "/usr/bin/time",
+        "-p",
+        "codex",
+        "exec",
+        "-C",
+        "/tmp/completion-ai-usage.tNH9tf/case-2",
+        "--ephemeral",
+        "--sandbox",
+        "read-only",
+        "--model",
+        "gpt-5.6-sol",
+        "-c",
+        "model_reasoning_effort=\"medium\"",
+        "--json",
+        "--skip-git-repo-check",
+        "--output-schema",
+        "/tmp/completion-ai-usage.tNH9tf/response.schema.json",
+        "--output-last-message",
+        "/tmp/completion-ai-usage.tNH9tf/trial-02.answer.json",
+        "-"
+      ],
+      "stdin_path": "/tmp/completion-ai-usage.tNH9tf/case-2/prompt.txt",
+      "stdout_path_at_execution": "/tmp/completion-ai-usage.tNH9tf/trial-02.stdout.jsonl",
+      "stderr_path_at_execution": "/tmp/completion-ai-usage.tNH9tf/trial-02.run.stderr.log"
+    },
+    {
+      "number": "03",
+      "variant": "case-2",
+      "source_revision": "working-tree-at-setup",
+      "start_utc": "2026-10-02T13:47:05Z",
+      "end_utc": "2026-10-02T13:47:19Z",
+      "exit_code": 0,
+      "wall_seconds": 14.39,
+      "turn_completed_count": 1,
+      "usage": [
+        {
+          "input_tokens": 75007,
+          "cached_input_tokens": 59392,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 416,
+          "reasoning_output_tokens": 126
+        }
+      ],
+      "command_count": 2,
+      "command_exit_codes": [0, 0],
+      "answer": {
+        "decision": "RECEIPT_RECORDED",
+        "idempotent": true,
+        "used_rollovers_delta": 0,
+        "state_json_rewritten": false,
+        "evidence": [
+          {
+            "path": "src/handoff-core.mjs",
+            "function": "receiptHandoff",
+            "lines": "614-640"
+          },
+          {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "260-287"
+          }
+        ]
+      },
+      "oracle_values_match": true,
+      "evidence_checks": [
+        {
+          "citation": {
+            "path": "src/handoff-core.mjs",
+            "function": "receiptHandoff",
+            "lines": "614-640"
+          },
+          "path_and_line_range_valid": true
+        },
+        {
+          "citation": {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "260-287"
+          },
+          "path_and_line_range_valid": true
+        }
+      ],
+      "raw_files": {
+        "stdout.jsonl": {
+          "path": "completion-ai-usage-trial-03.stdout.jsonl",
+          "sha256": "ae200c2bfeaf74d0705ef6f477aeec681bd8b80bbf0351644fd3778b1cc989b1",
+          "bytes": 19947
+        },
+        "stderr.log": {
+          "path": "completion-ai-usage-trial-03.stderr.log",
+          "sha256": "41a18cc43aa8bdf67804e987a98cdd44c7c10f70b11b98cbcd3a21972c648e9f",
+          "bytes": 2256
+        },
+        "answer.json": {
+          "path": "completion-ai-usage-trial-03.answer.json",
+          "sha256": "162894a745ec1a83e64cdc632e317f277e034ec2d41e844781f6edce3a58d6c2",
+          "bytes": 268
+        },
+        "start.utc": {
+          "path": "completion-ai-usage-trial-03.start.utc",
+          "sha256": "0333ac855ebda672f894f0da284acabae8951589420cbf915f3ca74838a0d2cf",
+          "bytes": 21
+        },
+        "end.utc": {
+          "path": "completion-ai-usage-trial-03.end.utc",
+          "sha256": "df7561d3fe927b5c79785206e32ab2d366b37b7aeec44c646eb54318cebceea2",
+          "bytes": 21
+        },
+        "exit.txt": {
+          "path": "completion-ai-usage-trial-03.exit.txt",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "bytes": 2
+        }
+      },
+      "valid_sample": true,
+      "invocation_argv": [
+        "/usr/bin/time",
+        "-p",
+        "codex",
+        "exec",
+        "-C",
+        "/tmp/completion-ai-usage.tNH9tf/case-2",
+        "--ephemeral",
+        "--sandbox",
+        "read-only",
+        "--model",
+        "gpt-5.6-sol",
+        "-c",
+        "model_reasoning_effort=\"medium\"",
+        "--json",
+        "--skip-git-repo-check",
+        "--output-schema",
+        "/tmp/completion-ai-usage.tNH9tf/response.schema.json",
+        "--output-last-message",
+        "/tmp/completion-ai-usage.tNH9tf/trial-03.answer.json",
+        "-"
+      ],
+      "stdin_path": "/tmp/completion-ai-usage.tNH9tf/case-2/prompt.txt",
+      "stdout_path_at_execution": "/tmp/completion-ai-usage.tNH9tf/trial-03.stdout.jsonl",
+      "stderr_path_at_execution": "/tmp/completion-ai-usage.tNH9tf/trial-03.run.stderr.log"
+    },
+    {
+      "number": "04",
+      "variant": "case-1",
+      "source_revision": "ae9ff54c33518b77fc0de18feb217660303ac739",
+      "start_utc": "2026-10-02T13:47:19Z",
+      "end_utc": "2026-10-02T13:47:34Z",
+      "exit_code": 0,
+      "wall_seconds": 14.17,
+      "turn_completed_count": 1,
+      "usage": [
+        {
+          "input_tokens": 74718,
+          "cached_input_tokens": 58112,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 422,
+          "reasoning_output_tokens": 159
+        }
+      ],
+      "command_count": 2,
+      "command_exit_codes": [0, 0],
+      "answer": {
+        "decision": "RECEIPT_RECORDED",
+        "idempotent": true,
+        "used_rollovers_delta": 0,
+        "state_json_rewritten": false,
+        "evidence": [
+          {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "827-847"
+          },
+          {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "850-853"
+          }
+        ]
+      },
+      "oracle_values_match": true,
+      "evidence_checks": [
+        {
+          "citation": {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "827-847"
+          },
+          "path_and_line_range_valid": true
+        },
+        {
+          "citation": {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "850-853"
+          },
+          "path_and_line_range_valid": true
+        }
+      ],
+      "raw_files": {
+        "stdout.jsonl": {
+          "path": "completion-ai-usage-trial-04.stdout.jsonl",
+          "sha256": "c9f9927f6c50568ad9cd0025abcb353832639e8bb75cf85eb42ea845fd27e50f",
+          "bytes": 23909
+        },
+        "stderr.log": {
+          "path": "completion-ai-usage-trial-04.stderr.log",
+          "sha256": "d0964ddd1e7e94a6ad683792c8e5b8fdbf534efceef7e6b01b4be50d1c9866b1",
+          "bytes": 2256
+        },
+        "answer.json": {
+          "path": "completion-ai-usage-trial-04.answer.json",
+          "sha256": "5814eba09133f1a803582dd43c6b2e3bd3b06ac171f063e591dc24a959c92882",
+          "bytes": 264
+        },
+        "start.utc": {
+          "path": "completion-ai-usage-trial-04.start.utc",
+          "sha256": "df7561d3fe927b5c79785206e32ab2d366b37b7aeec44c646eb54318cebceea2",
+          "bytes": 21
+        },
+        "end.utc": {
+          "path": "completion-ai-usage-trial-04.end.utc",
+          "sha256": "11a24e8511b2cb3fd98e3a76e222028c720eb3c49ed91324d51f769396e537d9",
+          "bytes": 21
+        },
+        "exit.txt": {
+          "path": "completion-ai-usage-trial-04.exit.txt",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "bytes": 2
+        }
+      },
+      "valid_sample": true,
+      "invocation_argv": [
+        "/usr/bin/time",
+        "-p",
+        "codex",
+        "exec",
+        "-C",
+        "/tmp/completion-ai-usage.tNH9tf/case-1",
+        "--ephemeral",
+        "--sandbox",
+        "read-only",
+        "--model",
+        "gpt-5.6-sol",
+        "-c",
+        "model_reasoning_effort=\"medium\"",
+        "--json",
+        "--skip-git-repo-check",
+        "--output-schema",
+        "/tmp/completion-ai-usage.tNH9tf/response.schema.json",
+        "--output-last-message",
+        "/tmp/completion-ai-usage.tNH9tf/trial-04.answer.json",
+        "-"
+      ],
+      "stdin_path": "/tmp/completion-ai-usage.tNH9tf/case-1/prompt.txt",
+      "stdout_path_at_execution": "/tmp/completion-ai-usage.tNH9tf/trial-04.stdout.jsonl",
+      "stderr_path_at_execution": "/tmp/completion-ai-usage.tNH9tf/trial-04.run.stderr.log"
+    },
+    {
+      "number": "05",
+      "variant": "case-1",
+      "source_revision": "ae9ff54c33518b77fc0de18feb217660303ac739",
+      "start_utc": "2026-10-02T13:47:34Z",
+      "end_utc": "2026-10-02T13:47:53Z",
+      "exit_code": 0,
+      "wall_seconds": 19.66,
+      "turn_completed_count": 1,
+      "usage": [
+        {
+          "input_tokens": 105849,
+          "cached_input_tokens": 94976,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 601,
+          "reasoning_output_tokens": 273
+        }
+      ],
+      "command_count": 3,
+      "command_exit_codes": [0, 0, 0],
+      "answer": {
+        "decision": "RECEIPT_RECORDED",
+        "idempotent": true,
+        "used_rollovers_delta": 0,
+        "state_json_rewritten": false,
+        "evidence": [
+          {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "814-853"
+          },
+          {
+            "path": "src/session-handoff.mjs",
+            "function": "checkCurrent",
+            "lines": "494-524"
+          }
+        ]
+      },
+      "oracle_values_match": true,
+      "evidence_checks": [
+        {
+          "citation": {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "814-853"
+          },
+          "path_and_line_range_valid": true
+        },
+        {
+          "citation": {
+            "path": "src/session-handoff.mjs",
+            "function": "checkCurrent",
+            "lines": "494-524"
+          },
+          "path_and_line_range_valid": true
+        }
+      ],
+      "raw_files": {
+        "stdout.jsonl": {
+          "path": "completion-ai-usage-trial-05.stdout.jsonl",
+          "sha256": "898ad29b964dc051a5b8193b638ebba4457e09a5d412261c3c19fab5c3fe4184",
+          "bytes": 36274
+        },
+        "stderr.log": {
+          "path": "completion-ai-usage-trial-05.stderr.log",
+          "sha256": "89c6c59ebe4769f130fe7d96dc6abf281fb1423cc63c54a19a10ea261de14652",
+          "bytes": 2256
+        },
+        "answer.json": {
+          "path": "completion-ai-usage-trial-05.answer.json",
+          "sha256": "47c3143832c6bd584946a59b48437be827b6363a9807593f9d4d4b12607b19c6",
+          "bytes": 269
+        },
+        "start.utc": {
+          "path": "completion-ai-usage-trial-05.start.utc",
+          "sha256": "11a24e8511b2cb3fd98e3a76e222028c720eb3c49ed91324d51f769396e537d9",
+          "bytes": 21
+        },
+        "end.utc": {
+          "path": "completion-ai-usage-trial-05.end.utc",
+          "sha256": "fae3f0496ef628c5c433ab8cf76dc4b311a0466dfb63cc7912512a884983fc04",
+          "bytes": 21
+        },
+        "exit.txt": {
+          "path": "completion-ai-usage-trial-05.exit.txt",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "bytes": 2
+        }
+      },
+      "valid_sample": true,
+      "invocation_argv": [
+        "/usr/bin/time",
+        "-p",
+        "codex",
+        "exec",
+        "-C",
+        "/tmp/completion-ai-usage.tNH9tf/case-1",
+        "--ephemeral",
+        "--sandbox",
+        "read-only",
+        "--model",
+        "gpt-5.6-sol",
+        "-c",
+        "model_reasoning_effort=\"medium\"",
+        "--json",
+        "--skip-git-repo-check",
+        "--output-schema",
+        "/tmp/completion-ai-usage.tNH9tf/response.schema.json",
+        "--output-last-message",
+        "/tmp/completion-ai-usage.tNH9tf/trial-05.answer.json",
+        "-"
+      ],
+      "stdin_path": "/tmp/completion-ai-usage.tNH9tf/case-1/prompt.txt",
+      "stdout_path_at_execution": "/tmp/completion-ai-usage.tNH9tf/trial-05.stdout.jsonl",
+      "stderr_path_at_execution": "/tmp/completion-ai-usage.tNH9tf/trial-05.run.stderr.log"
+    },
+    {
+      "number": "06",
+      "variant": "case-2",
+      "source_revision": "working-tree-at-setup",
+      "start_utc": "2026-10-02T13:47:53Z",
+      "end_utc": "2026-10-02T13:48:13Z",
+      "exit_code": 0,
+      "wall_seconds": 19.89,
+      "turn_completed_count": 1,
+      "usage": [
+        {
+          "input_tokens": 119527,
+          "cached_input_tokens": 82560,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 504,
+          "reasoning_output_tokens": 158
+        }
+      ],
+      "command_count": 3,
+      "command_exit_codes": [0, 0, 0],
+      "answer": {
+        "decision": "RECEIPT_RECORDED",
+        "idempotent": true,
+        "used_rollovers_delta": 0,
+        "state_json_rewritten": false,
+        "evidence": [
+          {
+            "path": "src/handoff-core.mjs",
+            "function": "receiptHandoff",
+            "lines": "614-640"
+          },
+          {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "260-287"
+          }
+        ]
+      },
+      "oracle_values_match": true,
+      "evidence_checks": [
+        {
+          "citation": {
+            "path": "src/handoff-core.mjs",
+            "function": "receiptHandoff",
+            "lines": "614-640"
+          },
+          "path_and_line_range_valid": true
+        },
+        {
+          "citation": {
+            "path": "src/session-handoff.mjs",
+            "function": "receipt",
+            "lines": "260-287"
+          },
+          "path_and_line_range_valid": true
+        }
+      ],
+      "raw_files": {
+        "stdout.jsonl": {
+          "path": "completion-ai-usage-trial-06.stdout.jsonl",
+          "sha256": "d2830f39d7d7e5fd54f71b267a95e57b8ef8d7690d58f15e7d652f0e1cc59e4d",
+          "bytes": 62399
+        },
+        "stderr.log": {
+          "path": "completion-ai-usage-trial-06.stderr.log",
+          "sha256": "ebc50c8945985fd7ee904f00150e080bd52f119621279c304b660c634691d2bd",
+          "bytes": 2256
+        },
+        "answer.json": {
+          "path": "completion-ai-usage-trial-06.answer.json",
+          "sha256": "162894a745ec1a83e64cdc632e317f277e034ec2d41e844781f6edce3a58d6c2",
+          "bytes": 268
+        },
+        "start.utc": {
+          "path": "completion-ai-usage-trial-06.start.utc",
+          "sha256": "fae3f0496ef628c5c433ab8cf76dc4b311a0466dfb63cc7912512a884983fc04",
+          "bytes": 21
+        },
+        "end.utc": {
+          "path": "completion-ai-usage-trial-06.end.utc",
+          "sha256": "873b03042167c69d8413b799fdd45b4b0ce88b70cba7195662f6dcfd979472fd",
+          "bytes": 21
+        },
+        "exit.txt": {
+          "path": "completion-ai-usage-trial-06.exit.txt",
+          "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+          "bytes": 2
+        }
+      },
+      "valid_sample": true,
+      "invocation_argv": [
+        "/usr/bin/time",
+        "-p",
+        "codex",
+        "exec",
+        "-C",
+        "/tmp/completion-ai-usage.tNH9tf/case-2",
+        "--ephemeral",
+        "--sandbox",
+        "read-only",
+        "--model",
+        "gpt-5.6-sol",
+        "-c",
+        "model_reasoning_effort=\"medium\"",
+        "--json",
+        "--skip-git-repo-check",
+        "--output-schema",
+        "/tmp/completion-ai-usage.tNH9tf/response.schema.json",
+        "--output-last-message",
+        "/tmp/completion-ai-usage.tNH9tf/trial-06.answer.json",
+        "-"
+      ],
+      "stdin_path": "/tmp/completion-ai-usage.tNH9tf/case-2/prompt.txt",
+      "stdout_path_at_execution": "/tmp/completion-ai-usage.tNH9tf/trial-06.stdout.jsonl",
+      "stderr_path_at_execution": "/tmp/completion-ai-usage.tNH9tf/trial-06.run.stderr.log"
+    }
+  ],
+  "summary": {
+    "case-1": {
+      "valid_n": 3,
+      "mean_usage": {
+        "input_tokens": 95590.66666666667,
+        "cached_input_tokens": 76288,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 544.3333333333334,
+        "reasoning_output_tokens": 238
+      },
+      "median_usage": {
+        "input_tokens": 105849,
+        "cached_input_tokens": 75776,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 601,
+        "reasoning_output_tokens": 273
+      },
+      "mean_wall_seconds": 18.413333333333334,
+      "median_wall_seconds": 19.66
+    },
+    "case-2": {
+      "valid_n": 3,
+      "mean_usage": {
+        "input_tokens": 91081.66666666667,
+        "cached_input_tokens": 63658.666666666664,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 485.6666666666667,
+        "reasoning_output_tokens": 178.33333333333334
+      },
+      "median_usage": {
+        "input_tokens": 78711,
+        "cached_input_tokens": 59392,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 504,
+        "reasoning_output_tokens": 158
+      },
+      "mean_wall_seconds": 18.043333333333333,
+      "median_wall_seconds": 19.85
+    }
+  },
+  "billing_cost": null,
+  "billing_cost_note": "No actual charge record; subscription usage is not converted using API prices.",
+  "inference_limit": "One source-reading question, three samples per variant; no whole-project token, quality, cost, or runtime conclusion."
+}

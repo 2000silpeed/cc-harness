@@ -13,6 +13,8 @@ export default [
       "dist/**",
       "test-results/**",
       "playwright-report/**",
+      // Separate nested Git project; the root check owns only this repository.
+      "harness-map/**",
     ],
   },
   {

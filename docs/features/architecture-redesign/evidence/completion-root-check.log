@@ -1,0 +1,43 @@
+
+> cc-harness@0.0.0 check
+> npm run lint && npm run design:check && npm run harness:check && npm run format:check && npm run test && npm run handoff:eval && npm run typecheck
+
+
+> cc-harness@0.0.0 lint
+> eslint --no-error-on-unmatched-pattern --no-warn-ignored "**/*.{js,mjs,ts,tsx,html}"
+
+
+/Users/sungwoon/ai-projects/cc-harness/harness-map/harness-map.html
+   501:10   error  'locIndexBy' is defined but never used                          @typescript-eslint/no-unused-vars
+   573:43   error  'model' is assigned a value but never used                      @typescript-eslint/no-unused-vars
+   863:39   error  'idPrefix' is defined but never used                            @typescript-eslint/no-unused-vars
+   996:9    error  'vt' is assigned a value but never used                         @typescript-eslint/no-unused-vars
+  1313:102  error  'e' is defined but never used                                   @typescript-eslint/no-unused-vars
+  1332:112  error  'e' is defined but never used                                   @typescript-eslint/no-unused-vars
+  1332:114  error  Empty block statement                                           no-empty
+  1333:90   error  'e' is defined but never used                                   @typescript-eslint/no-unused-vars
+  1333:92   error  Empty block statement                                           no-empty
+  1506:7    error  'eff' is assigned a value but never used                        @typescript-eslint/no-unused-vars
+  1574:60   error  'e' is defined but never used                                   @typescript-eslint/no-unused-vars
+  1577:39   error  'e' is defined but never used                                   @typescript-eslint/no-unused-vars
+  1597:7    error  The value assigned to 'm' is not used in subsequent statements  no-useless-assignment
+  1598:7    error  The value assigned to 'm' is not used in subsequent statements  no-useless-assignment
+
+/Users/sungwoon/ai-projects/cc-harness/harness-map/template.html
+   498:10   error  'locIndexBy' is defined but never used                          @typescript-eslint/no-unused-vars
+   570:43   error  'model' is assigned a value but never used                      @typescript-eslint/no-unused-vars
+   860:39   error  'idPrefix' is defined but never used                            @typescript-eslint/no-unused-vars
+   993:9    error  'vt' is assigned a value but never used                         @typescript-eslint/no-unused-vars
+  1310:102  error  'e' is defined but never used                                   @typescript-eslint/no-unused-vars
+  1329:112  error  'e' is defined but never used                                   @typescript-eslint/no-unused-vars
+  1329:114  error  Empty block statement                                           no-empty
+  1330:90   error  'e' is defined but never used                                   @typescript-eslint/no-unused-vars
+  1330:92   error  Empty block statement                                           no-empty
+  1503:7    error  'eff' is assigned a value but never used                        @typescript-eslint/no-unused-vars
+  1571:60   error  'e' is defined but never used                                   @typescript-eslint/no-unused-vars
+  1574:39   error  'e' is defined but never used                                   @typescript-eslint/no-unused-vars
+  1594:7    error  The value assigned to 'm' is not used in subsequent statements  no-useless-assignment
+  1595:7    error  The value assigned to 'm' is not used in subsequent statements  no-useless-assignment
+
+✖ 28 problems (28 errors, 0 warnings)
+
