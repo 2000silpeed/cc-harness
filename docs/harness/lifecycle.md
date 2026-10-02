@@ -103,6 +103,8 @@ ADOPT의 품질 저하 방지 규칙(ratchet)은 실패 개수와 실패의 식�
 
 엄격한 입력 계약은 필요할 때만 `node scripts/session-handoff.mjs --help`와 `template`로 확인합니다. `prepare --input <json> --state docs/features/{feature}/session-handoff.json`은 인계 기록(record)을 중간 상태가 노출되지 않도록 한 번에 준비합니다.
 
+인계가 필요한 작업은 기존 `session-handoff.mjs` 명령을 진입점으로 사용합니다. 이 명령의 파일·Git·잠금·안내문 입출력과 기록의 판정·전환 규칙은 서로 다른 책임입니다. `npm run handoff:eval`은 저장된 대표 입력의 결정과 동일 입력 기준선 일치 여부만 확인하며, 승인 주체나 인수 조건의 의미를 판정하지 않습니다. 일상적인 짧은 작업에 인계 기록이나 평가 실행을 의무화하지 않습니다.
+
 `decide --state <path> --root <project> [--session-id <real-id>]`는 다음 항목을 다시 확인합니다. 원본 버전(source), 커밋하지 않은 변경(dirty), 참조, 승인, 증거, STOP 상태, 다음 행동에 남은 예산, 진행 중인 작업(in-flight)입니다. 자동 `decide`와 `claim`은 Git의 현재 커밋(HEAD)과 작업 트리 상태(status)를 확인할 수 있어야 사용합니다.
 
 `approval_refs.status: "approved"`와 일치하는 SHA-256은 기록과 파일의 메타데이터 무결성만 확인하며, 실제 사용자 승인 주체·범위·시점·철회 여부를 증명하지 않습니다. `prepare`의 `PREPARED`와 `decide`의 준비 판정은 로컬 상태·해시·기존 STOP·증거·예산 검사 결과입니다. 이 판정이나 성공 요청문은 사용자 승인 확인 또는 실행 권한 발급이 아닙니다. 호출자는 실제 행동 전에 CLI 밖의 신뢰할 수 있는 사용자 결정 원문을 대조하고 승인 주체, 대상·범위, 결정 시점과 후속 철회 여부를 확인해야 합니다. CLI는 이 확인을 나타내는 `verified` 플래그나 자체 인증 수단을 제공하지 않습니다.

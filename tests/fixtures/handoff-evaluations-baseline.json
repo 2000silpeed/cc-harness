@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "corpus_sha256": "d281c02ea2c29fbefc156addbe27069be31cb266a3fc1504293f9dd82625d379",
+  "source_revision": "ae9ff54c33518b77fc0de18feb217660303ac739",
+  "source_sha256": "19823e889fa3e3db7a74b98610f8efbe8fd4412248860d7cf313b4176b84aefe",
+  "observation_method": "Executed preserved pre-AR-01 CLI snapshot against the same record and context in the isolated ar01 fixture repository; decisions and exit codes observed per case.",
+  "cases": [
+    {
+      "case_id": "phase-ready",
+      "input_sha256": "90fe3e948c5ae7be46b4a2248108caceafd7ea3fa890bd72aa8bad8dacb67b84",
+      "actual_decision": "PHASE_READY",
+      "exit_code": 0
+    },
+    {
+      "case_id": "rollover-ready",
+      "input_sha256": "ece773e1e531a281814a07f4cae812af02646e999d9fd07f84b628de3c3ce298",
+      "actual_decision": "ROLLOVER_READY",
+      "exit_code": 0
+    },
+    {
+      "case_id": "active-stop",
+      "input_sha256": "75d21d3b2ae4ab3a3af538b11cabaf65d778e9ea734d2148d695f42777eb3f77",
+      "actual_decision": "STOP_ACTIVE",
+      "exit_code": 0
+    },
+    {
+      "case_id": "rollover-budget",
+      "input_sha256": "7d8ead6e624ea381b1e46db5c2148ea5dfa4f15ae856a5b9c955740af6580fc8",
+      "actual_decision": "STOP_ROLLOVER_BUDGET_EXHAUSTED",
+      "exit_code": 0
+    },
+    {
+      "case_id": "green-budget",
+      "input_sha256": "c73114ea7492f48fcb4cf8e1f7b8be7698759309dcd05056fdf0a0c37ce3f672",
+      "actual_decision": "STOP_BUDGET_EXHAUSTED",
+      "exit_code": 0
+    },
+    {
+      "case_id": "inflight-activity",
+      "input_sha256": "dc0e0b8f3da4507b90bb43364354a199f8494352fd1f48805a5013b4c3d43a3d",
+      "actual_decision": "STOP_INFLIGHT_ACTIVITY",
+      "exit_code": 0
+    },
+    {
+      "case_id": "approval-self-declared",
+      "input_sha256": "bcc164199ea88a8b9c67441c12a6228c0fbeb9283c2442394df719807657c173",
+      "actual_decision": "PHASE_READY",
+      "exit_code": 0
+    },
+    {
+      "case_id": "claim-new",
+      "input_sha256": "5d586b38d885eea42230170d35ee93de2498447ad2350951b4e93376c5d00091",
+      "actual_decision": "CLAIMED",
+      "exit_code": 0
+    },
+    {
+      "case_id": "claim-replay",
+      "input_sha256": "d5afef9f0e1193b0d1fc19a27c2458ffa1d929e9479a6f505776bd49fcbd80b6",
+      "actual_decision": "STOP_RECONCILIATION_REQUIRED",
+      "exit_code": 0
+    },
+    {
+      "case_id": "receipt-new",
+      "input_sha256": "285c93c0758811b0663f92f4ccc362802d328b98e4ecd91f45a1b65a7cef7f9d",
+      "actual_decision": "RECEIPT_RECORDED",
+      "exit_code": 0
+    },
+    {
+      "case_id": "receipt-replay",
+      "input_sha256": "7d96e790577bb23b8a2db10b50d7344824b3f84c77c4bcb7d83e0054bc60570a",
+      "actual_decision": "RECEIPT_RECORDED",
+      "exit_code": 0
+    },
+    {
+      "case_id": "receipt-continue",
+      "input_sha256": "10b21d1715a716078a6d6cb842b4fc9d55eab543249c78d77298222edb233fe2",
+      "actual_decision": "CONTINUE_CURRENT",
+      "exit_code": 0
+    },
+    {
+      "case_id": "prepare-idempotent",
+      "input_sha256": "d61bf3bd4db73fb03f7dd4fedc5d8fc0175d7685281aa3f496db9a1f7cc912e9",
+      "actual_decision": "PREPARED",
+      "exit_code": 0
+    },
+    {
+      "case_id": "lineage-wrong-predecessor",
+      "input_sha256": "1f57ab804d55629c53375107a3c13d8d169bb86c33efe96e58371efb16fccda0",
+      "actual_decision": "ERROR",
+      "exit_code": 1,
+      "stderr": "predecessor_handoff_id does not match previous handoff_id"
+    }
+  ]
+}

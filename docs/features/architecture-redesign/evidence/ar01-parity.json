@@ -1,0 +1,2668 @@
+{
+  "source_revision": "ae9ff54c33518b77fc0de18feb217660303ac739",
+  "source_sha256": "19823e889fa3e3db7a74b98610f8efbe8fd4412248860d7cf313b4176b84aefe",
+  "command": "node /tmp/cc-harness-ar01-parity.mjs",
+  "total": 13,
+  "passed": 12,
+  "entries": [
+    {
+      "case_id": "rollover-valid",
+      "command": "decide",
+      "equal": true,
+      "old": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_ALREADY_TRANSFERRED\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "3a10a4395ba674e905503da25055396475adad8bba75df3e82b3f2c1fadb7f33",
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": {
+              "executor_id": "worker",
+              "session_id": "session-1"
+            },
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "receipted",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 1
+          }
+        }
+      },
+      "current": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_ALREADY_TRANSFERRED\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "3a10a4395ba674e905503da25055396475adad8bba75df3e82b3f2c1fadb7f33",
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": {
+              "executor_id": "worker",
+              "session_id": "session-1"
+            },
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "receipted",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 1
+          }
+        }
+      }
+    },
+    {
+      "case_id": "rollover-valid",
+      "command": "claim",
+      "equal": true,
+      "old": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_RECONCILIATION_REQUIRED\",\"launch_allowed\":false}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "3a10a4395ba674e905503da25055396475adad8bba75df3e82b3f2c1fadb7f33",
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": {
+              "executor_id": "worker",
+              "session_id": "session-1"
+            },
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "receipted",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 1
+          }
+        }
+      },
+      "current": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_RECONCILIATION_REQUIRED\",\"launch_allowed\":false}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "3a10a4395ba674e905503da25055396475adad8bba75df3e82b3f2c1fadb7f33",
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": {
+              "executor_id": "worker",
+              "session_id": "session-1"
+            },
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "receipted",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 1
+          }
+        }
+      }
+    },
+    {
+      "case_id": "rollover-valid",
+      "command": "receipt",
+      "equal": false,
+      "old": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"RECEIPT_RECORDED\",\"idempotent\":true,\"resume_prompt\":\"First run node scripts/session-handoff.mjs decide --state docs/features/example/session-handoff.json --root . --session-id session-1; perform no work unless it returns CONTINUE_CURRENT with transfer confirmed-receipt and the caller has verified actual user approval outside this CLI. Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization. Then Use $harness-cycle in RESUME mode. Read docs/features/example/session-handoff.json, verify handoff_id 3a10a4395ba674e905503da25055396475adad8bba75df3e82b3f2c1fadb7f33, source/dirty ownership and referenced evidence, then perform only checkpoint.next_action within approved_scope_ref. Preserve counters; apply STOP before phase transition. Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\",\"notice\":\"Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "3a10a4395ba674e905503da25055396475adad8bba75df3e82b3f2c1fadb7f33",
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": {
+              "executor_id": "worker",
+              "session_id": "session-1"
+            },
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "receipted",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 1
+          }
+        }
+      },
+      "current": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"RECEIPT_RECORDED\",\"idempotent\":true,\"resume_prompt\":\"First run node scripts/session-handoff.mjs decide --state docs/features/example/session-handoff.json --root . --session-id session-1; perform no work unless it returns CONTINUE_CURRENT with transfer confirmed-receipt and the caller has verified actual user approval outside this CLI. Then Use $harness-cycle in RESUME mode. Read docs/features/example/session-handoff.json, verify handoff_id 3a10a4395ba674e905503da25055396475adad8bba75df3e82b3f2c1fadb7f33, source/dirty ownership and referenced evidence, then perform only checkpoint.next_action within approved_scope_ref. Preserve counters; apply STOP before phase transition. Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\",\"notice\":\"Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "3a10a4395ba674e905503da25055396475adad8bba75df3e82b3f2c1fadb7f33",
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": {
+              "executor_id": "worker",
+              "session_id": "session-1"
+            },
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "receipted",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 1
+          }
+        }
+      }
+    },
+    {
+      "case_id": "rollover-valid",
+      "command": "decide",
+      "equal": true,
+      "old": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"CONTINUE_CURRENT\",\"transfer\":\"confirmed-receipt\",\"instruction\":\"Use $harness-cycle in RESUME mode. Read docs/features/example/session-handoff.json, verify handoff_id 3a10a4395ba674e905503da25055396475adad8bba75df3e82b3f2c1fadb7f33, source/dirty ownership and referenced evidence, then perform only checkpoint.next_action within approved_scope_ref. Preserve counters; apply STOP before phase transition. Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\",\"notice\":\"Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "3a10a4395ba674e905503da25055396475adad8bba75df3e82b3f2c1fadb7f33",
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": {
+              "executor_id": "worker",
+              "session_id": "session-1"
+            },
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "receipted",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 1
+          }
+        }
+      },
+      "current": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"CONTINUE_CURRENT\",\"transfer\":\"confirmed-receipt\",\"instruction\":\"Use $harness-cycle in RESUME mode. Read docs/features/example/session-handoff.json, verify handoff_id 3a10a4395ba674e905503da25055396475adad8bba75df3e82b3f2c1fadb7f33, source/dirty ownership and referenced evidence, then perform only checkpoint.next_action within approved_scope_ref. Preserve counters; apply STOP before phase transition. Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\",\"notice\":\"Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "3a10a4395ba674e905503da25055396475adad8bba75df3e82b3f2c1fadb7f33",
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": {
+              "executor_id": "worker",
+              "session_id": "session-1"
+            },
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "receipted",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 1
+          }
+        }
+      }
+    },
+    {
+      "case_id": "active-stop",
+      "command": "decide",
+      "equal": true,
+      "old": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_ACTIVE\",\"reason\":\"blocked\",\"resume_condition\":\"resolve\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "68d28286ac6c04f8f9cf917887d6b05f6dad6763fc17af24bba6cfd96f60d133",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": true,
+            "reason": "blocked",
+            "resolution_ref": null,
+            "resume_condition": "resolve"
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 0
+          }
+        }
+      },
+      "current": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_ACTIVE\",\"reason\":\"blocked\",\"resume_condition\":\"resolve\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "68d28286ac6c04f8f9cf917887d6b05f6dad6763fc17af24bba6cfd96f60d133",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": true,
+            "reason": "blocked",
+            "resolution_ref": null,
+            "resume_condition": "resolve"
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 0
+          }
+        }
+      }
+    },
+    {
+      "case_id": "active-stop",
+      "command": "claim",
+      "equal": true,
+      "old": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_ACTIVE\",\"reason\":\"blocked\",\"resume_condition\":\"resolve\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "68d28286ac6c04f8f9cf917887d6b05f6dad6763fc17af24bba6cfd96f60d133",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": true,
+            "reason": "blocked",
+            "resolution_ref": null,
+            "resume_condition": "resolve"
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 0
+          }
+        }
+      },
+      "current": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_ACTIVE\",\"reason\":\"blocked\",\"resume_condition\":\"resolve\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "68d28286ac6c04f8f9cf917887d6b05f6dad6763fc17af24bba6cfd96f60d133",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": true,
+            "reason": "blocked",
+            "resolution_ref": null,
+            "resume_condition": "resolve"
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 0
+          }
+        }
+      }
+    },
+    {
+      "case_id": "active-stop",
+      "command": "receipt",
+      "equal": true,
+      "old": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_DUPLICATE_OR_STALE\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "68d28286ac6c04f8f9cf917887d6b05f6dad6763fc17af24bba6cfd96f60d133",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": true,
+            "reason": "blocked",
+            "resolution_ref": null,
+            "resume_condition": "resolve"
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 0
+          }
+        }
+      },
+      "current": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_DUPLICATE_OR_STALE\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "68d28286ac6c04f8f9cf917887d6b05f6dad6763fc17af24bba6cfd96f60d133",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": true,
+            "reason": "blocked",
+            "resolution_ref": null,
+            "resume_condition": "resolve"
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 0
+          }
+        }
+      }
+    },
+    {
+      "case_id": "budget",
+      "command": "decide",
+      "equal": true,
+      "old": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_ROLLOVER_BUDGET_EXHAUSTED\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "4841099ec902937a08068cd880f66d5db3dd561b398b480dfa9aa9b2a2c68821",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 1
+          }
+        }
+      },
+      "current": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_ROLLOVER_BUDGET_EXHAUSTED\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "4841099ec902937a08068cd880f66d5db3dd561b398b480dfa9aa9b2a2c68821",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 1
+          }
+        }
+      }
+    },
+    {
+      "case_id": "budget",
+      "command": "claim",
+      "equal": true,
+      "old": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_ROLLOVER_BUDGET_EXHAUSTED\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "4841099ec902937a08068cd880f66d5db3dd561b398b480dfa9aa9b2a2c68821",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 1
+          }
+        }
+      },
+      "current": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_ROLLOVER_BUDGET_EXHAUSTED\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "4841099ec902937a08068cd880f66d5db3dd561b398b480dfa9aa9b2a2c68821",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 1
+          }
+        }
+      }
+    },
+    {
+      "case_id": "budget",
+      "command": "receipt",
+      "equal": true,
+      "old": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_DUPLICATE_OR_STALE\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "4841099ec902937a08068cd880f66d5db3dd561b398b480dfa9aa9b2a2c68821",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 1
+          }
+        }
+      },
+      "current": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_DUPLICATE_OR_STALE\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "4841099ec902937a08068cd880f66d5db3dd561b398b480dfa9aa9b2a2c68821",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "fresh-session"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 1
+          }
+        }
+      }
+    },
+    {
+      "case_id": "phase",
+      "command": "decide",
+      "equal": true,
+      "old": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"PHASE_READY\",\"next_skill\":\"ac-verifier\",\"next_action\":\"Verify AC.\",\"instruction\":\"Use $harness-cycle in RESUME mode. Read docs/features/example/session-handoff.json, verify handoff_id 28b0990834710d0f581a4f135016b2c1828c9a03d666cc605cd0b77bd396a790, source/dirty ownership and referenced evidence, then perform only checkpoint.next_action within approved_scope_ref. Preserve counters; apply STOP before phase transition. Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\",\"notice\":\"Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "28b0990834710d0f581a4f135016b2c1828c9a03d666cc605cd0b77bd396a790",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "continue-current"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 0
+          }
+        }
+      },
+      "current": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"PHASE_READY\",\"next_skill\":\"ac-verifier\",\"next_action\":\"Verify AC.\",\"instruction\":\"Use $harness-cycle in RESUME mode. Read docs/features/example/session-handoff.json, verify handoff_id 28b0990834710d0f581a4f135016b2c1828c9a03d666cc605cd0b77bd396a790, source/dirty ownership and referenced evidence, then perform only checkpoint.next_action within approved_scope_ref. Preserve counters; apply STOP before phase transition. Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\",\"notice\":\"Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "28b0990834710d0f581a4f135016b2c1828c9a03d666cc605cd0b77bd396a790",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "continue-current"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 0
+          }
+        }
+      }
+    },
+    {
+      "case_id": "phase",
+      "command": "claim",
+      "equal": true,
+      "old": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"PHASE_READY\",\"next_skill\":\"ac-verifier\",\"next_action\":\"Verify AC.\",\"instruction\":\"Use $harness-cycle in RESUME mode. Read docs/features/example/session-handoff.json, verify handoff_id 28b0990834710d0f581a4f135016b2c1828c9a03d666cc605cd0b77bd396a790, source/dirty ownership and referenced evidence, then perform only checkpoint.next_action within approved_scope_ref. Preserve counters; apply STOP before phase transition. Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\",\"notice\":\"Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "28b0990834710d0f581a4f135016b2c1828c9a03d666cc605cd0b77bd396a790",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "continue-current"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 0
+          }
+        }
+      },
+      "current": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"PHASE_READY\",\"next_skill\":\"ac-verifier\",\"next_action\":\"Verify AC.\",\"instruction\":\"Use $harness-cycle in RESUME mode. Read docs/features/example/session-handoff.json, verify handoff_id 28b0990834710d0f581a4f135016b2c1828c9a03d666cc605cd0b77bd396a790, source/dirty ownership and referenced evidence, then perform only checkpoint.next_action within approved_scope_ref. Preserve counters; apply STOP before phase transition. Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\",\"notice\":\"Local state, hash, STOP, evidence, and budget checks only. The caller must verify the actual user approval, identity, scope, time, and revocation status outside this CLI before acting. This CLI does not grant execution authorization.\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "28b0990834710d0f581a4f135016b2c1828c9a03d666cc605cd0b77bd396a790",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "continue-current"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 0
+          }
+        }
+      }
+    },
+    {
+      "case_id": "phase",
+      "command": "receipt",
+      "equal": true,
+      "old": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_DUPLICATE_OR_STALE\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "28b0990834710d0f581a4f135016b2c1828c9a03d666cc605cd0b77bd396a790",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "continue-current"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 0
+          }
+        }
+      },
+      "current": {
+        "exit": 0,
+        "stdout": "{\"decision\":\"STOP_DUPLICATE_OR_STALE\"}\n",
+        "stderr": "",
+        "state": {
+          "activity": {
+            "external_actions": [],
+            "workers": []
+          },
+          "budgets": {
+            "diagnostic": {
+              "limit": 1,
+              "used": 0
+            },
+            "green": {
+              "limit": 3,
+              "used": 3
+            },
+            "rework_count": 0
+          },
+          "checkpoint": {
+            "action_kind": "phase",
+            "mode": "RESUME",
+            "next_action": "Verify AC.",
+            "next_skill": "ac-verifier",
+            "next_stage": "ac-verification",
+            "stage": "green",
+            "stage_status": "passed"
+          },
+          "failures": [],
+          "handoff_id": "28b0990834710d0f581a4f135016b2c1828c9a03d666cc605cd0b77bd396a790",
+          "rollover": {
+            "claim": null,
+            "receipt": null,
+            "requested": "continue-current"
+          },
+          "schema_version": 2,
+          "sequence": 1,
+          "state": {
+            "approval_refs": [
+              {
+                "gate": "scope",
+                "path": "scope.md",
+                "sha256": "d8233a294e3028f552d2219dafbd9f417ccc039567d14e45ceecce60262d87ff",
+                "status": "approved"
+              },
+              {
+                "gate": "rollover",
+                "path": "rollover.md",
+                "sha256": "2a0beff6a15c37da66de84d015b9717ab144700b12c7377ec99217583cc56f85",
+                "status": "approved"
+              },
+              {
+                "gate": "stage:ac-verification",
+                "path": "stage.md",
+                "sha256": "be64adb52ee58dc731a15683944c1b8057e8276eca07930f0063a5e852641151",
+                "status": "approved"
+              }
+            ],
+            "contract_hashes": {
+              "contract.md": "3dd7131bf1c92dd2a9c9eb03891f3fbaf0321ef9ef019be728d8cc29225d6928"
+            },
+            "dirty_manifest": [
+              {
+                "owner": "worker",
+                "path": "tracked.txt",
+                "sha256": "7b9a72466d3960eb2aacccfc848939453490db0678bd4725def3f789b891c919"
+              }
+            ],
+            "evidence_refs": [
+              {
+                "path": "evidence.json",
+                "required": true,
+                "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+                "validity": "valid"
+              }
+            ],
+            "evidence_validity": "valid",
+            "predecessor_handoff_id": null,
+            "retired_refs": [],
+            "source_revision": "7cfde09197911b026e8422e155b11f451792e479"
+          },
+          "status": "prepared",
+          "stop": {
+            "active": false,
+            "reason": null,
+            "resolution_ref": null,
+            "resume_condition": null
+          },
+          "task": {
+            "approved_scope_ref": "scope.md",
+            "max_rollovers": 1,
+            "objective": "AR-01 baseline",
+            "rollover_authority_ref": "rollover.md",
+            "used_rollovers": 0
+          }
+        }
+      }
+    }
+  ],
+  "intentional_prompt_dedup": {
+    "expected_differences": 1,
+    "description": "resume_prompt contains one local notice instead of two; output notice field remains",
+    "other_exact_matches": 12,
+    "compatible_total": 13
+  }
+}

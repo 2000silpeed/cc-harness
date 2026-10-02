@@ -1,0 +1,51 @@
+
+> cc-harness@0.0.0 test
+> vitest run --run tests/unit/harness-portability.test.ts -t AR-01 rejects a stored receipt
+
+
+ RUN  v5.0.0 /Users/sungwoon/ai-projects/cc-harness
+
+ ❯ tests/unit/harness-portability.test.ts (130 tests | 2 failed | 128 skipped) 2355ms
+   × AR-01 rejects a stored receipt with placeholder session 1214ms
+   × AR-01 rejects a stored receipt with different executor 1140ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/harness-portability.test.ts > AR-01 rejects a stored receipt with placeholder session
+AssertionError: expected 'STOP_ALREADY_TRANSFERRED' to be 'STOP_MALFORMED' // Object.is equality
+
+Expected: "STOP_MALFORMED"
+Received: "STOP_ALREADY_TRANSFERRED"
+
+ ❯ tests/unit/harness-portability.test.ts:218:46
+    216|   const decide = runHandoff(root, ["decide", "--state", prepared.state…
+    217|   expect(decide.status).toBe(0);
+    218|   expect(JSON.parse(decide.stdout).decision).toBe("STOP_MALFORMED");
+       |                                              ^
+    219|   for (const args of [
+    220|     ["claim", "--state", prepared.statePath, "--handoff-id", id, "--ex…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/unit/harness-portability.test.ts > AR-01 rejects a stored receipt with different executor
+AssertionError: expected 'CONTINUE_CURRENT' to be 'STOP_MALFORMED' // Object.is equality
+
+Expected: "STOP_MALFORMED"
+Received: "CONTINUE_CURRENT"
+
+ ❯ tests/unit/harness-portability.test.ts:218:46
+    216|   const decide = runHandoff(root, ["decide", "--state", prepared.state…
+    217|   expect(decide.status).toBe(0);
+    218|   expect(JSON.parse(decide.stdout).decision).toBe("STOP_MALFORMED");
+       |                                              ^
+    219|   for (const args of [
+    220|     ["claim", "--state", prepared.statePath, "--handoff-id", id, "--ex…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 128 skipped (130)
+   Start at  14:11:36
+   Duration  2.46s (tests 98%, transform 1%)
+

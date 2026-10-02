@@ -12,7 +12,8 @@
     "format": "prettier . --write --ignore-unknown",
     "design:check": "node scripts/check-design-system.mjs",
     "harness:check": "node scripts/check-harness.mjs",
-    "check": "npm run lint && npm run design:check && npm run harness:check && npm run format:check && npm run test && npm run typecheck",
+    "handoff:eval": "node scripts/evaluate-handoff.mjs --dataset tests/fixtures/handoff-evaluations.json --baseline tests/fixtures/handoff-evaluations-baseline.json",
+    "check": "npm run lint && npm run design:check && npm run harness:check && npm run format:check && npm run test && npm run handoff:eval && npm run typecheck",
     "lint-staged": "lint-staged",
     "lint:commit": "commitlint --edit"
   },

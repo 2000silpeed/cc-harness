@@ -126,6 +126,7 @@
     "scripts/check-harness.mjs",
     "scripts/install-harness.mjs",
     "scripts/session-handoff.mjs",
+    "scripts/handoff-core.mjs",
     "scripts/read-section.mjs",
     "scripts/ax-session.mjs"
   ]

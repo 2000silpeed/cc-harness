@@ -153,11 +153,15 @@ function handoffInput(root: string, overrides: Record<string, unknown> = {}) {
 }
 
 function runHandoff(root: string, args: string[]) {
-  return spawnSync(process.execPath, [resolve(repository, handoffScript), ...args], {
-    cwd: root,
-    encoding: "utf8",
-    env: { ...process.env, PATH: process.env.PATH ?? "" },
-  });
+  return spawnSync(
+    process.execPath,
+    [process.env.HANDOFF_BASELINE_CLI ?? resolve(repository, handoffScript), ...args],
+    {
+      cwd: root,
+      encoding: "utf8",
+      env: { ...process.env, PATH: process.env.PATH ?? "" },
+    },
+  );
 }
 
 function prepareHandoff(root: string, input = handoffInput(root)) {
@@ -186,10 +190,116 @@ function expectLocalChecks(result: { stdout: string; status: number | null }, de
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 it("ships the session handoff helper in an installed harness", () => {
-  const target = directory();
+  const target = handoffRepository();
+  write(target, "tracked.txt", "baseline\n");
   const installed = run(repository, "install-harness", ["--target", target, "--apply"]);
   expect(installed.status, installed.stderr).toBe(0);
   expect(existsSync(resolve(target, handoffScript))).toBe(true);
+  expect(existsSync(resolve(target, "scripts/handoff-core.mjs"))).toBe(true);
+  const help = spawnSync(process.execPath, [resolve(target, handoffScript), "--help"], {
+    encoding: "utf8",
+  });
+  expect(help.status, help.stderr).toBe(0);
+  const template = spawnSync(process.execPath, [resolve(target, handoffScript), "template"], {
+    encoding: "utf8",
+  });
+  expect(template.status, template.stderr).toBe(0);
+  expect(JSON.parse(template.stdout).schema_version).toBe(2);
+  git(target, "add", ".");
+  git(target, "commit", "-qm", "installed harness fixture");
+  write(target, "tracked.txt", "worker change\n");
+  const inputPath = resolve(directory(), "installed-input.json");
+  const statePath = resolve(target, "docs/features/example/session-handoff.json");
+  writeFileSync(inputPath, JSON.stringify(handoffInput(target)));
+  const commands = [
+    ["prepare", "--input", inputPath, "--state", statePath],
+    ["decide", "--state", statePath, "--root", target],
+  ];
+  for (const args of commands) {
+    const installedRun = spawnSync(process.execPath, [resolve(target, handoffScript), ...args], {
+      cwd: target,
+      encoding: "utf8",
+    });
+    const sourceRun = runHandoff(target, args);
+    expect(installedRun.status, installedRun.stderr).toBe(0);
+    expect(sourceRun.status, sourceRun.stderr).toBe(0);
+    expect(JSON.parse(installedRun.stdout)).toEqual(JSON.parse(sourceRun.stdout));
+  }
+});
+
+it.each([
+  [
+    "placeholder session",
+    (record: any) => {
+      record.rollover.receipt.session_id = "pending-session";
+    },
+  ],
+  [
+    "different executor",
+    (record: any) => {
+      record.rollover.receipt.executor_id = "other-worker";
+    },
+  ],
+])("AR-01 rejects a stored receipt with %s", (_name, corrupt) => {
+  const root = handoffRepository();
+  const prepared = prepareHandoff(root);
+  expect(prepared.result.status, prepared.result.stderr).toBe(0);
+  const id = prepared.state.handoff_id;
+  const claim = runHandoff(root, [
+    "claim",
+    "--state",
+    prepared.statePath,
+    "--handoff-id",
+    id,
+    "--executor-id",
+    "worker",
+  ]);
+  expect(claim.status, claim.stderr).toBe(0);
+  const receipt = runHandoff(root, [
+    "receipt",
+    "--state",
+    prepared.statePath,
+    "--handoff-id",
+    id,
+    "--executor-id",
+    "worker",
+    "--session-id",
+    "session-1",
+  ]);
+  expect(receipt.status, receipt.stderr).toBe(0);
+  const record = JSON.parse(readFileSync(prepared.statePath, "utf8"));
+  corrupt(record);
+  writeFileSync(prepared.statePath, JSON.stringify(record));
+  const decide = runHandoff(root, [
+    "decide",
+    "--state",
+    prepared.statePath,
+    "--root",
+    root,
+    "--session-id",
+    "session-1",
+  ]);
+  expect(decide.status).toBe(0);
+  expect(JSON.parse(decide.stdout).decision).toBe("STOP_MALFORMED");
+  for (const args of [
+    ["claim", "--state", prepared.statePath, "--handoff-id", id, "--executor-id", "worker"],
+    [
+      "receipt",
+      "--state",
+      prepared.statePath,
+      "--handoff-id",
+      id,
+      "--executor-id",
+      "worker",
+      "--session-id",
+      "session-1",
+    ],
+  ]) {
+    const result = runHandoff(root, args);
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toMatch(/receipt/);
+  }
 });
 
 it("exposes compact help and a machine-readable input template", () => {

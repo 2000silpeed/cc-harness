@@ -1,0 +1,13 @@
+
+> cc-harness@0.0.0 test
+> vitest run --run tests/unit/handoff-core.test.ts tests/unit/harness-portability.test.ts
+
+
+ RUN  v5.0.0 /Users/sungwoon/ai-projects/cc-harness
+
+
+ Test Files  2 passed (2)
+      Tests  132 passed (132)
+   Start at  14:13:43
+   Duration  65.25s (tests 100%)
+

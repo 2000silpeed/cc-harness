@@ -90,19 +90,20 @@ Claude Code를 쓴다면 새 제품 루트에 `@AGENTS.md`를 불러오는 `CLAU
 
 아래 표는 cc-harness 원본을 설치하고 검사할 때 사용하는 명령입니다. 새 제품에서는 선택한 기술 구성에 맞는 명령을 별도로 구성해야 합니다.
 
-| 명령                           | 역할                                              |
-| ------------------------------ | ------------------------------------------------- |
-| node scripts/check-harness.mjs | 등록·스킬·문서·참조 검사, npm 설치 없이 실행 가능 |
-| npm ci                         | 하네스 검사 의존성 설치 및 Husky 연결             |
-| npm run lint                   | JS/MJS·TS/TSX·HTML 검사                           |
-| npm run design:check           | 구조도 정적 디자인 검사                           |
-| npm run format:check           | 서식 검사                                         |
-| npm test                       | Vitest 하네스 이식 회귀 검사                      |
-| npm run harness:check          | 하네스 등록·참조 검사                             |
-| npm run typecheck              | TypeScript 타입 검사                              |
-| npm run check                  | lint·디자인·하네스·서식·테스트·타입 통합          |
+| 명령                           | 역할                                               |
+| ------------------------------ | -------------------------------------------------- |
+| node scripts/check-harness.mjs | 등록·스킬·문서·참조 검사, npm 설치 없이 실행 가능  |
+| npm ci                         | 하네스 검사 의존성 설치 및 Husky 연결              |
+| npm run lint                   | JS/MJS·TS/TSX·HTML 검사                            |
+| npm run design:check           | 구조도 정적 디자인 검사                            |
+| npm run format:check           | 서식 검사                                          |
+| npm test                       | Vitest 하네스 이식 회귀 검사                       |
+| npm run harness:check          | 하네스 등록·참조 검사                              |
+| npm run handoff:eval           | 인계 대표 입력과 고정 기준선의 로컬 오프라인 비교  |
+| npm run typecheck              | TypeScript 타입 검사                               |
+| npm run check                  | lint·디자인·하네스·서식·테스트·인계 평가·타입 통합 |
 
-하네스 도구는 Node 24 계열을 기준으로 검증합니다. TypeScript는 이식 과정의 회귀와 타입을 검사하기 위해 유지합니다. 이 검사는 제품 앱, 개발 서버, 미리보기, 앱 빌드, 브라우저 테스트를 포함하지 않습니다. 따라서 하네스 검사가 통과해도 제품 구현, 인수 조건(AC) 충족, 시각 검증까지 끝났다고 볼 수 없습니다. 자세한 범위는 [검증 경계](docs/harness/verification.md)를 따릅니다.
+하네스 도구는 Node 24 계열을 기준으로 검증합니다. TypeScript는 이식 과정의 회귀와 타입을 검사하기 위해 유지합니다. `handoff:eval`은 저장된 대표 입력의 판정과 같은 입력 기준선을 비교하며 사용자 승인 출처나 AC의 의미를 확인하지 않습니다. 이 검사는 제품 앱, 개발 서버, 미리보기, 앱 빌드, 브라우저 테스트를 포함하지 않습니다. 따라서 하네스 검사가 통과해도 제품 구현, 인수 조건(AC) 충족, 시각 검증까지 끝났다고 볼 수 없습니다. 자세한 범위는 [검증 경계](docs/harness/verification.md)를 따릅니다.
 
 ## 구조도와 운영 경계
 
