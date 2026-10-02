@@ -28,8 +28,6 @@ const ACTIVITY_STATUSES = new Set([
   "unknown",
 ]);
 const TERMINAL_ACTIVITY = new Set(["completed", "failed", "cancelled"]);
-const STARTUP_PROMPT =
-  "Startup only: do not read or mutate project state and do not perform product work. Wait for the caller to persist a receipt with this real session ID and send the bounded resume prompt; then run decide with this session ID before work.";
 const STAGE_SKILLS = new Map([
   ["requirements", "feature-planner"],
   ["design", "design-system"],
@@ -523,13 +521,17 @@ function checkCurrent(record, location) {
   return null;
 }
 
-function prompt(record, location) {
-  return `Use $harness-cycle in RESUME mode. Read ${location.stateRelative}, verify handoff_id ${record.handoff_id}, source/dirty ownership and referenced evidence, then perform only checkpoint.next_action within approved_scope_ref. Preserve counters; apply STOP before phase transition.`;
-}
-
 function receiptPrompt(record, location) {
   const sessionId = record.rollover.receipt.session_id;
-  return `First run node scripts/session-handoff.mjs decide --state ${location.stateRelative} --root . --session-id ${sessionId}; perform no work unless it returns CONTINUE_CURRENT with transfer confirmed-receipt. Then ${prompt(record, location)}`;
+  return `Receipt recorded for session ${sessionId}. Approval provenance still requires manual review of the original user decision, approving identity, scope, time, and revocation status outside this CLI. This receipt is not execution authorization. A subsequent decide --state ${location.stateRelative} --root . --session-id ${sessionId} remains blocked until a separately approved trusted verification mechanism exists.`;
+}
+
+function provenanceStop() {
+  return {
+    decision: "STOP_APPROVAL_PROVENANCE_UNVERIFIED",
+    resume_condition:
+      "CLI 밖의 신뢰 가능한 사용자 승인 원문, 승인 주체, 대상 범위, 결정 시점 및 후속 철회 여부를 수동 검토해야 한다. 이 검토는 현재 CLI의 실행 허가가 아니다.",
+  };
 }
 
 function approval(record, gate, path) {
@@ -543,12 +545,7 @@ function readiness(record, location, sessionId) {
   if (stale) return { decision: stale };
   if (record.status === "claimed") return { decision: "STOP_RECONCILIATION_REQUIRED" };
   if (record.status === "receipted") {
-    if (sessionId === record.rollover.receipt.session_id)
-      return {
-        decision: "CONTINUE_CURRENT",
-        transfer: "confirmed-receipt",
-        instruction: prompt(record, location),
-      };
+    if (sessionId === record.rollover.receipt.session_id) return provenanceStop();
     return { decision: "STOP_ALREADY_TRANSFERRED" };
   }
   if (record.stop.active)
@@ -606,19 +603,9 @@ function readiness(record, location, sessionId) {
       return { decision: "STOP_ROLLOVER_AUTHORITY_REQUIRED" };
     if (record.task.used_rollovers >= record.task.max_rollovers)
       return { decision: "STOP_ROLLOVER_BUDGET_EXHAUSTED" };
-    return {
-      decision: "ROLLOVER_READY",
-      handoff_id: record.handoff_id,
-    };
+    return provenanceStop();
   }
-  if (record.checkpoint.stage_status === "passed")
-    return {
-      decision: "PHASE_READY",
-      next_skill: record.checkpoint.next_skill,
-      next_action: record.checkpoint.next_action,
-      instruction: prompt(record, location),
-    };
-  return { decision: "CONTINUE_CURRENT", instruction: prompt(record, location) };
+  return provenanceStop();
 }
 
 function checkReferenceLineage(previous, input) {
@@ -785,12 +772,7 @@ function claim() {
         return { decision: "STOP_RECONCILIATION_REQUIRED", launch_allowed: false };
       return { decision: "STOP_DUPLICATE_OR_STALE" };
     }
-    const ready = readiness(record, location);
-    if (ready.decision !== "ROLLOVER_READY") return ready;
-    record.status = "claimed";
-    record.rollover.claim = { executor_id: executorId };
-    atomicWrite(location.statePath, record);
-    return { decision: "CLAIMED", idempotent: false, launch_prompt: STARTUP_PROMPT };
+    return readiness(record, location);
   });
 }
 

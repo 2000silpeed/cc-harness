@@ -298,7 +298,7 @@
             <h3>기록과 권한의 계보</h3>
             <p>
               기준선 HEAD에서는 STOP 이유 및 승인·증거 참조의 연속성을 검사하는 코드 범위가
-              좁았습니다. STOP 연속성과 참조 metadata 계보를 각각 수정·검증해 현재 HEAD
+              좁았습니다. STOP 연속성과 참조 metadata 계보를 각각 수정·검증해 당시 HEAD
               <code>f93bec9</code>에 로컬 커밋했습니다. 커밋 전 <code>b30f72f</code>에서 별도 독립
               검증자가 <code>npm run check</code> 종료 코드 0을 확인했으며, 검사한
               코드·계약·테스트는 커밋 후에도 동일합니다.
@@ -329,7 +329,7 @@
         <h2>첫 가설 실험 결과 <span class="pill fact">로컬 커밋 완료</span></h2>
         <p class="section-intro">
           이 절은 기준선 HEAD <code>616db09</code> 이후의 로컬 작업 결과입니다. 위 감사의 STOP
-          지적은 당시 코드의 사실로 보존하며, 해당 조건의 수정은 현재 HEAD에 반영됐습니다.
+          지적은 당시 코드의 사실로 보존하며, 해당 조건의 수정은 이후 로컬 커밋에 반영됐습니다.
         </p>
         <div class="grid two">
           <div class="panel">
@@ -457,7 +457,7 @@
       </section>
 
       <section id="approval-experiment">
-        <h2>세 번째 가설: 승인 출처의 자기 선언</h2>
+        <h2>세 번째 가설: 승인 출처의 자기 선언 <span class="pill fact">로컬 차단 구현</span></h2>
         <p class="section-intro">
           원본 저장소의 승인 기록을 바꾸지 않고 폐기 가능한
           <code>/tmp/approval-boundary.Sd9Cf6/repo</code>에서 재현했습니다. 이 실험은 파일 해시가
@@ -477,15 +477,37 @@
             </p>
           </div>
           <div class="panel">
-            <h3>현재 범위의 권고 A</h3>
+            <h3>권고 A의 현재 로컬 구현</h3>
             <p>
-              CLI는 참조 형식·파일 해시 등 metadata 무결성을 검사합니다. 실제 승인 원문, 결정자,
-              범위는 별도 인간·세션 검토에서 대조해야 합니다. 이를 통과한 승인으로 자동 간주하지
-              않도록 인계와 독립 검토에 출처 확인 결과를 명시합니다. 서명 영수증을 도입하는 B안은
-              별도 설계와 승인이 필요하며 이번에 구현하지 않았습니다.
+              이번 검사 당시 HEAD <code>b23df99</code> 위 미커밋 작업 트리에서 CLI의 자동 단계
+              진행·현재 단계 계속·rollover·claim 성공 경로를
+              <code>STOP_APPROVAL_PROVENANCE_UNVERIFIED</code>로 차단했습니다. 기존 무결성·안전·예산
+              STOP은 먼저 판정하며, <code>claim</code>이 출처 STOP을 반환할 때 기록 바이트와
+              카운터는 그대로 둡니다. 유효한 <code>prepare</code>는 <code>PREPARED</code> 기록만
+              저장합니다.
             </p>
           </div>
         </div>
+        <div class="callout">
+          <strong>검사와 남은 경계</strong>구현자의 관련 Vitest는 Red 126개 중 7개 실패를 관찰한 뒤
+          Green 126/126, 후속 STOP 우선순위·v2 claim 보강 뒤 127/127을 통과했습니다. 분리된 검증자는
+          AP-1~6을 PASS로 판정하고 관련 Vitest 127/127을 재실행했습니다. 이후 같은 HEAD
+          <code>b23df99</code>의 작업 트리에서 독립 검증자가 <code>npm run check</code>를 정확히 1회
+          실행해 종료 코드 0을 확인했습니다. 이 통합 검사에는 Vitest 2개 파일 139/139와 lint, 디자인
+          84개 선언, 하네스 15개 스킬·61개 등록 파일, 서식, 타입 검사가 포함됩니다.
+          <a href="../features/session-handoff/tests/approval-provenance-scenarios.md"
+            >G5 시나리오</a
+          >
+          · <a href="../harness/lifecycle.md#세션-checkpoint와-handoff">생명주기 계약</a> ·
+          <a href="../../scripts/session-handoff.mjs">로컬 구현</a>
+        </div>
+        <p>
+          <code>receipt</code>는 이미 claimed된 과거 기록의 사실만 남기며, 영수증과 재개 요청문은
+          실행 허가가 아닙니다. CLI 밖에서 신뢰 가능한 사용자 승인 원문·주체·범위·시점·후속 철회를
+          수동으로 대조해야 합니다. 이 검토가 끝나도 현 CLI는 자체 <code>verified</code> 표시로 자동
+          재개하지 않습니다. 신뢰할 수 있는 검증 수단과 자동 재개 계약은 미구현이며 별도 승인과 독립
+          검토가 필요합니다.
+        </p>
       </section>
 
       <section id="today">
@@ -593,7 +615,7 @@
               <p>
                 기준선의 후속 <code>prepare</code>는 활성 STOP을 해제할 때의 증거를 검사했지만, 계속
                 활성일 때 <code>reason</code>·<code>resume_condition</code>의 일치를 검사하지
-                않았습니다. 현재 HEAD <code>f93bec9</code>에는 이 조건이 추가됐습니다.
+                않았습니다. 당시 HEAD <code>f93bec9</code>에는 이 조건이 추가됐습니다.
                 <a href="../../scripts/session-handoff.mjs">현재 인계 스크립트</a> ·
                 <a href="../harness/lifecycle.md">재개 계약</a>
               </p>
@@ -610,8 +632,8 @@
               <h3>승인·증거 참조의 후속 기록</h3>
               <p>
                 기준선에서는 후속 기록 비교가 예산·실패·STOP을 다루지만 이전
-                <code>approval_refs</code>·<code>evidence_refs</code>의 탈락은 허용했습니다. 현재
-                HEAD <code>f93bec9</code>의 v2 계보 검사는 활성 유지 또는 사유가 있는 은퇴를
+                <code>approval_refs</code>·<code>evidence_refs</code>의 탈락은 허용했습니다.
+                <code>f93bec9</code> 커밋의 v2 계보 검사는 활성 유지 또는 사유가 있는 은퇴를
                 요구합니다.
                 <a href="../../scripts/session-handoff.mjs">인계 스크립트</a>
               </p>
@@ -620,7 +642,8 @@
                 원본 바이트 없이 metadata 계보를 보존하기로 선택했고, 독립 검증자는 관련 AC를 PASS로
                 판정했습니다. 당시 전체 통합 검사는 위 기록처럼 통과했습니다. 커밋 전
                 <code>b30f72f</code>에서도 별도 독립 검증자의 <code>npm run check</code>가 종료 코드
-                0으로 통과했고, 검사한 코드·계약·테스트는 현재 HEAD에서도 동일합니다.
+                0으로 통과했고, 검사한 코드·계약·테스트는 당시 <code>f93bec9</code> 커밋에서도
+                동일했습니다.
               </aside>
             </div>
           </div>
@@ -629,8 +652,10 @@
             <div>
               <h3>승인 상태의 자기 선언 가능성</h3>
               <p>
-                도구는 승인 참조의 모양과 파일 해시를 검사한 뒤 <code>status === "approved"</code>를
-                권한으로 해석합니다. 그 값이 실제 승인 주체에서 왔는지는 자동 증명하지 않습니다.
+                기준선 도구는 승인 참조의 모양과 파일 해시를 검사한 뒤
+                <code>status === "approved"</code>를 권한으로 해석했습니다. 현재 로컬 구현은 출처
+                확인 전 자동 성공 경로를 <code>STOP_APPROVAL_PROVENANCE_UNVERIFIED</code>로
+                차단합니다. 그 값이 실제 승인 주체에서 왔는지는 여전히 자동 증명하지 않습니다.
                 <a href="../../scripts/session-handoff.mjs">참조 검증 코드</a> ·
                 <a href="../../scripts/session-handoff.mjs">판정 코드</a> ·
                 <a href="../harness/lifecycle.md">AI 자기 승인 금지</a>
@@ -640,7 +665,8 @@
                 <code>approved</code> metadata만으로 <code>decide</code>가
                 <code>PHASE_READY</code>를 반환함을 독립 재실행했습니다. 파일 무결성은 승인 출처의
                 진위를 보장하지 않으므로 승인 원문·결정자·범위 대조는 별도 인간·세션 검토로
-                유지합니다.
+                유지합니다. 이 재현은 차단 구현 전의 역사적 실패 증거이며, 현 작업 트리의 성공
+                동작을 나타내지 않습니다.
               </aside>
             </div>
           </div>
@@ -1097,19 +1123,27 @@
             <ul>
               <li>
                 <span class="pill fact">역사적 수행</span> 감사 기준 HEAD <code>616db09</code>와
-                당시 깨끗한 작업 트리 확인, 선택한 코드·계약·기록 정적 검토. 이 보고서 수정 시점의
-                HEAD는 <code>f93bec9</code>입니다.
+                당시 깨끗한 작업 트리 확인, 선택한 코드·계약·기록 정적 검토. 이번 검사 당시 승인
+                출처 변경은 HEAD <code>b23df99</code> 위 미커밋 작업 트리에 있었습니다.
               </li>
               <li>
                 <span class="pill fact">커밋 전 검증</span> HEAD <code>b30f72f</code>에서 독립
                 검증자 <code>npm run check</code> 1회 종료 코드 0. lint, 디자인 84개 선언, 하네스
                 15개 스킬·61개 등록 파일, 서식, Vitest 2개 파일 135/135, 타입 검사를 포함합니다.
-                검사한 코드·계약·테스트는 현재 HEAD <code>f93bec9</code>에서도 동일합니다.
+                검사한 코드·계약·테스트는 당시 HEAD <code>f93bec9</code>에서도 동일했습니다.
+              </li>
+              <li>
+                <span class="pill fact">현재 로컬 구현·관련 검사</span> 승인 출처 미검증 경로를
+                <code>STOP_APPROVAL_PROVENANCE_UNVERIFIED</code>로 차단했습니다. 구현자 관련 Vitest
+                127/127, 별도 독립 AC AP-1~6 PASS와 독립 재실행 127/127이 확인됐습니다. 같은 HEAD
+                <code>b23df99</code>의 작업 트리에서 독립 검증자가 전체
+                <code>npm run check</code> 1회 종료 코드 0과 Vitest 2개 파일 139/139를 확인했습니다.
               </li>
               <li><span class="pill limit">미재현</span> 훅 실제 발화, 외부 모델·비용 측정.</li>
               <li>
                 <span class="pill limit">미구현</span> B안 도메인 코어와 새 평가 파이프라인. v2 인계
-                계보는 HEAD <code>f93bec9</code>에 로컬 커밋됐습니다.
+                계보는 당시 HEAD <code>f93bec9</code>에 로컬 커밋됐습니다. 신뢰 승인 출처 검증
+                수단과 자동 재개는 미구현입니다.
               </li>
               <li>
                 <span class="pill proposal">미승인</span> B안 ADR과 5단계 전환은 검토 제안입니다.

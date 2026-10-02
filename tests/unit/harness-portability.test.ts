@@ -172,6 +172,28 @@ function prepareHandoff(root: string, input = handoffInput(root)) {
   };
 }
 
+function expectProvenanceStop(result: { stdout: string; status: number | null }) {
+  expect(result.status).toBe(0);
+  const response = JSON.parse(result.stdout);
+  expect(response.decision).toBe("STOP_APPROVAL_PROVENANCE_UNVERIFIED");
+  expect(response.resume_condition).toMatch(/원문|original/i);
+  expect(response.resume_condition).toMatch(/주체|identity/i);
+  expect(response.resume_condition).toMatch(/범위|scope/i);
+  expect(response.resume_condition).toMatch(/시점|time/i);
+  expect(response.resume_condition).toMatch(/철회|revocation/i);
+  for (const key of [
+    "next_skill",
+    "next_action",
+    "instruction",
+    "launch_prompt",
+    "resume_prompt",
+    "transfer",
+  ])
+    expect(response).not.toHaveProperty(key);
+  expect(response.launch_allowed).not.toBe(true);
+  return response;
+}
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 it("ships the session handoff helper in an installed harness", () => {
@@ -263,7 +285,7 @@ it("keeps cumulative retired references while allowing old files to change or di
   const second = prepareHandoff(root, next);
   expect(second.result.status, second.result.stderr).toBe(0);
   const decision = runHandoff(root, ["decide", "--state", second.statePath, "--root", root]);
-  expect(JSON.parse(decision.stdout).decision).toBe("ROLLOVER_READY");
+  expectProvenanceStop(decision);
   const third: any = handoffInput(root);
   third.schema_version = 2;
   third.sequence = 3;
@@ -594,7 +616,7 @@ it("prepares a stable record and distinguishes phase continuation from fresh rol
   expect(second.state.handoff_id).toBe(first.state.handoff_id);
 
   const rolloverDecision = runHandoff(root, ["decide", "--state", first.statePath, "--root", root]);
-  expect(JSON.parse(rolloverDecision.stdout).decision).toBe("ROLLOVER_READY");
+  expectProvenanceStop(rolloverDecision);
   expect(JSON.parse(rolloverDecision.stdout)).not.toHaveProperty("launch_prompt");
   expect(JSON.parse(rolloverDecision.stdout)).not.toHaveProperty("resume_prompt");
   expect(JSON.parse(rolloverDecision.stdout)).not.toHaveProperty("instruction");
@@ -613,11 +635,37 @@ it("prepares a stable record and distinguishes phase continuation from fresh rol
     phaseRoot,
   ]);
   expect(phaseDecision.status, phaseDecision.stderr).toBe(0);
-  expect(JSON.parse(phaseDecision.stdout)).toMatchObject({
-    decision: "PHASE_READY",
-    next_skill: "ac-verifier",
+  expectProvenanceStop(phaseDecision);
+});
+
+it("AP-S05 stops approved pending work in the current session", () => {
+  const root = handoffRepository();
+  const input: any = handoffInput(root, {
+    rollover: { requested: "continue-current", claim: null, receipt: null },
   });
-  expect(phaseDecision.stdout).toContain("perform only checkpoint.next_action");
+  input.checkpoint.stage_status = "pending";
+  input.checkpoint.stage = "ac-verification";
+  const prepared = prepareHandoff(root, input);
+  expect(prepared.result.status, prepared.result.stderr).toBe(0);
+  expectProvenanceStop(runHandoff(root, ["decide", "--state", prepared.statePath, "--root", root]));
+});
+
+it("AP-S15 rejects self-declared verification at prepare and decide", () => {
+  const root = handoffRepository();
+  const input: any = handoffInput(root);
+  input.verified = true;
+  expect(prepareHandoff(root, input).result.status).toBe(1);
+  const prepared = prepareHandoff(root);
+  expect(prepared.result.status, prepared.result.stderr).toBe(0);
+  const decision = runHandoff(root, [
+    "decide",
+    "--state",
+    prepared.statePath,
+    "--root",
+    root,
+    "--verified",
+  ]);
+  expect(decision.status).toBe(1);
 });
 
 it.each([
@@ -665,25 +713,54 @@ it("rejects state path escape and symlink paths", () => {
   expect(readdirSync(outside)).toEqual([]);
 });
 
+// Tracked reference edits also change the dirty manifest, which has priority over reference hashes.
 it.each([
-  ["changed source", (root: string) => git(root, "commit", "--allow-empty", "-qm", "new")],
-  ["changed dirty file", (root: string) => write(root, "tracked.txt", "changed again\n")],
-  ["unlisted dirty file", (root: string) => write(root, "new.txt", "unlisted\n")],
-  ["changed contract", (root: string) => write(root, "contract.md", "changed\n")],
-  ["changed approval", (root: string) => write(root, "scope.md", "changed\n")],
-  ["changed evidence", (root: string) => write(root, "evidence.json", '{"passed":false}\n')],
-])("stops when persisted identity becomes stale: %s", (_name, mutate) => {
+  [
+    "changed source",
+    (root: string) => git(root, "commit", "--allow-empty", "-qm", "new"),
+    "STOP_SOURCE_STALE",
+  ],
+  [
+    "changed dirty file",
+    (root: string) => write(root, "tracked.txt", "changed again\n"),
+    "STOP_DIRTY_STALE",
+  ],
+  [
+    "unlisted dirty file",
+    (root: string) => write(root, "new.txt", "unlisted\n"),
+    "STOP_DIRTY_STALE",
+  ],
+  [
+    "changed contract",
+    (root: string) => write(root, "contract.md", "changed\n"),
+    "STOP_DIRTY_STALE",
+  ],
+  ["changed approval", (root: string) => write(root, "scope.md", "changed\n"), "STOP_DIRTY_STALE"],
+  [
+    "changed evidence",
+    (root: string) => write(root, "evidence.json", '{"passed":false}\n'),
+    "STOP_DIRTY_STALE",
+  ],
+])("stops when persisted identity becomes stale: %s", (_name, mutate, expected) => {
   const root = handoffRepository();
   const prepared = prepareHandoff(root);
   expect(prepared.result.status, prepared.result.stderr).toBe(0);
   mutate(root);
   const decision = runHandoff(root, ["decide", "--state", prepared.statePath, "--root", root]);
-  expect(JSON.parse(decision.stdout).decision).toMatch(/^STOP_/);
+  expect(JSON.parse(decision.stdout).decision).toBe(expected);
 });
 
 it.each([
-  ["missing scope approval", (input: any) => input.state.approval_refs.shift()],
-  ["unknown evidence", (input: any) => (input.state.evidence_validity = "unknown")],
+  [
+    "missing scope approval",
+    (input: any) => input.state.approval_refs.shift(),
+    "STOP_APPROVAL_REQUIRED",
+  ],
+  [
+    "unknown evidence",
+    (input: any) => (input.state.evidence_validity = "unknown"),
+    "STOP_EVIDENCE_INVALID_OR_UNKNOWN",
+  ],
   [
     "active stop",
     (input: any) =>
@@ -693,33 +770,45 @@ it.each([
         resume_condition: "fix",
         resolution_ref: null,
       }),
+    "STOP_ACTIVE",
   ],
-  ["pending worker", (input: any) => input.activity.workers.push({ id: "w1", status: "pending" })],
+  [
+    "pending worker",
+    (input: any) => input.activity.workers.push({ id: "w1", status: "pending" }),
+    "STOP_INFLIGHT_ACTIVITY",
+  ],
   [
     "unknown external action",
     (input: any) => input.activity.external_actions.push({ id: "x1", status: "unknown" }),
+    "STOP_INFLIGHT_ACTIVITY",
   ],
-  ["missing rollover authority", (input: any) => (input.task.rollover_authority_ref = null)],
-  ["rollover budget", (input: any) => (input.task.used_rollovers = 1)],
-])("does not ready an unsafe handoff: %s", (_name, mutate) => {
+  [
+    "missing rollover authority",
+    (input: any) => (input.task.rollover_authority_ref = null),
+    "STOP_ROLLOVER_AUTHORITY_REQUIRED",
+  ],
+  [
+    "rollover budget",
+    (input: any) => (input.task.used_rollovers = 1),
+    "STOP_ROLLOVER_BUDGET_EXHAUSTED",
+  ],
+])("does not ready an unsafe handoff: %s", (_name, mutate, expected) => {
   const root = handoffRepository();
   const input: any = handoffInput(root);
   mutate(input);
   const prepared = prepareHandoff(root, input);
   expect(prepared.result.status, prepared.result.stderr).toBe(0);
   const decision = runHandoff(root, ["decide", "--state", prepared.statePath, "--root", root]);
-  expect(JSON.parse(decision.stdout).decision).toMatch(/^STOP_/);
+  expect(JSON.parse(decision.stdout).decision).toBe(expected);
 });
 
 it("applies a budget only to its relevant next action", () => {
   const root = handoffRepository();
   const acVerification = prepareHandoff(root);
   expect(acVerification.result.status, acVerification.result.stderr).toBe(0);
-  expect(
-    JSON.parse(
-      runHandoff(root, ["decide", "--state", acVerification.statePath, "--root", root]).stdout,
-    ).decision,
-  ).toBe("ROLLOVER_READY");
+  expectProvenanceStop(
+    runHandoff(root, ["decide", "--state", acVerification.statePath, "--root", root]),
+  );
 
   const greenRoot = handoffRepository();
   const nextGreen: any = handoffInput(greenRoot);
@@ -780,7 +869,7 @@ it("requires explicit current-stage authority before pending work or rollover", 
     "--root",
     approvedRoot,
   ]);
-  expect(JSON.parse(decision.stdout).decision).toBe("ROLLOVER_READY");
+  expectProvenanceStop(decision);
 });
 
 it("applies diagnostic budget through an explicit read-only action kind", () => {
@@ -939,7 +1028,7 @@ it.each([
   expect(rejected.state).toEqual(prepared.state);
 });
 
-it("claims once, requires reconciliation after ambiguity, and resumes only the receipted session", () => {
+it("AP-S06/S07 stops claim without changing bytes across executors", () => {
   const root = handoffRepository();
   const prepared = prepareHandoff(root);
   expect(prepared.result.status, prepared.result.stderr).toBe(0);
@@ -952,10 +1041,63 @@ it("claims once, requires reconciliation after ambiguity, and resumes only the r
     "--executor-id",
     "executor-1",
   ];
-  const claimed = runHandoff(root, args);
-  expect(JSON.parse(claimed.stdout)).toMatchObject({ decision: "CLAIMED", idempotent: false });
-  expect(claimed.stdout).toContain("do not read or mutate project state");
-  expect(claimed.stdout).not.toContain("Use $harness-cycle");
+  const before = readFileSync(prepared.statePath);
+  expectProvenanceStop(runHandoff(root, args));
+  expectProvenanceStop(runHandoff(root, args));
+  expectProvenanceStop(runHandoff(root, [...args.slice(0, -1), "executor-2"]));
+  expect(readFileSync(prepared.statePath)).toEqual(before);
+  expect(JSON.parse(before.toString())).toMatchObject({
+    status: "prepared",
+    rollover: { claim: null, receipt: null },
+    task: { used_rollovers: 0 },
+  });
+});
+
+it("AP-S14 stops a v2 claim without changing its record", () => {
+  const root = handoffRepository();
+  const input: any = handoffInput(root);
+  input.schema_version = 2;
+  input.state.predecessor_handoff_id = null;
+  input.state.retired_refs = [];
+  const prepared = prepareHandoff(root, input);
+  expect(prepared.result.status, prepared.result.stderr).toBe(0);
+  const before = readFileSync(prepared.statePath);
+  expectProvenanceStop(
+    runHandoff(root, [
+      "claim",
+      "--state",
+      prepared.statePath,
+      "--handoff-id",
+      prepared.state.handoff_id,
+      "--executor-id",
+      "executor-v2",
+    ]),
+  );
+  expect(readFileSync(prepared.statePath)).toEqual(before);
+});
+
+it("AP-S10/S11/S12/S13 preserves legacy claim and receipt reconciliation", () => {
+  const root = handoffRepository();
+  const prepared = prepareHandoff(root);
+  expect(prepared.result.status, prepared.result.stderr).toBe(0);
+  const claimedState = {
+    ...prepared.state,
+    status: "claimed",
+    rollover: {
+      ...prepared.state.rollover,
+      claim: { executor_id: "executor-1" },
+    },
+  };
+  writeFileSync(prepared.statePath, JSON.stringify(claimedState));
+  const args = [
+    "claim",
+    "--state",
+    prepared.statePath,
+    "--handoff-id",
+    prepared.state.handoff_id,
+    "--executor-id",
+    "executor-1",
+  ];
   const replay = JSON.parse(runHandoff(root, args).stdout);
   expect(replay.decision).toBe("STOP_RECONCILIATION_REQUIRED");
   expect(replay).not.toHaveProperty("launch_prompt");
@@ -980,7 +1122,9 @@ it("claims once, requires reconciliation after ambiguity, and resumes only the r
   ];
   const receipt = runHandoff(root, receiptArgs);
   expect(JSON.parse(receipt.stdout).decision).toBe("RECEIPT_RECORDED");
-  expect(receipt.stdout).toContain("Use $harness-cycle in RESUME mode");
+  expect(JSON.parse(receipt.stdout).resume_prompt).toMatch(/승인 출처|approval provenance/i);
+  expect(JSON.parse(receipt.stdout).resume_prompt).toMatch(/수동 검토|manual review/i);
+  expect(receipt.stdout).not.toContain("perform no work unless it returns CONTINUE_CURRENT");
   expect(receipt.stdout).toContain("decide --state");
   expect(receipt.stdout).toContain("--session-id session-real-1");
   expect(JSON.parse(runHandoff(root, receiptArgs).stdout).decision).toBe("RECEIPT_RECORDED");
@@ -993,10 +1137,7 @@ it("claims once, requires reconciliation after ambiguity, and resumes only the r
     "--session-id",
     "session-real-1",
   ]);
-  expect(JSON.parse(resumed.stdout)).toMatchObject({
-    decision: "CONTINUE_CURRENT",
-    transfer: "confirmed-receipt",
-  });
+  expectProvenanceStop(resumed);
   const wrongSession = runHandoff(root, [
     "decide",
     "--state",
@@ -1034,25 +1175,20 @@ it("claims once, requires reconciliation after ambiguity, and resumes only the r
     "--root",
     root,
   ]);
-  expect(JSON.parse(continuedDecision.stdout)).toMatchObject({
-    decision: "PHASE_READY",
-    next_skill: "tdd-refactor",
-  });
+  expectProvenanceStop(continuedDecision);
 });
 
 it("freezes project identity after claim until receipt or reconciliation", () => {
   const root = handoffRepository();
   const prepared = prepareHandoff(root);
-  const claim = runHandoff(root, [
-    "claim",
-    "--state",
+  writeFileSync(
     prepared.statePath,
-    "--handoff-id",
-    prepared.state.handoff_id,
-    "--executor-id",
-    "executor-1",
-  ]);
-  expect(JSON.parse(claim.stdout).decision).toBe("CLAIMED");
+    JSON.stringify({
+      ...prepared.state,
+      status: "claimed",
+      rollover: { ...prepared.state.rollover, claim: { executor_id: "executor-1" } },
+    }),
+  );
   write(root, "tracked.txt", "mutation after claim\n");
   const receipt = runHandoff(root, [
     "receipt",
@@ -1092,15 +1228,14 @@ it("disables automated decisions and claims when Git identity is unavailable", (
 it("blocks repeated prepare from resetting rollover use or chaining the same checkpoint", () => {
   const root = handoffRepository();
   const prepared = prepareHandoff(root);
-  runHandoff(root, [
-    "claim",
-    "--state",
+  writeFileSync(
     prepared.statePath,
-    "--handoff-id",
-    prepared.state.handoff_id,
-    "--executor-id",
-    "executor-1",
-  ]);
+    JSON.stringify({
+      ...prepared.state,
+      status: "claimed",
+      rollover: { ...prepared.state.rollover, claim: { executor_id: "executor-1" } },
+    }),
+  );
   runHandoff(root, [
     "receipt",
     "--state",
