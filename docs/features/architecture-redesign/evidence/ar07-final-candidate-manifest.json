@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "purpose": "AR-07 isolated final-check candidate",
+  "source_revision": "0c96b805f345b4d8fadcb6c7079bab69f4fa392f",
+  "branch": "master",
+  "environment": {
+    "node": "v24.14.1",
+    "npm": "11.11.0",
+    "cli_version_reported_by_parent": "0.150.1",
+    "requested_worker_model_effort": "gpt-5.6-sol/medium",
+    "observed_worker_model_effort": "unknown",
+    "failed_fresh_session": "01a0fc13-0952-70d2-8032-4c65df97b04e",
+    "failed_fresh_session_result": "exit 1; HTTP 400 unsupported default gpt-6.1-sol; no task work executed"
+  },
+  "frozen_inputs": {
+    "contract_sha256": "ec481f53df0703042c52c6a14bebe9661e33668dd3d9530dc6daf8a780b4ad03",
+    "scenarios_sha256": "b7d62643fadc70dfe3c64c0f7d76edc08cc7da979c9019f99968ee39a57cfa5d",
+    "corpus_sha256": "85db86ed3309e4eb2478c04ac729d67aa8694cf41506a36fc6bc06bc4fd59d47",
+    "baseline_sha256": "d554331359f6519d964fe3e2669c7d908536d1bce34ebff23f2cbcb63012098f",
+    "legacy_source": "ae9ff54c33518b77fc0de18feb217660303ac739:scripts/session-handoff.mjs",
+    "legacy_source_sha256": "19823e889fa3e3db7a74b98610f8efbe8fd4412248860d7cf313b4176b84aefe",
+    "legacy_capture_sha256": "5098d0c2cac1919c152d450750f39292af54fc90ad2beb27087f394d67d2b22b"
+  },
+  "exclusions": [
+    {
+      "path": "docs/features/trusted-approval",
+      "tree_sha256": "4cd17dce507dc923a5db8c218e8eea6365d640e96245292a1457546a20176a29"
+    },
+    {
+      "path": "harness-map",
+      "tree_sha256": "fcdee9390949902b5b1c24c51284042431b3979c71c2e973ef89b5a2b48f77ef"
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/architecture/redesign-review-2026-09-30.html",
+      "sha256": "4b1a725fa77d7fcfe4460b0b387fd88d9430992c8ff996633fa726cf5acce360"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/closure-contract.md",
+      "sha256": "d65ac181f361cadb1adbcbe72a341318a5954bc6488f77dd9c559266eee8e3bb"
+    },
+    {
+      "path": "docs/features/architecture-redesign/progress.md",
+      "sha256": "16acaa33962c371b7a4938c568bfaaf763630f23ce4323223e9d1a0d46de579e"
+    },
+    {
+      "path": "docs/harness/coverage.md",
+      "sha256": "a327587210badeea7d43b4a5ce78e0b5e9e8c606f6813175e30d3ba546dcc936"
+    },
+    {
+      "path": "scripts/evaluate-handoff.mjs",
+      "sha256": "1e6449fa760d7ea5631aeb26c048dfc59d6ed550d6ad068afe36495caa981211"
+    },
+    {
+      "path": "tests/fixtures/handoff-evaluations-baseline.json",
+      "sha256": "d554331359f6519d964fe3e2669c7d908536d1bce34ebff23f2cbcb63012098f"
+    },
+    {
+      "path": "tests/fixtures/handoff-evaluations.json",
+      "sha256": "85db86ed3309e4eb2478c04ac729d67aa8694cf41506a36fc6bc06bc4fd59d47"
+    },
+    {
+      "path": "tests/unit/handoff-evaluation.test.ts",
+      "sha256": "521fefc0c997791e10fdf524f87b28f4ea290b6cfaf1c0b90ce7b889803f75c2"
+    },
+    {
+      "path": "docs/features/architecture-redesign/quality-hardening.md",
+      "sha256": "ec481f53df0703042c52c6a14bebe9661e33668dd3d9530dc6daf8a780b4ad03"
+    },
+    {
+      "path": "docs/features/architecture-redesign/tests/AR-07-scenarios.md",
+      "sha256": "b7d62643fadc70dfe3c64c0f7d76edc08cc7da979c9019f99968ee39a57cfa5d"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/quality-hardening-check.md",
+      "sha256": "3048d287e6e71b9ab0d2572ea113222d5baba29ed70dd5c3cc90d53f69349e90"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/quality-hardening-docs-handoff.md",
+      "sha256": "7a60e93d51f006efc29ace8addb90c92761c066709115c847ba2bf69d51f2237"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-capture-legacy.mjs",
+      "sha256": "66ce1b5ce3c59251f19e0f2132d9a89f92f8ce902eacdf018e19f656e72a795c"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-current.json",
+      "sha256": "ae055ee1f05e475db790a406d31b00397a1bd26170978a21b1107b98a475a34d"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-eval.log",
+      "sha256": "491d163c95d4f0ab91489eead3358258f6587d8c34f2a7e4cdf0b47df6c253cb"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-evaluation.md",
+      "sha256": "53ae875dc7cae298e212a6a259cec641ac86602e56dfd24e8ce75ccef4de43d6"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-final-prettier-freeze.log",
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-final-related-formatted.log",
+      "sha256": "e86a3a372ec15cfb909d5c668a538b79aea4ae0f6d6d83753371e254487cc8bb"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-final-related.log",
+      "sha256": "7f9fd9411a565723ceaff9432c38d35634e9854a27a6c01cd435660669218e01"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-final-static-precheck.log",
+      "sha256": "74a739a405480191f66d92f857be9bfba1770ceff101a89e570bbe610d6eefbf"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-final-stop-negative.json",
+      "sha256": "019ea1d61dc587b5587ce137dd87a789be82ae68adfc58baa4db339e03776111"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-gitless-eval.json",
+      "sha256": "ae055ee1f05e475db790a406d31b00397a1bd26170978a21b1107b98a475a34d"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-green-formatted.log",
+      "sha256": "14835342d923b219d1b5da7f4a5877de4fbda94508a5f99ba6fec648269a7646"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-green.log",
+      "sha256": "59bdf7441581ec8fd671629c5bcdd44d720a20ad80158b628c91e9c225de1ba3"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-handoff.md",
+      "sha256": "7552031c6e7543f43152e430eab3da51454633ed67445529b1ec528b6cd9036a"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-legacy-raw.json",
+      "sha256": "5098d0c2cac1919c152d450750f39292af54fc90ad2beb27087f394d67d2b22b"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-old-falsepass.json",
+      "sha256": "193ae7bbf69a7716f9ce6f129612582ed20343055f29f6ec8c7dda81406587ff"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-provenance-green.log",
+      "sha256": "65c4f613f089b631022b12049f8e6b2a1c4486c5916d6b4ddab73a7489f7fade"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-provenance-red.log",
+      "sha256": "99786521f17eb423c903147e98938a0a81061250946bd094588f5cd493190056"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-provenance-test-freeze.sha256",
+      "sha256": "6adf161037ecbe01f6bf5e2c7fcc063ceb03151206e01ee259ec9b60de976d5c"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-red-formatted.log",
+      "sha256": "b5061e01581ff90c4816c53d26cabece3d8fc574c595fd33c36c314de37ed8cc"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-red.log",
+      "sha256": "1af09b7f60bce255f1ddfe842b93e05cf36a293018ef7847b728e4c072b65a15"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar07-test-freeze.sha256",
+      "sha256": "eb6a9f3ba685a0344e0edbefa2b0453bf0d2167284617c8bc29149aa66c6d963"
+    }
+  ],
+  "self_hash": "excluded to avoid a self-hash cycle; hash manifest externally after creation"
+}

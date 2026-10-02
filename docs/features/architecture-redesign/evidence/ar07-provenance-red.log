@@ -1,0 +1,28 @@
+
+ RUN  v5.0.0 /Users/sungwoon/ai-projects/cc-harness
+
+ ❯ tests/unit/handoff-evaluation.test.ts (6 tests | 1 failed) 533ms
+   ❯ offline handoff evaluator semantic observations (6)
+     × rejects invalid baseline schema, provenance, input and missing rows 102ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/handoff-evaluation.test.ts > offline handoff evaluator semantic observations > rejects invalid baseline schema, provenance, input and missing rows
+AssertionError: expected +0 not to be +0 // Object.is equality
+ ❯ hasPath tests/unit/handoff-evaluation.test.ts:66:29
+     64|
+     65| function hasPath(result: ReturnType<typeof run>, caseId: string, path:…
+     66|   expect(result.status).not.toBe(0);
+       |                             ^
+     67|   expect(result.report.failures).toContainEqual(
+     68|     expect.objectContaining({ case_id: caseId, field_path: path }),
+ ❯ tests/unit/handoff-evaluation.test.ts:168:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  19:01:44
+   Duration  618ms (tests 97%, transform 2%, import 1%)
+

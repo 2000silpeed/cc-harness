@@ -1251,7 +1251,19 @@
                 격리 snapshot 검사는 종료 0·Vitest 176/176이었습니다. 검사 후 이 보고서의 과거
                 라벨과 상태 문구를 갱신해 후행 바이트는 별도 정적 검사로 확인합니다. AR-06 AC3도
                 별도 독립 PASS를 받아 원래 5단계의 가역적 로컬 구현·검증이 완료됐습니다. Git
-                커밋·푸시는 아직 실행 전이며 새 보고서의 실제 넓은/400px 화면 렌더는 미확인입니다.
+                커밋·푸시는 당시 실행 전이었고, 이후 완료분은 <code>0c96b80</code>으로
+                <code>master</code>와 <code>origin/master</code>에 전달됐습니다(2026-10-02 원격 SHA
+                대조). 이번
+                <a href="../features/architecture-redesign/quality-hardening.md"
+                  >R10–R12 품질 보완</a
+                >은 평가 schema v2·고정 역사 CLI baseline·14개 corpus를 구현했고, 같은
+                <code>STOP_ACTIVE</code> 결정을 유지한 <code>result.reason</code> drift가 종료 1의
+                <code>candidate_mismatch</code> 정확 경로로 검출됨을 보완했습니다. 관련 Vitest는 6/6
+                통과했고 이 STOP 회귀 추가에서는 평가기 실행 코드를 추가로 수정하지 않았습니다.
+                <code>.git</code> 없는 소유 파일 격리 snapshot의 최종 <code>npm run check</code>는
+                종료 0, Vitest 178/178, 평가 14/14·변화 0이었습니다. 현재 root 전체 검사는 실행하지
+                않았습니다. AR-07 AC1·AC2·AC3는 독립 PASS이며 후행 Git 전달은 실행 후 로컬·원격
+                SHA로 확인합니다. 당시 보고서의 실제 넓은/400px 화면 렌더는 미확인입니다.
                 <a href="../features/architecture-redesign/progress.md">현재 진행 기록</a>
               </li>
               <li>

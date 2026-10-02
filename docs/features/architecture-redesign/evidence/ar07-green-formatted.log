@@ -1,0 +1,9 @@
+
+ RUN  v5.0.0 /Users/sungwoon/ai-projects/cc-harness
+
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  19:00:03
+   Duration  896ms (tests 96%, transform 2%, import 1%)
+

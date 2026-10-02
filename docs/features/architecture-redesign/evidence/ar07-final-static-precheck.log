@@ -1,0 +1,9 @@
+Checking formatting...
+[warn] tests/unit/handoff-evaluation.test.ts
+[warn] docs/architecture/redesign-review-2026-09-30.html
+[warn] Code style issues found in 2 files. Run Prettier with --write to fix.
+
+> cc-harness@0.0.0 design:check
+> node scripts/check-design-system.mjs
+
+디자인 검사 통과: 84개 선언 (/Users/sungwoon/ai-projects/cc-harness/docs/architecture/index.html)

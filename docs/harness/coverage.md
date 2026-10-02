@@ -31,3 +31,11 @@
 이식 도구는 프레임워크, 데이터베이스(DB), 인증, 클라우드, 전역 Codex·Claude Code 설정, 플러그인, 모델 컨텍스트 프로토콜(MCP), 독립 에이전트 실행 환경, 원격 CI, 디자인 합성 엔진을 설치하지 않습니다. 필요한 항목은 대상 환경을 확인한 뒤 선택하고 연결하고 검증해야 합니다. 방법론에 나온 예시 값을 제품 요구사항으로 그대로 복사해서는 안 됩니다.
 
 재사용은 [reuse.md](reuse.md), 승인과 반복은 [lifecycle.md](lifecycle.md), 실제 검증은 [verification.md](verification.md)를 따릅니다.
+
+## 로컬 문서 앵커 검사 범위
+
+`scripts/check-harness.mjs`의 링크 검사는 등록된 로컬 Markdown 문서의 링크에서 상대 `.md`·`.html`·`.htm` fragment를 확인합니다. 외부 URL은 대상이 아닙니다. 링크 경로와 fragment는 percent decode하며 빈 fragment·잘못된 인코딩·지원하지 않는 대상·없는 앵커를 오류로 보고합니다.
+
+Markdown 제목은 들여쓰기 0–3칸의 ATX `#` 1–6개만 인식합니다. GitHub 방식에 맞춰 일부 링크·강조·인라인 코드 표기를 걷어내고 소문자 slug와 중복 접미사 `-1`, `-2`를 만듭니다. 이는 GitHub Markdown 전체 문법 구현이 아닌 제한된 slug 규칙입니다. 명시적 HTML `id`와 `<a name>`도 정적 소스에서 읽습니다. 주석·코드 펜스·들여쓴 코드·일부 raw-text 태그·`template` 내부는 앵커 생성에서 제외합니다.
+
+Setext 제목, 동적 DOM/스크립트가 생성하는 앵커, 복잡한 Markdown·HTML 파싱과 렌더러별 모든 slug 차이는 지원하지 않습니다. 이 입력에 의존하는 문서는 명시적 앵커를 쓰거나 별도 렌더 검증을 수행해야 합니다. 수제 검사기의 지원 범위를 이대로 유지하며 범용 파서 의존성을 추가하지 않습니다.

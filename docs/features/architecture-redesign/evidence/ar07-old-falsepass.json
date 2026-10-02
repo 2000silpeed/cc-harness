@@ -1,0 +1,10 @@
+{
+  "red_case": "same decision, wrong expected result.next_action",
+  "command": "node scripts/evaluate-handoff.mjs --dataset <v1-semantic-tamper> --baseline <v1-original-observation>",
+  "exit_code": 0,
+  "report_pass": true,
+  "case_pass": true,
+  "semantic_expected_next_action": "WRONG ACTION",
+  "actual_contract_next_action": "Verify AC.",
+  "failures": []
+}

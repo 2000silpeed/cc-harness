@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "cases": [
     {
       "case_id": "phase-ready",
@@ -100,7 +100,61 @@
         },
         "context": {}
       },
-      "expected_decision": "PHASE_READY"
+      "expected_decision": "PHASE_READY",
+      "expected_observation": {
+        "result": {
+          "decision": "PHASE_READY",
+          "next_skill": "ac-verifier",
+          "next_action": "Verify AC."
+        },
+        "record_before": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "record_after": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "input_unchanged": true
+      }
     },
     {
       "case_id": "rollover-ready",
@@ -201,7 +255,60 @@
         },
         "context": {}
       },
-      "expected_decision": "ROLLOVER_READY"
+      "expected_decision": "ROLLOVER_READY",
+      "expected_observation": {
+        "result": {
+          "decision": "ROLLOVER_READY",
+          "handoff_id": "3a10a4395ba674e905503da25055396475adad8bba75df3e82b3f2c1fadb7f33"
+        },
+        "record_before": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "record_after": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "input_unchanged": true
+      }
     },
     {
       "case_id": "active-stop",
@@ -302,7 +409,61 @@
         },
         "context": {}
       },
-      "expected_decision": "STOP_ACTIVE"
+      "expected_decision": "STOP_ACTIVE",
+      "expected_observation": {
+        "result": {
+          "decision": "STOP_ACTIVE",
+          "reason": "blocked",
+          "resume_condition": "resolve"
+        },
+        "record_before": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "record_after": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "input_unchanged": true
+      }
     },
     {
       "case_id": "rollover-budget",
@@ -403,7 +564,59 @@
         },
         "context": {}
       },
-      "expected_decision": "STOP_ROLLOVER_BUDGET_EXHAUSTED"
+      "expected_decision": "STOP_ROLLOVER_BUDGET_EXHAUSTED",
+      "expected_observation": {
+        "result": {
+          "decision": "STOP_ROLLOVER_BUDGET_EXHAUSTED"
+        },
+        "record_before": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 1
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "record_after": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 1
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "input_unchanged": true
+      }
     },
     {
       "case_id": "green-budget",
@@ -504,7 +717,60 @@
         },
         "context": {}
       },
-      "expected_decision": "STOP_BUDGET_EXHAUSTED"
+      "expected_decision": "STOP_BUDGET_EXHAUSTED",
+      "expected_observation": {
+        "result": {
+          "decision": "STOP_BUDGET_EXHAUSTED",
+          "budget": "green"
+        },
+        "record_before": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "record_after": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "input_unchanged": true
+      }
     },
     {
       "case_id": "inflight-activity",
@@ -610,7 +876,59 @@
         },
         "context": {}
       },
-      "expected_decision": "STOP_INFLIGHT_ACTIVITY"
+      "expected_decision": "STOP_INFLIGHT_ACTIVITY",
+      "expected_observation": {
+        "result": {
+          "decision": "STOP_INFLIGHT_ACTIVITY"
+        },
+        "record_before": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "record_after": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "input_unchanged": true
+      }
     },
     {
       "case_id": "approval-self-declared",
@@ -711,7 +1029,61 @@
         },
         "context": {}
       },
-      "expected_decision": "PHASE_READY"
+      "expected_decision": "PHASE_READY",
+      "expected_observation": {
+        "result": {
+          "decision": "PHASE_READY",
+          "next_skill": "ac-verifier",
+          "next_action": "Verify AC."
+        },
+        "record_before": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "record_after": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "input_unchanged": true
+      }
     },
     {
       "case_id": "claim-new",
@@ -815,7 +1187,65 @@
           "executorId": "worker"
         }
       },
-      "expected_decision": "CLAIMED"
+      "expected_decision": "CLAIMED",
+      "expected_observation": {
+        "result": {
+          "decision": "CLAIMED",
+          "idempotent": false
+        },
+        "record_before": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "record_after": {
+          "status": "claimed",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": null
+          }
+        },
+        "input_unchanged": true,
+        "transition": {
+          "changed": true
+        }
+      }
     },
     {
       "case_id": "claim-replay",
@@ -921,7 +1351,67 @@
           "executorId": "worker"
         }
       },
-      "expected_decision": "STOP_RECONCILIATION_REQUIRED"
+      "expected_decision": "STOP_RECONCILIATION_REQUIRED",
+      "expected_observation": {
+        "result": {
+          "decision": "STOP_RECONCILIATION_REQUIRED",
+          "launch_allowed": false
+        },
+        "record_before": {
+          "status": "claimed",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": null
+          }
+        },
+        "record_after": {
+          "status": "claimed",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": null
+          }
+        },
+        "input_unchanged": true,
+        "transition": {
+          "changed": false
+        }
+      }
     },
     {
       "case_id": "receipt-new",
@@ -1028,7 +1518,70 @@
           "sessionId": "session-1"
         }
       },
-      "expected_decision": "RECEIPT_RECORDED"
+      "expected_decision": "RECEIPT_RECORDED",
+      "expected_observation": {
+        "result": {
+          "decision": "RECEIPT_RECORDED",
+          "idempotent": false
+        },
+        "record_before": {
+          "status": "claimed",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": null
+          }
+        },
+        "record_after": {
+          "status": "receipted",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 1
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": {
+              "executor_id": "worker",
+              "session_id": "session-1"
+            }
+          }
+        },
+        "input_unchanged": true,
+        "transition": {
+          "changed": true
+        }
+      }
     },
     {
       "case_id": "receipt-replay",
@@ -1138,7 +1691,73 @@
           "sessionId": "session-1"
         }
       },
-      "expected_decision": "RECEIPT_RECORDED"
+      "expected_decision": "RECEIPT_RECORDED",
+      "expected_observation": {
+        "result": {
+          "decision": "RECEIPT_RECORDED",
+          "idempotent": true
+        },
+        "record_before": {
+          "status": "receipted",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 1
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": {
+              "executor_id": "worker",
+              "session_id": "session-1"
+            }
+          }
+        },
+        "record_after": {
+          "status": "receipted",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 1
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": {
+              "executor_id": "worker",
+              "session_id": "session-1"
+            }
+          }
+        },
+        "input_unchanged": true,
+        "transition": {
+          "changed": false
+        }
+      }
     },
     {
       "case_id": "receipt-continue",
@@ -1246,7 +1865,70 @@
           "sessionId": "session-1"
         }
       },
-      "expected_decision": "CONTINUE_CURRENT"
+      "expected_decision": "CONTINUE_CURRENT",
+      "expected_observation": {
+        "result": {
+          "decision": "CONTINUE_CURRENT",
+          "transfer": "confirmed-receipt"
+        },
+        "record_before": {
+          "status": "receipted",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 1
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": {
+              "executor_id": "worker",
+              "session_id": "session-1"
+            }
+          }
+        },
+        "record_after": {
+          "status": "receipted",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 1
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": {
+              "executor_id": "worker"
+            },
+            "receipt": {
+              "executor_id": "worker",
+              "session_id": "session-1"
+            }
+          }
+        },
+        "input_unchanged": true
+      }
     },
     {
       "case_id": "prepare-idempotent",
@@ -1437,7 +2119,63 @@
           }
         }
       },
-      "expected_decision": "PREPARED"
+      "expected_decision": "PREPARED",
+      "expected_observation": {
+        "result": {
+          "decision": "PREPARED",
+          "handoff_id": "28b0990834710d0f581a4f135016b2c1828c9a03d666cc605cd0b77bd396a790"
+        },
+        "record_before": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "record_after": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "input_unchanged": true,
+        "transition": {
+          "changed": false
+        }
+      }
     },
     {
       "case_id": "lineage-wrong-predecessor",
@@ -1629,7 +2367,60 @@
         }
       },
       "expected_decision": "ERROR",
-      "expected_error": "predecessor_handoff_id does not match previous handoff_id"
+      "expected_error": "predecessor_handoff_id does not match previous handoff_id",
+      "expected_observation": {
+        "result": {
+          "decision": "ERROR",
+          "error": "predecessor_handoff_id does not match previous handoff_id"
+        },
+        "record_before": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "record_after": {
+          "status": "prepared",
+          "sequence": 1,
+          "checkpoint": {
+            "next_action": "Verify AC."
+          },
+          "task": {
+            "used_rollovers": 0
+          },
+          "budgets": {
+            "green": {
+              "used": 3
+            },
+            "diagnostic": {
+              "used": 0
+            },
+            "rework_count": 0
+          },
+          "rollover": {
+            "claim": null,
+            "receipt": null
+          }
+        },
+        "input_unchanged": true
+      }
     }
   ]
 }

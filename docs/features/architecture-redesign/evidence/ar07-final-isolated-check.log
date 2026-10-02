@@ -1,16 +1,58 @@
+
+> cc-harness@0.0.0 check
+> npm run lint && npm run design:check && npm run harness:check && npm run format:check && npm run test && npm run handoff:eval && npm run typecheck
+
+
+> cc-harness@0.0.0 lint
+> eslint --no-error-on-unmatched-pattern --no-warn-ignored "**/*.{js,mjs,ts,tsx,html}"
+
+
+> cc-harness@0.0.0 design:check
+> node scripts/check-design-system.mjs
+
+디자인 검사 통과: 84개 선언 (/private/var/folders/bc/dgnqfptd3g980z9ybm8kw5fh0000gn/T/cc-harness-ar07-final.xQ7bZR/docs/architecture/index.html)
+
+> cc-harness@0.0.0 harness:check
+> node scripts/check-harness.mjs
+
+하네스 검사 통과: 스킬 15개, 등록 파일 62개
+파일·참조·등록 구조 검사이며 제품 구현·독립 검토·훅 발화 검증은 아닙니다.
+
+> cc-harness@0.0.0 format:check
+> prettier . --check --ignore-unknown
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> cc-harness@0.0.0 test
+> vitest run
+
+
+ RUN  v5.0.0 /private/var/folders/bc/dgnqfptd3g980z9ybm8kw5fh0000gn/T/cc-harness-ar07-final.xQ7bZR
+
+
+ Test Files  4 passed (4)
+      Tests  178 passed (178)
+   Start at  19:09:35
+   Duration  82.58s (tests 100%)
+
+
+> cc-harness@0.0.0 handoff:eval
+> node scripts/evaluate-handoff.mjs --dataset tests/fixtures/handoff-evaluations.json --baseline tests/fixtures/handoff-evaluations-baseline.json
+
 {
   "schema_version": 2,
   "corpus_sha256": "4d5f0defa2a61e1c1d15775eb17f3075c44b594681c1ed7f0fccb04e415a4613",
-  "source_revision": "ae9ff54c33518b77fc0de18feb217660303ac739",
-  "source_sha256": "19823e889fa3e3db7a74b98610f8efbe8fd4412248860d7cf313b4176b84aefe",
-  "observation_method": "Executed pinned ae9ff54 CLI in cloned AR01 fixture Git repository, capturing raw stdout/stderr/exit and state before/after in ar07-legacy-raw.json.",
-  "capture_sha256": "5098d0c2cac1919c152d450750f39292af54fc90ad2beb27087f394d67d2b22b",
+  "baseline_source_revision": "ae9ff54c33518b77fc0de18feb217660303ac739",
+  "baseline_source_sha256": "19823e889fa3e3db7a74b98610f8efbe8fd4412248860d7cf313b4176b84aefe",
+  "pass": true,
   "cases": [
     {
       "case_id": "phase-ready",
       "input_sha256": "90fe3e948c5ae7be46b4a2248108caceafd7ea3fa890bd72aa8bad8dacb67b84",
-      "exit_code": 0,
-      "observation": {
+      "expected_decision": "PHASE_READY",
+      "actual_decision": "PHASE_READY",
+      "actual_observation": {
         "result": {
           "decision": "PHASE_READY",
           "next_skill": "ac-verifier",
@@ -63,13 +105,20 @@
           }
         },
         "input_unchanged": true
-      }
+      },
+      "actual_exit_code": 0,
+      "baseline_decision": "PHASE_READY",
+      "changed": false,
+      "comparable": true,
+      "pass": true,
+      "approval_provenance": "not_checked"
     },
     {
       "case_id": "rollover-ready",
       "input_sha256": "ece773e1e531a281814a07f4cae812af02646e999d9fd07f84b628de3c3ce298",
-      "exit_code": 0,
-      "observation": {
+      "expected_decision": "ROLLOVER_READY",
+      "actual_decision": "ROLLOVER_READY",
+      "actual_observation": {
         "result": {
           "decision": "ROLLOVER_READY",
           "handoff_id": "3a10a4395ba674e905503da25055396475adad8bba75df3e82b3f2c1fadb7f33"
@@ -121,13 +170,20 @@
           }
         },
         "input_unchanged": true
-      }
+      },
+      "actual_exit_code": 0,
+      "baseline_decision": "ROLLOVER_READY",
+      "changed": false,
+      "comparable": true,
+      "pass": true,
+      "approval_provenance": "not_checked"
     },
     {
       "case_id": "active-stop",
       "input_sha256": "75d21d3b2ae4ab3a3af538b11cabaf65d778e9ea734d2148d695f42777eb3f77",
-      "exit_code": 0,
-      "observation": {
+      "expected_decision": "STOP_ACTIVE",
+      "actual_decision": "STOP_ACTIVE",
+      "actual_observation": {
         "result": {
           "decision": "STOP_ACTIVE",
           "reason": "blocked",
@@ -180,13 +236,20 @@
           }
         },
         "input_unchanged": true
-      }
+      },
+      "actual_exit_code": 0,
+      "baseline_decision": "STOP_ACTIVE",
+      "changed": false,
+      "comparable": true,
+      "pass": true,
+      "approval_provenance": "not_checked"
     },
     {
       "case_id": "rollover-budget",
       "input_sha256": "7d8ead6e624ea381b1e46db5c2148ea5dfa4f15ae856a5b9c955740af6580fc8",
-      "exit_code": 0,
-      "observation": {
+      "expected_decision": "STOP_ROLLOVER_BUDGET_EXHAUSTED",
+      "actual_decision": "STOP_ROLLOVER_BUDGET_EXHAUSTED",
+      "actual_observation": {
         "result": {
           "decision": "STOP_ROLLOVER_BUDGET_EXHAUSTED"
         },
@@ -237,13 +300,20 @@
           }
         },
         "input_unchanged": true
-      }
+      },
+      "actual_exit_code": 0,
+      "baseline_decision": "STOP_ROLLOVER_BUDGET_EXHAUSTED",
+      "changed": false,
+      "comparable": true,
+      "pass": true,
+      "approval_provenance": "not_checked"
     },
     {
       "case_id": "green-budget",
       "input_sha256": "c73114ea7492f48fcb4cf8e1f7b8be7698759309dcd05056fdf0a0c37ce3f672",
-      "exit_code": 0,
-      "observation": {
+      "expected_decision": "STOP_BUDGET_EXHAUSTED",
+      "actual_decision": "STOP_BUDGET_EXHAUSTED",
+      "actual_observation": {
         "result": {
           "decision": "STOP_BUDGET_EXHAUSTED",
           "budget": "green"
@@ -295,13 +365,20 @@
           }
         },
         "input_unchanged": true
-      }
+      },
+      "actual_exit_code": 0,
+      "baseline_decision": "STOP_BUDGET_EXHAUSTED",
+      "changed": false,
+      "comparable": true,
+      "pass": true,
+      "approval_provenance": "not_checked"
     },
     {
       "case_id": "inflight-activity",
       "input_sha256": "dc0e0b8f3da4507b90bb43364354a199f8494352fd1f48805a5013b4c3d43a3d",
-      "exit_code": 0,
-      "observation": {
+      "expected_decision": "STOP_INFLIGHT_ACTIVITY",
+      "actual_decision": "STOP_INFLIGHT_ACTIVITY",
+      "actual_observation": {
         "result": {
           "decision": "STOP_INFLIGHT_ACTIVITY"
         },
@@ -352,13 +429,20 @@
           }
         },
         "input_unchanged": true
-      }
+      },
+      "actual_exit_code": 0,
+      "baseline_decision": "STOP_INFLIGHT_ACTIVITY",
+      "changed": false,
+      "comparable": true,
+      "pass": true,
+      "approval_provenance": "not_checked"
     },
     {
       "case_id": "approval-self-declared",
       "input_sha256": "bcc164199ea88a8b9c67441c12a6228c0fbeb9283c2442394df719807657c173",
-      "exit_code": 0,
-      "observation": {
+      "expected_decision": "PHASE_READY",
+      "actual_decision": "PHASE_READY",
+      "actual_observation": {
         "result": {
           "decision": "PHASE_READY",
           "next_skill": "ac-verifier",
@@ -411,13 +495,20 @@
           }
         },
         "input_unchanged": true
-      }
+      },
+      "actual_exit_code": 0,
+      "baseline_decision": "PHASE_READY",
+      "changed": false,
+      "comparable": true,
+      "pass": true,
+      "approval_provenance": "not_checked"
     },
     {
       "case_id": "claim-new",
       "input_sha256": "5d586b38d885eea42230170d35ee93de2498447ad2350951b4e93376c5d00091",
-      "exit_code": 0,
-      "observation": {
+      "expected_decision": "CLAIMED",
+      "actual_decision": "CLAIMED",
+      "actual_observation": {
         "result": {
           "decision": "CLAIMED",
           "idempotent": false
@@ -474,13 +565,20 @@
         "transition": {
           "changed": true
         }
-      }
+      },
+      "actual_exit_code": 0,
+      "baseline_decision": "CLAIMED",
+      "changed": false,
+      "comparable": true,
+      "pass": true,
+      "approval_provenance": "not_checked"
     },
     {
       "case_id": "claim-replay",
       "input_sha256": "d5afef9f0e1193b0d1fc19a27c2458ffa1d929e9479a6f505776bd49fcbd80b6",
-      "exit_code": 0,
-      "observation": {
+      "expected_decision": "STOP_RECONCILIATION_REQUIRED",
+      "actual_decision": "STOP_RECONCILIATION_REQUIRED",
+      "actual_observation": {
         "result": {
           "decision": "STOP_RECONCILIATION_REQUIRED",
           "launch_allowed": false
@@ -539,13 +637,20 @@
         "transition": {
           "changed": false
         }
-      }
+      },
+      "actual_exit_code": 0,
+      "baseline_decision": "STOP_RECONCILIATION_REQUIRED",
+      "changed": false,
+      "comparable": true,
+      "pass": true,
+      "approval_provenance": "not_checked"
     },
     {
       "case_id": "receipt-new",
       "input_sha256": "285c93c0758811b0663f92f4ccc362802d328b98e4ecd91f45a1b65a7cef7f9d",
-      "exit_code": 0,
-      "observation": {
+      "expected_decision": "RECEIPT_RECORDED",
+      "actual_decision": "RECEIPT_RECORDED",
+      "actual_observation": {
         "result": {
           "decision": "RECEIPT_RECORDED",
           "idempotent": false
@@ -607,13 +712,20 @@
         "transition": {
           "changed": true
         }
-      }
+      },
+      "actual_exit_code": 0,
+      "baseline_decision": "RECEIPT_RECORDED",
+      "changed": false,
+      "comparable": true,
+      "pass": true,
+      "approval_provenance": "not_checked"
     },
     {
       "case_id": "receipt-replay",
       "input_sha256": "7d96e790577bb23b8a2db10b50d7344824b3f84c77c4bcb7d83e0054bc60570a",
-      "exit_code": 0,
-      "observation": {
+      "expected_decision": "RECEIPT_RECORDED",
+      "actual_decision": "RECEIPT_RECORDED",
+      "actual_observation": {
         "result": {
           "decision": "RECEIPT_RECORDED",
           "idempotent": true
@@ -678,13 +790,20 @@
         "transition": {
           "changed": false
         }
-      }
+      },
+      "actual_exit_code": 0,
+      "baseline_decision": "RECEIPT_RECORDED",
+      "changed": false,
+      "comparable": true,
+      "pass": true,
+      "approval_provenance": "not_checked"
     },
     {
       "case_id": "receipt-continue",
       "input_sha256": "10b21d1715a716078a6d6cb842b4fc9d55eab543249c78d77298222edb233fe2",
-      "exit_code": 0,
-      "observation": {
+      "expected_decision": "CONTINUE_CURRENT",
+      "actual_decision": "CONTINUE_CURRENT",
+      "actual_observation": {
         "result": {
           "decision": "CONTINUE_CURRENT",
           "transfer": "confirmed-receipt"
@@ -746,13 +865,20 @@
           }
         },
         "input_unchanged": true
-      }
+      },
+      "actual_exit_code": 0,
+      "baseline_decision": "CONTINUE_CURRENT",
+      "changed": false,
+      "comparable": true,
+      "pass": true,
+      "approval_provenance": "not_checked"
     },
     {
       "case_id": "prepare-idempotent",
       "input_sha256": "d61bf3bd4db73fb03f7dd4fedc5d8fc0175d7685281aa3f496db9a1f7cc912e9",
-      "exit_code": 0,
-      "observation": {
+      "expected_decision": "PREPARED",
+      "actual_decision": "PREPARED",
+      "actual_observation": {
         "result": {
           "decision": "PREPARED",
           "handoff_id": "28b0990834710d0f581a4f135016b2c1828c9a03d666cc605cd0b77bd396a790"
@@ -807,13 +933,20 @@
         "transition": {
           "changed": false
         }
-      }
+      },
+      "actual_exit_code": 0,
+      "baseline_decision": "PREPARED",
+      "changed": false,
+      "comparable": true,
+      "pass": true,
+      "approval_provenance": "not_checked"
     },
     {
       "case_id": "lineage-wrong-predecessor",
       "input_sha256": "1f57ab804d55629c53375107a3c13d8d169bb86c33efe96e58371efb16fccda0",
-      "exit_code": 1,
-      "observation": {
+      "expected_decision": "ERROR",
+      "actual_decision": "ERROR",
+      "actual_observation": {
         "result": {
           "decision": "ERROR",
           "error": "predecessor_handoff_id does not match previous handoff_id"
@@ -865,7 +998,19 @@
           }
         },
         "input_unchanged": true
-      }
+      },
+      "actual_exit_code": 1,
+      "baseline_decision": "ERROR",
+      "changed": false,
+      "comparable": true,
+      "pass": true,
+      "approval_provenance": "not_checked"
     }
-  ]
+  ],
+  "failures": []
 }
+
+> cc-harness@0.0.0 typecheck
+> tsc --noEmit
+
+CHECK_EXIT=0

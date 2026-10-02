@@ -1,0 +1,177 @@
+
+ RUN  v5.0.0 /Users/sungwoon/ai-projects/cc-harness
+
+ ❯ tests/unit/handoff-evaluation.test.ts (6 tests | 6 failed) 186ms
+   ❯ offline handoff evaluator semantic observations (6)
+     × compares 14 fixed expected and historical observations with current semantics 34ms
+     × reports same-decision current drift at exact semantic field paths 31ms
+     × rejects missing, null and wrongly typed current semantic fields 29ms
+     × separates baseline drift from candidate mismatch and rejects incomplete expected values 30ms
+     × rejects invalid baseline schema, provenance, input and missing rows 29ms
+     × rejects input mutation even when decision and result fields match 32ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/handoff-evaluation.test.ts > offline handoff evaluator semantic observations > compares 14 fixed expected and historical observations with current semantics
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/unit/handoff-evaluation.test.ts:68:26
+     66|   it("compares 14 fixed expected and historical observations with curr…
+     67|     const first = run();
+     68|     expect(first.status).toBe(0);
+       |                          ^
+     69|     expect(first.report.pass).toBe(true);
+     70|     expect(first.report.schema_version).toBe(2);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/unit/handoff-evaluation.test.ts > offline handoff evaluator semantic observations > reports same-decision current drift at exact semantic field paths
+AssertionError: expected [ { case_id: '$evaluation', …(1) } ] to deep equally contain ObjectContaining{…}
+
+- Expected:
+ObjectContaining {
+  "case_id": "phase-ready",
+  "field_path": "result.next_action",
+}
+
++ Received:
+[
+  {
+    "case_id": "$evaluation",
+    "reason": "invalid_input",
+  },
+]
+
+ ❯ hasPath tests/unit/handoff-evaluation.test.ts:60:34
+     58| function hasPath(result: ReturnType<typeof run>, caseId: string, path:…
+     59|   expect(result.status).not.toBe(0);
+     60|   expect(result.report.failures).toContainEqual(
+       |                                  ^
+     61|     expect.objectContaining({ case_id: caseId, field_path: path }),
+     62|   );
+ ❯ tests/unit/handoff-evaluation.test.ts:91:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/unit/handoff-evaluation.test.ts > offline handoff evaluator semantic observations > rejects missing, null and wrongly typed current semantic fields
+AssertionError: expected [ { case_id: '$evaluation', …(1) } ] to deep equally contain ObjectContaining{…}
+
+- Expected:
+ObjectContaining {
+  "case_id": "claim-new",
+  "field_path": "result.idempotent",
+}
+
++ Received:
+[
+  {
+    "case_id": "$evaluation",
+    "reason": "invalid_input",
+  },
+]
+
+ ❯ hasPath tests/unit/handoff-evaluation.test.ts:60:34
+     58| function hasPath(result: ReturnType<typeof run>, caseId: string, path:…
+     59|   expect(result.status).not.toBe(0);
+     60|   expect(result.report.failures).toContainEqual(
+       |                                  ^
+     61|     expect.objectContaining({ case_id: caseId, field_path: path }),
+     62|   );
+ ❯ tests/unit/handoff-evaluation.test.ts:101:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/unit/handoff-evaluation.test.ts > offline handoff evaluator semantic observations > separates baseline drift from candidate mismatch and rejects incomplete expected values
+AssertionError: expected [ { case_id: '$evaluation', …(1) } ] to deep equally contain ObjectContaining{…}
+
+- Expected:
+ObjectContaining {
+  "case_id": "receipt-replay",
+  "field_path": "result.idempotent",
+}
+
++ Received:
+[
+  {
+    "case_id": "$evaluation",
+    "reason": "invalid_input",
+  },
+]
+
+ ❯ hasPath tests/unit/handoff-evaluation.test.ts:60:34
+     58| function hasPath(result: ReturnType<typeof run>, caseId: string, path:…
+     59|   expect(result.status).not.toBe(0);
+     60|   expect(result.report.failures).toContainEqual(
+       |                                  ^
+     61|     expect.objectContaining({ case_id: caseId, field_path: path }),
+     62|   );
+ ❯ tests/unit/handoff-evaluation.test.ts:109:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  tests/unit/handoff-evaluation.test.ts > offline handoff evaluator semantic observations > rejects invalid baseline schema, provenance, input and missing rows
+AssertionError: expected [ { case_id: '$evaluation', …(1) } ] to deep equally contain ObjectContaining{…}
+
+- Expected:
+ObjectContaining {
+  "reason": "invalid_baseline_schema",
+}
+
++ Received:
+[
+  {
+    "case_id": "$evaluation",
+    "reason": "invalid_input",
+  },
+]
+
+ ❯ tests/unit/handoff-evaluation.test.ts:119:64
+    117|     const v1 = structuredClone(baseline);
+    118|     v1.schema_version = 1;
+    119|     expect(run(corpusPath, temporaryJson(v1)).report.failures).toConta…
+       |                                                                ^
+    120|       expect.objectContaining({ reason: "invalid_baseline_schema" }),
+    121|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  tests/unit/handoff-evaluation.test.ts > offline handoff evaluator semantic observations > rejects input mutation even when decision and result fields match
+AssertionError: expected [ { case_id: '$evaluation', …(1) } ] to deep equally contain ObjectContaining{…}
+
+- Expected:
+ObjectContaining {
+  "case_id": "phase-ready",
+  "field_path": "input_unchanged",
+}
+
++ Received:
+[
+  {
+    "case_id": "$evaluation",
+    "reason": "invalid_input",
+  },
+]
+
+ ❯ hasPath tests/unit/handoff-evaluation.test.ts:60:34
+     58| function hasPath(result: ReturnType<typeof run>, caseId: string, path:…
+     59|   expect(result.status).not.toBe(0);
+     60|   expect(result.report.failures).toContainEqual(
+       |                                  ^
+     61|     expect.objectContaining({ case_id: caseId, field_path: path }),
+     62|   );
+ ❯ tests/unit/handoff-evaluation.test.ts:141:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed (6)
+   Start at  18:56:21
+   Duration  268ms (tests 91%, transform 6%, import 2%, worker 1%)
+
