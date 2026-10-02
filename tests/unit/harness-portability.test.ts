@@ -172,25 +172,14 @@ function prepareHandoff(root: string, input = handoffInput(root)) {
   };
 }
 
-function expectProvenanceStop(result: { stdout: string; status: number | null }) {
+function expectLocalChecks(result: { stdout: string; status: number | null }, decision: string) {
   expect(result.status).toBe(0);
   const response = JSON.parse(result.stdout);
-  expect(response.decision).toBe("STOP_APPROVAL_PROVENANCE_UNVERIFIED");
-  expect(response.resume_condition).toMatch(/원문|original/i);
-  expect(response.resume_condition).toMatch(/주체|identity/i);
-  expect(response.resume_condition).toMatch(/범위|scope/i);
-  expect(response.resume_condition).toMatch(/시점|time/i);
-  expect(response.resume_condition).toMatch(/철회|revocation/i);
-  for (const key of [
-    "next_skill",
-    "next_action",
-    "instruction",
-    "launch_prompt",
-    "resume_prompt",
-    "transfer",
-  ])
-    expect(response).not.toHaveProperty(key);
-  expect(response.launch_allowed).not.toBe(true);
+  expect(response.decision).toBe(decision);
+  expect(response.notice).toMatch(/Local state/);
+  expect(response.notice).toMatch(/actual user approval/);
+  expect(response.notice).toMatch(/outside this CLI/);
+  expect(response.notice).toMatch(/does not grant execution authorization/);
   return response;
 }
 
@@ -285,7 +274,7 @@ it("keeps cumulative retired references while allowing old files to change or di
   const second = prepareHandoff(root, next);
   expect(second.result.status, second.result.stderr).toBe(0);
   const decision = runHandoff(root, ["decide", "--state", second.statePath, "--root", root]);
-  expectProvenanceStop(decision);
+  expectLocalChecks(decision, "ROLLOVER_READY");
   const third: any = handoffInput(root);
   third.schema_version = 2;
   third.sequence = 3;
@@ -616,10 +605,7 @@ it("prepares a stable record and distinguishes phase continuation from fresh rol
   expect(second.state.handoff_id).toBe(first.state.handoff_id);
 
   const rolloverDecision = runHandoff(root, ["decide", "--state", first.statePath, "--root", root]);
-  expectProvenanceStop(rolloverDecision);
-  expect(JSON.parse(rolloverDecision.stdout)).not.toHaveProperty("launch_prompt");
-  expect(JSON.parse(rolloverDecision.stdout)).not.toHaveProperty("resume_prompt");
-  expect(JSON.parse(rolloverDecision.stdout)).not.toHaveProperty("instruction");
+  expectLocalChecks(rolloverDecision, "ROLLOVER_READY");
 
   const phaseRoot = handoffRepository();
   const phaseInput = handoffInput(phaseRoot, {
@@ -635,10 +621,11 @@ it("prepares a stable record and distinguishes phase continuation from fresh rol
     phaseRoot,
   ]);
   expect(phaseDecision.status, phaseDecision.stderr).toBe(0);
-  expectProvenanceStop(phaseDecision);
+  const phaseResponse = expectLocalChecks(phaseDecision, "PHASE_READY");
+  expect(phaseResponse.instruction).toMatch(/actual user approval.*outside this CLI/);
 });
 
-it("AP-S05 stops approved pending work in the current session", () => {
+it("allows approved pending work in the current session after local checks", () => {
   const root = handoffRepository();
   const input: any = handoffInput(root, {
     rollover: { requested: "continue-current", claim: null, receipt: null },
@@ -647,7 +634,11 @@ it("AP-S05 stops approved pending work in the current session", () => {
   input.checkpoint.stage = "ac-verification";
   const prepared = prepareHandoff(root, input);
   expect(prepared.result.status, prepared.result.stderr).toBe(0);
-  expectProvenanceStop(runHandoff(root, ["decide", "--state", prepared.statePath, "--root", root]));
+  const response = expectLocalChecks(
+    runHandoff(root, ["decide", "--state", prepared.statePath, "--root", root]),
+    "CONTINUE_CURRENT",
+  );
+  expect(response.instruction).toMatch(/actual user approval.*outside this CLI/);
 });
 
 it("AP-S15 rejects self-declared verification at prepare and decide", () => {
@@ -806,8 +797,9 @@ it("applies a budget only to its relevant next action", () => {
   const root = handoffRepository();
   const acVerification = prepareHandoff(root);
   expect(acVerification.result.status, acVerification.result.stderr).toBe(0);
-  expectProvenanceStop(
+  expectLocalChecks(
     runHandoff(root, ["decide", "--state", acVerification.statePath, "--root", root]),
+    "ROLLOVER_READY",
   );
 
   const greenRoot = handoffRepository();
@@ -869,7 +861,7 @@ it("requires explicit current-stage authority before pending work or rollover", 
     "--root",
     approvedRoot,
   ]);
-  expectProvenanceStop(decision);
+  expectLocalChecks(decision, "ROLLOVER_READY");
 });
 
 it("applies diagnostic budget through an explicit read-only action kind", () => {
@@ -1028,7 +1020,7 @@ it.each([
   expect(rejected.state).toEqual(prepared.state);
 });
 
-it("AP-S06/S07 stops claim without changing bytes across executors", () => {
+it("claims once locally and requires reconciliation across executors", () => {
   const root = handoffRepository();
   const prepared = prepareHandoff(root);
   expect(prepared.result.status, prepared.result.stderr).toBe(0);
@@ -1041,19 +1033,23 @@ it("AP-S06/S07 stops claim without changing bytes across executors", () => {
     "--executor-id",
     "executor-1",
   ];
-  const before = readFileSync(prepared.statePath);
-  expectProvenanceStop(runHandoff(root, args));
-  expectProvenanceStop(runHandoff(root, args));
-  expectProvenanceStop(runHandoff(root, [...args.slice(0, -1), "executor-2"]));
-  expect(readFileSync(prepared.statePath)).toEqual(before);
-  expect(JSON.parse(before.toString())).toMatchObject({
-    status: "prepared",
-    rollover: { claim: null, receipt: null },
+  const claimed = expectLocalChecks(runHandoff(root, args), "CLAIMED");
+  expect(claimed.launch_prompt).toMatch(/actual user approval.*outside this CLI/);
+  expect(claimed.notice).toMatch(/caller creates the session separately/);
+  const after = readFileSync(prepared.statePath);
+  expect(JSON.parse(runHandoff(root, args).stdout).decision).toBe("STOP_RECONCILIATION_REQUIRED");
+  expect(JSON.parse(runHandoff(root, [...args.slice(0, -1), "executor-2"]).stdout).decision).toBe(
+    "STOP_DUPLICATE_OR_STALE",
+  );
+  expect(readFileSync(prepared.statePath)).toEqual(after);
+  expect(JSON.parse(after.toString())).toMatchObject({
+    status: "claimed",
+    rollover: { claim: { executor_id: "executor-1" }, receipt: null },
     task: { used_rollovers: 0 },
   });
 });
 
-it("AP-S14 stops a v2 claim without changing its record", () => {
+it("claims a v2 record and preserves its reference lineage", () => {
   const root = handoffRepository();
   const input: any = handoffInput(root);
   input.schema_version = 2;
@@ -1061,8 +1057,7 @@ it("AP-S14 stops a v2 claim without changing its record", () => {
   input.state.retired_refs = [];
   const prepared = prepareHandoff(root, input);
   expect(prepared.result.status, prepared.result.stderr).toBe(0);
-  const before = readFileSync(prepared.statePath);
-  expectProvenanceStop(
+  expectLocalChecks(
     runHandoff(root, [
       "claim",
       "--state",
@@ -1072,8 +1067,12 @@ it("AP-S14 stops a v2 claim without changing its record", () => {
       "--executor-id",
       "executor-v2",
     ]),
+    "CLAIMED",
   );
-  expect(readFileSync(prepared.statePath)).toEqual(before);
+  expect(JSON.parse(readFileSync(prepared.statePath, "utf8"))).toMatchObject({
+    status: "claimed",
+    state: { predecessor_handoff_id: null, retired_refs: [] },
+  });
 });
 
 it("AP-S10/S11/S12/S13 preserves legacy claim and receipt reconciliation", () => {
@@ -1122,9 +1121,10 @@ it("AP-S10/S11/S12/S13 preserves legacy claim and receipt reconciliation", () =>
   ];
   const receipt = runHandoff(root, receiptArgs);
   expect(JSON.parse(receipt.stdout).decision).toBe("RECEIPT_RECORDED");
-  expect(JSON.parse(receipt.stdout).resume_prompt).toMatch(/승인 출처|approval provenance/i);
-  expect(JSON.parse(receipt.stdout).resume_prompt).toMatch(/수동 검토|manual review/i);
-  expect(receipt.stdout).not.toContain("perform no work unless it returns CONTINUE_CURRENT");
+  expectLocalChecks(receipt, "RECEIPT_RECORDED");
+  expect(JSON.parse(receipt.stdout).resume_prompt).toMatch(
+    /actual user approval.*outside this CLI/,
+  );
   expect(receipt.stdout).toContain("decide --state");
   expect(receipt.stdout).toContain("--session-id session-real-1");
   expect(JSON.parse(runHandoff(root, receiptArgs).stdout).decision).toBe("RECEIPT_RECORDED");
@@ -1137,7 +1137,7 @@ it("AP-S10/S11/S12/S13 preserves legacy claim and receipt reconciliation", () =>
     "--session-id",
     "session-real-1",
   ]);
-  expectProvenanceStop(resumed);
+  expectLocalChecks(resumed, "CONTINUE_CURRENT");
   const wrongSession = runHandoff(root, [
     "decide",
     "--state",
@@ -1175,7 +1175,44 @@ it("AP-S10/S11/S12/S13 preserves legacy claim and receipt reconciliation", () =>
     "--root",
     root,
   ]);
-  expectProvenanceStop(continuedDecision);
+  expectLocalChecks(continuedDecision, "PHASE_READY");
+});
+
+it("keeps an active STOP on a receipted record even for its matching session", () => {
+  const root = handoffRepository();
+  const input: any = handoffInput(root);
+  input.stop = {
+    active: true,
+    reason: "Independent review failed",
+    resume_condition: "Resolve the failed review",
+    resolution_ref: null,
+  };
+  const prepared = prepareHandoff(root, input);
+  expect(prepared.result.status, prepared.result.stderr).toBe(0);
+  const receipted = {
+    ...prepared.state,
+    status: "receipted",
+    task: { ...prepared.state.task, used_rollovers: 1 },
+    rollover: {
+      ...prepared.state.rollover,
+      claim: { executor_id: "executor-1" },
+      receipt: { executor_id: "executor-1", session_id: "session-real-1" },
+    },
+  };
+  writeFileSync(prepared.statePath, JSON.stringify(receipted));
+  const decision = runHandoff(root, [
+    "decide",
+    "--state",
+    prepared.statePath,
+    "--root",
+    root,
+    "--session-id",
+    "session-real-1",
+  ]);
+  expect(JSON.parse(decision.stdout)).toMatchObject({
+    decision: "STOP_ACTIVE",
+    reason: "Independent review failed",
+  });
 });
 
 it("freezes project identity after claim until receipt or reconciliation", () => {
