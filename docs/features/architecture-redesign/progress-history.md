@@ -38,3 +38,18 @@
 ## AR-03 관련 검사
 
 - 문서 수정 뒤 `npm run design:check` → 종료 0, `docs/architecture/index.html`의 디자인 선언 84개 통과. 이 정적 검사는 새 보고서의 브라우저 표시나 인수 조건 의미를 판정하지 않는다.
+
+## 2026-10-02 AR-01~03 완료와 잔여 작업 재개
+
+- AR-01~~03은 최종 커밋 `228fea90465772bc737927f61fd3b560e4076d2a`에 들어갔다. 당시 최종 `npm run check`는 종료 코드 0, Vitest 149/149와 오프라인 평가 14/14·기준선 대비 변화 0이었다. 이는 새 AR-04~~06 검사가 아니다. 원본 로그와 입력 해시는 [final-check.md](evidence/final-check.md) 및 [evaluation-run.md](evidence/evaluation-run.md)에 보존한다.
+- 사용자 연속 요청 원문은 “남은거 끝까지 해줘 멈추지마 전문가처럼 빡세게 일해”다. 이전 대화의 목적·로컬 구현 승인을 이어받아 AR-04~06 계약을 작성한다. Git 커밋·푸시 권한 인계는 메인이 원문·대상·범위를 실제 확인한다. 별도 PR·병합·배포·유료·보안 권한으로 넓히지 않는다.
+- 새 작업 시작 source `228fea90465772bc737927f61fd3b560e4076d2a`, dirty `?? docs/features/trusted-approval/`은 타 작업 소유다. 문서 작성자는 `docs/features/architecture-redesign/`의 v2 계약·진행 파일만 소유하며 타인의 변경을 되돌리지 않는다.
+- AR-04는 lifecycle §5를 승인·외부 권한의 규범 출처로 두고 delivery/planning/skill 문구와 구조도 파생 뷰를 맞춘다. 상충하는 여러 진입 문서를 함께 닫아야 해 기본 4파일 예산을 넘는 최소 7파일 변경이 예상된다. 새 의존성은 추가하지 않는다.
+- AR-05 조사: `check-harness.mjs`가 fragment를 버리는 결함을 확인했다. 현재 검토한 상대 Markdown 16개 링크의 유효성은 깨진 fragment 검출 증거가 아니다. `npm run check`의 디자인 검사 1회와 portability의 설치본 `--apply` 대상 검사기는 이미 존재해 새 중복 트리거를 넣지 않는다.
+- AR-05 훅: 직접 `--hook` benign Bash 호출에서 84개 선언 scan 자체 약 0.03초를 관찰했으나 native hook trust/dispatch는 미확인이다. 메인은 기본 대상 네 디자인 입력·checker SHA·root identity의 직전 full 성공 snapshot으로만 cache hit를 허용하는 기술안을 선택했다. 기본 `design:check`/`npm run check`는 full이고 Bash 문자열/JSON stdin으로 쓰기를 추정하지 않는다. cache 오류·입력 변화·실패는 full 또는 안전 실패다. 이 기술안의 구현·효과는 아직 미검증이다.
+- AR-06은 동일 workload의 실제 시간·호출 수·재시도/감사 범위를 비교한다. 토큰·비용이 관찰되지 않으면 `unknown`으로 남기고 속도 향상은 측정 전 주장하지 않는다.
+
+## 2026-10-02 AR-04~06 구현·검사 결과
+
+- AR-04 규범·구조도 AC1–3, AR-05 앵커 수정과 cache 후보 평가 AC1–5, AR-06 측정·운영 판정 AC1/AC1b/AC2는 각각 독립 PASS를 받았다. 뒤이어 별도 검증자 `redesign_stage_verify`가 보고서·진행 기록·검사 경계의 AR-06 AC3도 PASS로 판정했다. [최종 판정 기록](evidence/closure-final-review.md)에 검토 해시를 남긴다. 이로써 원래 5단계의 가역적 로컬 구현·검증은 완료됐다. 앞 절의 cache 채택안은 **당시 실험 가설**이며, W1/W2 29행 측정 뒤 운영 불채택했다. 운영 디자인 검사는 항상 full이고 native hook 발화·토큰·비용은 unknown이다. Git 커밋·푸시는 이 시점에 아직 실행 전이다.
+- 루트 `npm run check`는 타 작업 소유 미추적 `harness-map/`의 ESLint 28개 오류로 종료 1, 후속 단계 미실행이다. 같은 의존성과 재설계 source를 복사한 [격리 snapshot](evidence/closure-snapshot-check.md)의 복구 검사에서는 `npm run check` 종료 0, 디자인 84개·하네스 15개 스킬/62개 등록 파일·Vitest 4개 파일 176/176·인계 평가 실패 0·타입 검사 PASS였다. 검사 후 보고서 역사 라벨·상태 문구를 고쳐 후행 HTML의 정적 검사와 실제 화면 검증은 별도로 구분한다.

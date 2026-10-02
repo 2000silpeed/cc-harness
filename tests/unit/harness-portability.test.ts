@@ -1716,6 +1716,7 @@ it("accepts normal parent links into harness documents", () => {
 
 it("checks document links and accepts existing relative links with anchors", () => {
   const root = fixture();
+  write(root, skillPath, readFileSync(resolve(root, skillPath), "utf8") + "\n# Example\n");
   write(
     root,
     methodPath,
@@ -1724,6 +1725,106 @@ it("checks document links and accepts existing relative links with anchors", () 
   expect(run(root).status).toBe(0);
   write(root, methodPath, "[missing](missing.md)");
   expect(run(root).status).toBe(1);
+});
+
+it("rejects a broken relative Markdown fragment", () => {
+  const root = fixture();
+  write(root, methodPath, "# Actual heading\n[broken](./testing-strategy.md#missing-heading)\n");
+  const result = run(root);
+  expect(result.status).toBe(1);
+  expect(result.stderr).toContain("끊어진 앵커");
+});
+
+it("accepts rendered Markdown headings, duplicate slugs, encoded text, and explicit anchors", () => {
+  const root = fixture();
+  write(
+    root,
+    methodPath,
+    [
+      "# Hello *World*!",
+      "## Repeat",
+      "## Repeat",
+      "# 한글 표제",
+      '<a name="manual"></a>',
+      "<span id='inline'></span>",
+      "[markup](#hello-world)",
+      "[duplicate](#repeat-1)",
+      `[encoded](#${encodeURIComponent("한글-표제")})`,
+      "[name](#manual)",
+      "[id](#inline)",
+    ].join("\n"),
+  );
+  const result = run(root);
+  expect(result.stderr).toBe("");
+  expect(result.status).toBe(0);
+});
+
+it("checks local HTML ids and named anchors", () => {
+  const root = fixture();
+  write(root, "docs/methods/example.html", '<section id="actual"></section><a name="legacy"></a>');
+  write(root, methodPath, "[id](example.html#actual) [name](example.html#legacy)");
+  expect(run(root).status).toBe(0);
+  write(root, methodPath, "[broken](example.html#absent)");
+  const result = run(root);
+  expect(result.status).toBe(1);
+  expect(result.stderr).toContain("끊어진 앵커");
+});
+
+it.each([
+  ["script", '<script>const x = "<span id=\"ghost\"></span>";</script>'],
+  ["indented script", '    <script>const x = "<span id=\"ghost\"></span>";</script>'],
+  ["style", '<style>/* <span id="ghost"></span> */</style>'],
+  ["textarea", '<textarea><span id="ghost"></span></textarea>'],
+  ["title", '<title><span id="ghost"></span></title>'],
+  ["template", '<template><span id="ghost"></span></template>'],
+  ["nested template", '<template><template><span id="ghost"></span></template></template>'],
+  ["malformed script", '<script type="broken><span id="ghost"></span>'],
+  ["plaintext", '<plaintext>literal</plaintext><span id="ghost"></span>'],
+])("does not treat inactive HTML contents as anchors: %s", (kind, html) => {
+  const root = fixture();
+  write(root, "docs/methods/example.html", html);
+  write(root, methodPath, "[ghost](example.html#ghost)");
+  const result = run(root);
+  expect(result.status).toBe(1);
+  expect(result.stderr).toContain(
+    kind === "malformed script" ? "지원하지 않는 HTML raw-text 태그 형식" : "끊어진 앵커",
+  );
+});
+
+it.each(["script", "style", "textarea", "title", "template"])(
+  "accepts an id on the outer HTML element: %s",
+  (tag) => {
+    const root = fixture();
+    write(root, "docs/methods/example.html", `<${tag} id="outer">inner</${tag}>`);
+    write(root, methodPath, "[outer](example.html#outer)");
+    expect(run(root).status).toBe(0);
+  },
+);
+
+it("ignores Markdown headings inside raw HTML content", () => {
+  const root = fixture();
+  write(root, methodPath, "<script>\n# Ghost\n</script>\n# Real\n[real](#real)\n[ghost](#ghost)");
+  const result = run(root);
+  expect(result.status).toBe(1);
+  expect(result.stderr).toContain("끊어진 앵커");
+});
+
+it.each([
+  ["fenced heading", "```md\n# Fake\n```\n[broken](#fake)"],
+  ["fenced HTML id", "~~~html\n<span id='fake'></span>\n~~~\n[broken](#fake)"],
+  ["commented anchor", "<!-- <a id='fake'></a> -->\n[broken](#fake)"],
+  ["data attribute", "<span data-id='fake'></span>\n[broken](#fake)"],
+  ["inline code", "`<span id='fake'></span>`\n[broken](#fake)"],
+  ["missing duplicate", "# Same\n# Same\n[broken](#same-2)"],
+  ["extra hash", "# Actual\n[broken](#actual#other)"],
+  ["unsupported target", "[broken](../harness/registry.json#schemaVersion)"],
+  ["invalid encoding", "[broken](#%ZZ)"],
+])("rejects a false or unsupported local fragment: %s", (_kind, content) => {
+  const root = fixture();
+  write(root, methodPath, content);
+  const result = run(root);
+  expect(result.status).toBe(1);
+  expect(result.stderr).toContain("끊어진 링크");
 });
 
 it.each(["file", "ancestor", "registry"])(

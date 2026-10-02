@@ -32,6 +32,113 @@ const localPath = (name, allowParents = false) => {
   return current;
 };
 
+const localAnchors = (path, markdown) => {
+  const anchors = new Set();
+  const usedSlugs = new Set();
+  const content = readFileSync(path, "utf8").replace(/<!--[\s\S]*?(?:-->|$)/g, (comment) =>
+    comment.replace(/[^\n]/g, ""),
+  );
+  const visible = [];
+  let fence = null;
+  for (const line of content.split(/\r?\n/)) {
+    const marker = line.match(/^ {0,3}(`{3,}|~{3,})/);
+    if (fence) {
+      if (new RegExp(`^ {0,3}${fence[0]}{${fence[1]},}[ \\t]*$`).test(line)) fence = null;
+      continue;
+    }
+    if (marker) {
+      fence = [marker[1][0], marker[1].length];
+      continue;
+    }
+    if (markdown && /^(?: {4}|\t)/.test(line)) continue;
+    visible.push(line);
+  }
+  const original = visible.join("\n");
+  const html = original.replace(/(`+)(.*?)\1/g, (code) => " ".repeat(code.length));
+  const maskedRanges = [];
+  const templates = [];
+  const opaqueOpeners = new Set();
+  let raw = null;
+  for (const tag of html.matchAll(/<(\/?)([a-z][\w:-]*)\b((?:"[^"]*"|'[^']*'|[^'">])*)>/gi)) {
+    const closing = Boolean(tag[1]);
+    const name = tag[2].toLowerCase();
+    const end = tag.index + tag[0].length;
+    if (raw) {
+      if (closing && name === raw.name && raw.name !== "plaintext") {
+        maskedRanges.push([raw.start, end]);
+        raw = null;
+      }
+      continue;
+    }
+    if (closing) {
+      if (name === "template" && templates.length) maskedRanges.push([templates.pop(), end]);
+      continue;
+    }
+    if (name === "template") templates.push(end);
+    const isRaw = [
+      "script",
+      "style",
+      "textarea",
+      "title",
+      "xmp",
+      "iframe",
+      "noembed",
+      "noframes",
+      "noscript",
+      "plaintext",
+    ].includes(name);
+    if (isRaw || name === "template") opaqueOpeners.add(tag.index);
+    if (isRaw) raw = { name, start: end };
+    if (templates.length > (name === "template" ? 1 : 0)) continue;
+    const attributes = tag[3].matchAll(
+      /(?:^|\s)([^\s=/>]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?/g,
+    );
+    for (const attribute of attributes) {
+      const attributeName = attribute[1].toLowerCase();
+      if (
+        (attributeName === "id" || (attributeName === "name" && name === "a")) &&
+        (attribute[2] !== undefined || attribute[3] !== undefined || attribute[4] !== undefined)
+      )
+        anchors.add(attribute[2] ?? attribute[3] ?? attribute[4]);
+    }
+  }
+  if (raw) maskedRanges.push([raw.start, original.length]);
+  for (const start of templates) maskedRanges.push([start, original.length]);
+  for (const candidate of html.matchAll(
+    /<(?:script|style|textarea|title|template|xmp|iframe|noembed|noframes|noscript|plaintext)\b/gi,
+  )) {
+    if (
+      !opaqueOpeners.has(candidate.index) &&
+      !maskedRanges.some(([start, end]) => candidate.index >= start && candidate.index < end)
+    )
+      throw new Error("지원하지 않는 HTML raw-text 태그 형식");
+  }
+  let headings = original;
+  for (const [start, end] of maskedRanges)
+    headings =
+      headings.slice(0, start) +
+      headings.slice(start, end).replace(/[^\n]/g, " ") +
+      headings.slice(end);
+  if (!markdown) return anchors;
+  for (const line of headings.split("\n")) {
+    const heading = line.match(/^ {0,3}#{1,6}(?:[ \t]+|$)(.*)$/);
+    if (!heading) continue;
+    const label = heading[1]
+      .replace(/[ \t]+#+[ \t]*$/, "")
+      .replace(/!?\[([^\]]+)\]\([^)]*\)/g, "$1")
+      .replace(/<[^>]*>/g, "")
+      .replace(/[`*_~]/g, "")
+      .trim()
+      .toLowerCase();
+    const base = label.replace(/[^\p{L}\p{N}_\-\s]/gu, "").replace(/\s/g, "-");
+    let slug = base;
+    for (let suffix = 1; usedSlugs.has(slug); suffix++) slug = `${base}-${suffix}`;
+    usedSlugs.add(slug);
+    anchors.add(slug);
+  }
+  return anchors;
+};
+
 try {
   const registry = JSON.parse(readFileSync(localPath("docs/harness/registry.json"), "utf8"));
   if (!registry || typeof registry !== "object" || Array.isArray(registry))
@@ -181,13 +288,29 @@ try {
       ...content.matchAll(/^\s*\[[^\]]+\]:\s*<?([^\s>]+)>?/gm),
     ];
     for (const [, rawLink] of links) {
-      if (/^(?:https?:|mailto:|#|\/\/)/i.test(rawLink)) continue;
-      const link = decodeURIComponent(rawLink.split(/[?#]/)[0]);
-      if (!link) continue;
-      if (isAbsolute(link) || link.includes("\\"))
-        throw new Error("안전하지 않은 링크: " + filename + " → " + rawLink);
+      if (/^(?:https?:|mailto:|\/\/)/i.test(rawLink)) continue;
       try {
-        localPath(dirname(filename).split(sep).join("/") + "/" + link, true);
+        const hashIndex = rawLink.indexOf("#");
+        const address = hashIndex < 0 ? rawLink : rawLink.slice(0, hashIndex);
+        const encodedFragment = hashIndex < 0 ? undefined : rawLink.slice(hashIndex + 1);
+        const link = decodeURIComponent(address.split("?")[0]);
+        if (isAbsolute(link) || link.includes("\\")) throw new Error("안전하지 않은 링크");
+        if (!link && encodedFragment === undefined) continue;
+        const target = localPath(
+          link ? dirname(filename).split(sep).join("/") + "/" + link : filename,
+          true,
+        );
+        if (encodedFragment === undefined) continue;
+        if (!encodedFragment) throw new Error("지원하지 않는 빈 로컬 앵커");
+        let fragment;
+        try {
+          fragment = decodeURIComponent(encodedFragment);
+        } catch {
+          throw new Error("지원하지 않는 로컬 앵커 인코딩");
+        }
+        const markdown = target.toLowerCase().endsWith(".md");
+        if (!markdown && !/\.html?$/i.test(target)) throw new Error("지원하지 않는 로컬 앵커 대상");
+        if (!localAnchors(target, markdown).has(fragment)) throw new Error("끊어진 앵커");
       } catch (error) {
         errors.push("끊어진 링크: " + filename + " → " + rawLink + ": " + error.message);
       }

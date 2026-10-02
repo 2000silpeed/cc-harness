@@ -1,0 +1,157 @@
+import { afterEach, expect, it } from "vitest";
+import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
+import {
+  copyFileSync,
+  chmodSync,
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+
+const repository = process.cwd();
+const temporary: string[] = [];
+
+afterEach(() => {
+  for (const path of temporary.splice(0)) rmSync(path, { recursive: true, force: true });
+});
+
+function fixture() {
+  const base = mkdtempSync(join(tmpdir(), "design-hook-cache-"));
+  temporary.push(base);
+  const root = join(base, "project");
+  const scratch = join(base, "private-tmp");
+  mkdirSync(scratch);
+  const files = [
+    "scripts/check-design-system.mjs",
+    "docs/design-system/colors.md",
+    "docs/design-system/typography.md",
+    "docs/design-system/spacing.md",
+  ];
+  for (const file of files) {
+    const target = join(root, file);
+    mkdirSync(dirname(target), { recursive: true });
+    copyFileSync(join(repository, file), target);
+  }
+  const html = join(root, "docs/architecture/index.html");
+  mkdirSync(dirname(html), { recursive: true });
+  writeFileSync(html, "<style>body { color: #e8edf1; }</style>\n");
+  const cacheDir = join(
+    scratch,
+    `cc-harness-design-${createHash("sha256").update(realpathSync(root)).digest("hex")}`,
+  );
+  return { root, scratch, html, cacheDir, cache: join(cacheDir, "success.json") };
+}
+
+function run(root: string, scratch: string, ...args: string[]) {
+  return spawnSync(process.execPath, [join(root, "scripts/check-design-system.mjs"), ...args], {
+    cwd: root,
+    encoding: "utf8",
+    env: { ...process.env, TMPDIR: scratch },
+  });
+}
+
+it("reuses only a matching successful hook snapshot and keeps ordinary checks full", () => {
+  const { root, scratch, cache, cacheDir } = fixture();
+  const cold = run(root, scratch, "--hook");
+  expect(cold.status, cold.stderr).toBe(0);
+  expect(cold.stdout).toBe("{}\n");
+  expect(existsSync(cache)).toBe(true);
+  expect(lstatSync(cacheDir).mode & 0o777).toBe(0o700);
+  expect(lstatSync(cache).mode & 0o777).toBe(0o600);
+  const warm = run(root, scratch, "--hook");
+  expect(warm.status, warm.stderr).toBe(0);
+  expect(warm.stdout).toBe("");
+  const full = run(root, scratch);
+  expect(full.status, full.stderr).toBe(0);
+  expect(full.stdout).toContain("디자인 검사 통과:");
+});
+
+it("keeps a successful cache after invalid input and rechecks each invalid invocation", () => {
+  const { root, scratch, html, cache } = fixture();
+  expect(run(root, scratch, "--hook").status).toBe(0);
+  const success = readFileSync(cache);
+  const validHtml = readFileSync(html);
+  writeFileSync(html, "<style>body { color: unknown-color; }</style>\n");
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const result = run(root, scratch, "--hook");
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain("디자인 기준 이탈");
+    expect(readFileSync(cache)).toEqual(success);
+  }
+  writeFileSync(html, validHtml);
+  expect(run(root, scratch, "--hook").stdout).toBe("");
+});
+
+it("runs full for an explicit target, unknown argument, corrupt cache, and symlink input", () => {
+  const { root, scratch, html, cache } = fixture();
+  expect(run(root, scratch, "--hook").status).toBe(0);
+  const success = readFileSync(cache);
+  expect(run(root, scratch, "--hook", html).stdout).toBe("{}\n");
+  const invalidTarget = join(root, "invalid-target.html");
+  writeFileSync(invalidTarget, "<style>body { color: unknown-color; }</style>\n");
+  const explicitInvalid = run(root, scratch, "--hook", invalidTarget);
+  expect(explicitInvalid.status).toBe(2);
+  expect(explicitInvalid.stderr).toContain("디자인 기준 이탈");
+  const unknown = run(root, scratch, "--hook", "--unknown");
+  expect(unknown.status).toBe(2);
+  expect(readFileSync(cache)).toEqual(success);
+  writeFileSync(cache, "not json");
+  expect(run(root, scratch, "--hook").stdout).toBe("{}\n");
+  const validHtml = readFileSync(html);
+  const linkedHtml = join(root, "linked.html");
+  writeFileSync(linkedHtml, validHtml);
+  rmSync(html);
+  symlinkSync(linkedHtml, html);
+  expect(run(root, scratch, "--hook").stdout).toBe("{}\n");
+  writeFileSync(linkedHtml, "<style>body { color: unknown-color; }</style>\n");
+  const invalid = run(root, scratch, "--hook");
+  expect(invalid.status).toBe(2);
+  expect(invalid.stderr).toContain("디자인 기준 이탈");
+});
+
+it("invalidates a successful snapshot when checker bytes or root identity change", () => {
+  const first = fixture();
+  expect(run(first.root, first.scratch, "--hook").stdout).toBe("{}\n");
+  const oldRecord = readFileSync(first.cache);
+  writeFileSync(
+    join(first.root, "scripts/check-design-system.mjs"),
+    readFileSync(join(first.root, "scripts/check-design-system.mjs"), "utf8") +
+      "\n// new revision\n",
+  );
+  expect(run(first.root, first.scratch, "--hook").stdout).toBe("{}\n");
+  expect(readFileSync(first.cache)).not.toEqual(oldRecord);
+  expect(run(first.root, first.scratch, "--hook").stdout).toBe("");
+  const second = fixture();
+  expect(run(second.root, second.scratch, "--hook").stdout).toBe("{}\n");
+  expect(first.cache).not.toBe(second.cache);
+});
+
+it("ignores linked or inaccessible cache records without changing their contents", () => {
+  const { root, scratch, cache, cacheDir } = fixture();
+  expect(run(root, scratch, "--hook").stdout).toBe("{}\n");
+  const oldRecord = readFileSync(cache);
+  const linkedRecord = join(scratch, "other-record");
+  writeFileSync(linkedRecord, oldRecord);
+  rmSync(cache);
+  symlinkSync(linkedRecord, cache);
+  expect(run(root, scratch, "--hook").stdout).toBe("{}\n");
+  expect(readFileSync(linkedRecord)).toEqual(oldRecord);
+  rmSync(cache);
+  writeFileSync(cache, oldRecord);
+  chmodSync(cache, 0o400);
+  expect(run(root, scratch, "--hook").stdout).toBe("{}\n");
+  expect(readFileSync(cache)).toEqual(oldRecord);
+  chmodSync(cache, 0o600);
+  chmodSync(cacheDir, 0o500);
+  expect(run(root, scratch, "--hook").stdout).toBe("{}\n");
+  chmodSync(cacheDir, 0o700);
+});

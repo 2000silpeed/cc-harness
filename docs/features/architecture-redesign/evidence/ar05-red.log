@@ -1,0 +1,57 @@
+
+ RUN  v5.0.0 /Users/sungwoon/ai-projects/cc-harness
+
+ ❯ tests/unit/design-hook-cache.test.ts (3 tests | 3 failed) 96ms
+   × reuses only a matching successful hook snapshot and keeps ordinary checks full 35ms
+   × keeps a successful cache after invalid input and rechecks each invalid invocation 31ms
+   × runs full for an explicit target, unknown argument, corrupt cache, and symlink input 30ms
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/unit/design-hook-cache.test.ts > reuses only a matching successful hook snapshot and keeps ordinary checks full
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/unit/design-hook-cache.test.ts:65:29
+     63|   expect(cold.status, cold.stderr).toBe(0);
+     64|   expect(cold.stdout).toBe("{}\n");
+     65|   expect(existsSync(cache)).toBe(true);
+       |                             ^
+     66|   expect(lstatSync(cacheDir).mode & 0o777).toBe(0o700);
+     67|   expect(lstatSync(cache).mode & 0o777).toBe(0o600);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/unit/design-hook-cache.test.ts > keeps a successful cache after invalid input and rechecks each invalid invocation
+Error: ENOENT: no such file or directory, open '/var/folders/bc/dgnqfptd3g980z9ybm8kw5fh0000gn/T/design-hook-cache-pmBEvl/private-tmp/cc-harness-design-1dea8e69b9ad0df3444d18c526ea8d11e8e69544c4142d05142ae7ad38b6eec8/success.json'
+ ❯ tests/unit/design-hook-cache.test.ts:79:19
+     77|   const { root, scratch, html, cache } = fixture();
+     78|   expect(run(root, scratch, "--hook").status).toBe(0);
+     79|   const success = readFileSync(cache);
+       |                   ^
+     80|   const validHtml = readFileSync(html);
+     81|   writeFileSync(html, "<style>body { color: unknown-color; }</style>\n…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+ FAIL  tests/unit/design-hook-cache.test.ts > runs full for an explicit target, unknown argument, corrupt cache, and symlink input
+Error: ENOENT: no such file or directory, open '/var/folders/bc/dgnqfptd3g980z9ybm8kw5fh0000gn/T/design-hook-cache-CQll3e/private-tmp/cc-harness-design-4af767c2a5d33723b1f1443b53c15d1b64b9fc9f2c0273e65205c137f374fa36/success.json'
+ ❯ tests/unit/design-hook-cache.test.ts:95:19
+     93|   const { root, scratch, html, cache } = fixture();
+     94|   expect(run(root, scratch, "--hook").status).toBe(0);
+     95|   const success = readFileSync(cache);
+       |                   ^
+     96|   expect(run(root, scratch, "--hook", html).stdout).toBe("{}\n");
+     97|   const unknown = run(root, scratch, "--hook", "--unknown");
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  16:55:32
+   Duration  174ms (tests 84%, transform 9%, import 4%, worker 1%)
+

@@ -23,9 +23,9 @@ MSC에는 승인 목표/범위, revision·dirty hash, 직접 관련 contract/AC/
 
 ## STOP과 예산
 
-delivery 계약의 필수·실행 안전 STOP 전체를 실행 전과 각 단계 전후에 적용한다. Green은 누적 최대 3회(사용자 상한이 낮으면 그 값), 읽기 전용 diagnostic은 이슈당 누적 1회다. 새 context/model/RESUME으로 counter를 초기화하지 않는다. Refactor는 대상의 전체 회귀 명령이 통과하지 않으면 STOP이며 일부 테스트로 대신하지 않는다.
+delivery 계약의 필수·실행 안전 STOP 전체를 실행 전과 각 단계 전후에 적용한다. Green 총예산은 `min(3, 1 + user_approved_retry)`이고 읽기 전용 diagnostic은 이슈당 누적 1회다. 새 context/model/RESUME으로 counter를 초기화하지 않는다. Refactor는 대상의 전체 회귀 명령이 통과하지 않으면 STOP이며 일부 테스트로 대신하지 않는다.
 
-diagnostic은 STOP/gate가 없고 정상 환경·승인 범위·남은 Green/diagnostic 예산·새 근거가 있을 때만 원인/가설/계획을 반환한다. 승인된 architecture 안의 usable plan과 Green 예산이 있어야 새 worker가 구현한다. 새 architecture는 user gate, diagnostic 실패·unknown·no-progress는 STOP이다.
+diagnostic은 STOP/gate가 없고 정상 환경·승인 범위·남은 Green/diagnostic 예산·새 근거가 있을 때만 원인/가설/계획을 반환한다. 승인된 architecture 안의 usable plan과 Green 예산이 있어야 새 worker가 구현한다. 새 architecture가 필요하면 lifecycle §5의 유효한 G2 위임 범위·만료·철회를 먼저 대조하고, 범위 안의 판정에는 필요한 독립 감사를 적용한다. 범위 밖이거나 권한이 없으면 사용자 게이트로 상향한다. diagnostic 실패·unknown·no-progress는 STOP이다.
 
 사용자 판단, 선행 미완료, 충돌, 보안 차단, 진전 없음, 예산/이슈 상한 소진, 중단 요청이면 사유·증거·재개 조건을 남기고 실행을 끝낸다. 외부 게시 권한이 없으면 로컬 초안까지만 만든다. 코드 통과를 E2E·CI·머지·배포 완료로 바꾸지 않는다.
 

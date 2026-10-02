@@ -1,0 +1,228 @@
+import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
+import {
+  copyFileSync,
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { performance } from "node:perf_hooks";
+
+const repository = "/Users/sungwoon/ai-projects/cc-harness";
+const baseRevision = "228fea90465772bc737927f61fd3b560e4076d2a";
+const sourceFiles = [
+  "docs/design-system/colors.md",
+  "docs/design-system/typography.md",
+  "docs/design-system/spacing.md",
+  "docs/architecture/index.html",
+];
+const evidenceDir = join(repository, "docs/features/architecture-redesign/evidence");
+const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
+const stdin = Buffer.from(
+  '{"hook_event_name":"PostToolUse","tool_name":"Bash","tool_input":{"command":"pwd"}}',
+);
+
+if (process.argv.length !== 3 || process.argv[2] !== "--run") {
+  process.stdout.write("Prepared only. Run with --run after independent AR-05 AC PASS.\n");
+  process.exit(0);
+}
+
+const baselineResult = spawnSync("git", ["show", `${baseRevision}:scripts/check-design-system.mjs`], {
+  cwd: repository,
+  maxBuffer: 1024 * 1024,
+});
+if (baselineResult.status !== 0) throw new Error("baseline git show failed");
+const baseline = baselineResult.stdout;
+const candidate = readFileSync(join(repository, "scripts/check-design-system.mjs"));
+const frozenInputs = Object.fromEntries(
+  sourceFiles.map((file) => [file, readFileSync(join(repository, file))]),
+);
+const sourceHashes = Object.fromEntries(
+  sourceFiles.map((file) => [file, sha(frozenInputs[file])]),
+);
+const base = mkdtempSync(join(tmpdir(), "ar06-direct-entry-"));
+const root = join(base, "project");
+const scratch = join(base, "private-tmp");
+mkdirSync(scratch, { mode: 0o700 });
+for (const file of sourceFiles) {
+  const destination = join(root, file);
+  mkdirSync(dirname(destination), { recursive: true });
+  writeFileSync(destination, frozenInputs[file]);
+}
+const checkerPath = join(root, "scripts/check-design-system.mjs");
+mkdirSync(dirname(checkerPath), { recursive: true });
+const env = { PATH: process.env.PATH ?? "", TMPDIR: scratch, LANG: "C.UTF-8", TZ: "UTC" };
+const envHash = sha(Buffer.from(JSON.stringify(Object.entries(env).sort())));
+const cacheDir = join(scratch, `cc-harness-design-${sha(Buffer.from(realpathSync(root)))}`);
+const cacheFile = join(cacheDir, "success.json");
+const rows = [];
+const assertion = [];
+const sourceStable = () =>
+  sourceFiles.every((file) => sha(readFileSync(join(repository, file))) === sourceHashes[file]);
+const resetCache = () => {
+  if (existsSync(cacheDir)) {
+    if (lstatSync(cacheDir).isSymbolicLink()) throw new Error("fixture cache became a symlink");
+    rmSync(cacheDir, { recursive: true });
+  }
+};
+const call = (workload, version, round, phase, args) => {
+  const start = performance.now();
+  const result = spawnSync(process.execPath, [checkerPath, ...args], {
+    cwd: root,
+    env,
+    input: stdin,
+    maxBuffer: 1024 * 1024,
+  });
+  const wallMs = performance.now() - start;
+  const stdout = result.stdout ?? Buffer.alloc(0);
+  const stderr = result.stderr ?? Buffer.alloc(0);
+  const text = stdout.toString("utf8");
+  const errorText = stderr.toString("utf8");
+  const observedPath =
+    result.status === 0 && text.length === 0
+      ? "cache-hit-inferred"
+      : result.status === 0 || errorText.includes("디자인 기준 이탈")
+        ? "full-parse-inferred"
+        : "unknown";
+  const row = {
+    workload,
+    version,
+    round,
+    phase,
+    command: `node scripts/check-design-system.mjs${args.length ? " " + args.join(" ") : ""}`,
+    args,
+    exit: result.status,
+    signal: result.signal,
+    wall_ms: Math.round(wallMs * 1000) / 1000,
+    stdout_bytes: stdout.length,
+    stderr_bytes: stderr.length,
+    stdout: text,
+    stderr: errorText,
+    observed_path: observedPath,
+  };
+  rows.push(row);
+  return row;
+};
+
+if (!sourceStable()) throw new Error("design inputs changed while fixture was frozen");
+for (const [version, code] of [
+  ["baseline", baseline],
+  ["candidate", candidate],
+]) {
+  writeFileSync(checkerPath, code);
+  for (let round = 1; round <= 3; round += 1) {
+    resetCache();
+    call("W1", version, round, "cold-hook", ["--hook"]);
+    call("W1", version, round, "warm-hook-1", ["--hook"]);
+    call("W1", version, round, "warm-hook-2", ["--hook"]);
+    call("W1", version, round, "default-full", []);
+  }
+}
+const w1 = rows.filter((row) => row.workload === "W1");
+if (w1.length !== 24) assertion.push("W1 row count is not 24");
+for (const row of w1) {
+  if (row.exit !== 0) assertion.push(`W1 ${row.version}/${row.round}/${row.phase} exited ${row.exit}`);
+  if (row.phase === "default-full" && !row.stdout.includes("84개 선언"))
+    assertion.push(`W1 ${row.version}/${row.round} default did not report 84 declarations`);
+  if (row.version === "baseline" && row.observed_path !== "full-parse-inferred")
+    assertion.push(`W1 baseline ${row.round}/${row.phase} was not full`);
+  if (row.version === "candidate") {
+    const expected = row.phase.startsWith("warm") ? "cache-hit-inferred" : "full-parse-inferred";
+    if (row.observed_path !== expected)
+      assertion.push(`W1 candidate ${row.round}/${row.phase} was ${row.observed_path}`);
+  }
+}
+
+// W2 keeps the final W1 candidate success cache and changes only the fixture HTML.
+const goodCache = readFileSync(cacheFile);
+const goodCacheSha = sha(goodCache);
+const htmlPath = join(root, "docs/architecture/index.html");
+const validHtml = readFileSync(htmlPath);
+const htmlText = validHtml.toString("utf8");
+const invalidHtml = htmlText.replace(/([;{]\s*color\s*:\s*)([^;{}]+)/m, "$1unknown-color");
+if (invalidHtml === htmlText) throw new Error("No CSS color declaration to invalidate");
+writeFileSync(htmlPath, invalidHtml);
+writeFileSync(checkerPath, baseline);
+call("W2", "baseline", 1, "invalid-hook", ["--hook"]);
+writeFileSync(checkerPath, candidate);
+call("W2", "candidate", 1, "invalid-hook", ["--hook"]);
+call("W2", "candidate", 1, "invalid-default", []);
+call("W2", "candidate", 1, "invalid-hook-repeat", ["--hook"]);
+const cacheAfterInvalidSha = sha(readFileSync(cacheFile));
+if (cacheAfterInvalidSha !== goodCacheSha) assertion.push("W2 success cache changed on invalid input");
+writeFileSync(htmlPath, validHtml);
+call("W2", "candidate", 1, "restored-hook", ["--hook"]);
+for (const row of rows.filter((item) => item.workload === "W2")) {
+  const expected = row.phase === "invalid-default" ? 1 : row.phase === "restored-hook" ? 0 : 2;
+  if (row.exit !== expected) assertion.push(`W2 ${row.version}/${row.phase} exit ${row.exit}`);
+  if (expected !== 0 && !row.stderr.includes("디자인 기준 이탈"))
+    assertion.push(`W2 ${row.version}/${row.phase} lacks design failure`);
+}
+if (!sourceStable()) assertion.push("source design inputs changed during measurement");
+for (const file of sourceFiles) {
+  if (sha(readFileSync(join(root, file))) !== sourceHashes[file])
+    assertion.push(`fixture input changed after restore: ${file}`);
+}
+const statistic = (numbers) => {
+  const sorted = [...numbers].sort((a, b) => a - b);
+  return { min: sorted[0], median: (sorted[5] + sorted[6]) / 2, max: sorted.at(-1) };
+};
+const summary = {
+  source_revision: baseRevision,
+  measured_at_utc: new Date().toISOString(),
+  surface: "direct node CLI entrypoint; synthetic stdin; not native hook dispatch",
+  fixture_root: realpathSync(root),
+  cache_dir: cacheDir,
+  node: process.version,
+  platform: process.platform,
+  arch: process.arch,
+  cwd: root,
+  stdin_sha256: sha(stdin),
+  environment_sha256: envHash,
+  environment_keys: Object.keys(env).sort(),
+  inputs_sha256: sourceHashes,
+  checker_sha256: { baseline: sha(baseline), candidate: sha(candidate) },
+  cache: {
+    good_sha256: goodCacheSha,
+    after_invalid_sha256: cacheAfterInvalidSha,
+    directory_mode: statSync(cacheDir).mode & 0o777,
+    file_mode: statSync(cacheFile).mode & 0o777,
+  },
+  counts: {
+    baseline_full: w1.filter((row) => row.version === "baseline" && row.observed_path === "full-parse-inferred").length,
+    candidate_full: w1.filter((row) => row.version === "candidate" && row.observed_path === "full-parse-inferred").length,
+    candidate_reuse: w1.filter((row) => row.version === "candidate" && row.observed_path === "cache-hit-inferred").length,
+  },
+  wall_ms: {
+    baseline: statistic(w1.filter((row) => row.version === "baseline").map((row) => row.wall_ms)),
+    candidate: statistic(w1.filter((row) => row.version === "candidate").map((row) => row.wall_ms)),
+  },
+  assertions: assertion,
+  rows,
+};
+mkdirSync(evidenceDir, { recursive: true });
+writeFileSync(join(evidenceDir, "ar06-measurements.json"), JSON.stringify(summary, null, 2) + "\n");
+const report = [
+  "# AR-06 W1/W2 직접 CLI 측정",
+  "",
+  `- 판정: ${assertion.length ? "비교 불가 또는 실패" : "W1/W2 관찰 계약 충족"}.`,
+  `- fixture root: \`${summary.fixture_root}\`; 입력 4개 SHA와 환경·stdin SHA는 JSON에 기록했다.`,
+  `- checker SHA: 기준 \`${summary.checker_sha256.baseline}\`, 후보 \`${summary.checker_sha256.candidate}\`.`,
+  `- W1: 기준 full ${summary.counts.baseline_full}/12; 후보 full ${summary.counts.candidate_full}/12, 재사용 ${summary.counts.candidate_reuse}/12.`,
+  `- W1 wall ms 기준 min/median/max ${Object.values(summary.wall_ms.baseline).join("/")}; 후보 ${Object.values(summary.wall_ms.candidate).join("/")}. 개별 행은 JSON 참조.`,
+  `- W2 성공 cache SHA ${goodCacheSha}; 무효 후 SHA ${cacheAfterInvalidSha}.`,
+  "- `scan`은 stdout/오류와 checker 분기에 근거한 직접 CLI 관찰 분류다. native Codex/Claude 훅 신뢰·발화, 토큰·비용은 unknown이다.",
+  `- assertion: ${assertion.length ? assertion.join("; ") : "없음"}.`,
+  "",
+];
+writeFileSync(join(evidenceDir, "ar06-measurements.md"), report.join("\n"));
+process.stdout.write(`W1 rows=${w1.length}, W2 rows=${rows.length - w1.length}, assertions=${assertion.length}\n`);
+if (assertion.length) process.exitCode = 1;

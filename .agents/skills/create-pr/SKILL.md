@@ -5,7 +5,7 @@ description: 검증된 이슈 또는 기능을 PR·CI·머지 단계로 인계�
 
 # PR과 통합 인계
 
-`docs/methods/delivery-automation.md`의 `## PR, CI, 보호 규칙, 최종 머지`와, 실제 기록을 작성할 때만 `docs/harness/templates.md`의 `## PR·CI·머지 기록`을 읽는다. 각 절은 다음 같은/상위 수준 제목 직전까지만 선택한다.
+`docs/harness/lifecycle.md`의 `## 5. 승인과 외부 작업`과 `docs/methods/delivery-automation.md`의 `## PR, CI, 보호 규칙, 최종 머지`를 읽는다. 실제 기록을 작성할 때만 `docs/harness/templates.md`의 `## PR·CI·머지 기록`을 읽는다. 각 절은 다음 같은/상위 수준 제목 직전까지만 선택한다.
 
 1. 실제 repo·base/head·브랜치 전략·dirty 변경·관련 이슈와 실행 권한을 확인한다. main이나 원격 이름을 추정하지 않는다. 이슈 PR은 이슈 하나의 수직 슬라이스만 담고 다른 이슈의 변경을 섞지 않는다.
 2. 먼저 PR 본문·변경 요약 초안을 검토받고(lifecycle §5의 이슈 PR 권한이 기록돼 있으면 생성된 PR 리뷰로 대신한다), 대상의 기존 E2E를 포함한 필수 검사가 통과해야 push/PR로 간다. 승인 범위 안에서만 브랜치·스테이징·커밋·푸시·PR을 수행한다. 승인 없으면 초안만 작성한다.

@@ -1,0 +1,176 @@
+{
+  "schema": "closure-source-manifest-v1",
+  "captured_at_utc": "2026-10-02T08:14:06.211499+00:00",
+  "git_head": "228fea90465772bc737927f61fd3b560e4076d2a",
+  "node": "v24.14.1",
+  "npm": "11.11.0",
+  "os": "macOS-26.5.1-arm64-arm-64bit",
+  "operational_source": [
+    {
+      "path": ".agents/skills/create-pr/SKILL.md",
+      "sha256": "937df56958c67eedbdbe4c4e0a58c49be5ec8a579f74c2bd1722e269b326e46b"
+    },
+    {
+      "path": ".agents/skills/feature-planner/SKILL.md",
+      "sha256": "f7d9a6fa0b22597ee6c720ca2ea705c202d38fb58fc78cf00a7bc18bbb62381c"
+    },
+    {
+      "path": ".agents/skills/tdd-auto-loop/SKILL.md",
+      "sha256": "78ea6f304217851e68fb280f05584ae5dbdefd4361e2d4e03df41888a5f1d59a"
+    },
+    {
+      "path": "docs/architecture/index.html",
+      "sha256": "c5b8f9a5a151ae97e938819d77d77624226afffa70cd69d59bf071872bc9271c"
+    },
+    {
+      "path": "docs/architecture/redesign-review-2026-09-30.html",
+      "sha256": "c7ee83d62698bac14af217c19a062672356b1816370b556c3582f59ef7de5947"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar06-measurements.json",
+      "sha256": "1c2cb87fb73300dc976bfdc02f6d655b3430acdfd3542b54593cd4fbd1506b5b"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar06-measurements.md",
+      "sha256": "94d945945e4a689e390ed53acccaecf2c5f096b9c206c256d2ae2dd700f0bf1b"
+    },
+    {
+      "path": "docs/features/architecture-redesign/issues-closure.md",
+      "sha256": "09c71b73b860c24b0746d7e69bf5a85a40fa29211256cd8b6a2b4a7d74b2aaaa"
+    },
+    {
+      "path": "docs/features/architecture-redesign/prd-v2.md",
+      "sha256": "6b5ed97bb028351be47f40bdd57d4dfb76f51690db402708c5e2a3748cbdd2c6"
+    },
+    {
+      "path": "docs/features/architecture-redesign/spec-fixed-v2.md",
+      "sha256": "907b4de84e679fd51a4a6c7d019858fb0bfa1889f7672a0c4d920a6336b17efc"
+    },
+    {
+      "path": "docs/features/architecture-redesign/tests/closure-scenarios.md",
+      "sha256": "393879d574aa57ca9bb529052ac56fae8a2a554bbffc431485fd97f71e2d2820"
+    },
+    {
+      "path": "docs/harness/lifecycle.md",
+      "sha256": "00bc83cc5fa2930384e7886b9f115aba3155d08b75e21fead009986f3172a2ca"
+    },
+    {
+      "path": "docs/methods/delivery-automation.md",
+      "sha256": "0b27d1d27e3c79ced3958fd3942c1e2532bd4e982f6aa8a75511668268ef16e1"
+    },
+    {
+      "path": "docs/methods/planning.md",
+      "sha256": "513d263f11eb592e91e610ad93e719ac97fa45344b04bb49e37c28c60e94fc4d"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "3027500a83c594daf1fc69053c2bd6d197230ae7662d520b699b52163a80f58f"
+    },
+    {
+      "path": "package.json",
+      "sha256": "784e666ef199e50c6f09450c75411d64e5d93cf22b42be7b579ce37b0c58c0f3"
+    },
+    {
+      "path": "scripts/ax-session.mjs",
+      "sha256": "c1e5a5da2afe8b575797acb16238780b39aaaf999cfb1342eb7f8b5395788f1c"
+    },
+    {
+      "path": "scripts/check-design-system.mjs",
+      "sha256": "683a499c26a91f97918e2187543cb13415b45992a0f2456424beb291a14cb417"
+    },
+    {
+      "path": "scripts/check-harness.mjs",
+      "sha256": "34ca184868d06819f47824043646e98ffeccec6e437aedda425d8f5f0fa4b026"
+    },
+    {
+      "path": "scripts/evaluate-handoff.mjs",
+      "sha256": "c3fed1da9b2c10fb1017feb65745ca395e1c34fd7e3b2cdcb76e248112e7b8ba"
+    },
+    {
+      "path": "scripts/handoff-core.d.mts",
+      "sha256": "7fae8caa542f4e6003c8c42b506a121874ed383c2c953c6ef21840066a10f3f7"
+    },
+    {
+      "path": "scripts/handoff-core.mjs",
+      "sha256": "824c40fa8c7a677125945f8188a1e3bb8d57f9c110286ce607f80b2e82e8e283"
+    },
+    {
+      "path": "scripts/install-harness.mjs",
+      "sha256": "66040c5050ada954fd3cf588215277b33471f47be92fbc6fbb43f56cf013b2b0"
+    },
+    {
+      "path": "scripts/read-section.mjs",
+      "sha256": "738f61128b3982ee007843e484c769a65a236f09eb3f44491da3c8db9a52de52"
+    },
+    {
+      "path": "scripts/session-handoff.mjs",
+      "sha256": "b9c64fb48edf85a94eb42a2cc5698f8854431c596db485fd087bc79f7dab031b"
+    },
+    {
+      "path": "tests/fixtures/handoff-evaluations-baseline.json",
+      "sha256": "5f7ed49f97d1ad4ba26e1f5d355ae288e806680cedf31225594937f94a1441e6"
+    },
+    {
+      "path": "tests/fixtures/handoff-evaluations.json",
+      "sha256": "8090a900a23fb2e0325e93f0a06531677555129f35a01ca67f741f072351a7de"
+    },
+    {
+      "path": "tests/unit/ax-session.test.ts",
+      "sha256": "fc9c7566d87e594e0f354938608d15ea8cc61306049c27e090d0a03de8896cd6"
+    },
+    {
+      "path": "tests/unit/handoff-core.test.ts",
+      "sha256": "788f72aa5cafa1dfeab0626c4abf576e42fa5f4930aaeaaa7620d4fa285e54e4"
+    },
+    {
+      "path": "tests/unit/handoff-evaluation.test.ts",
+      "sha256": "73cfc791e25bcf9c078bc0fa057666a70721b510a208a620f7e59c77fea28474"
+    },
+    {
+      "path": "tests/unit/harness-portability.test.ts",
+      "sha256": "106eba62c842008eea77711b82efa74a4bc76c64d853b6882506123237bc26e0"
+    }
+  ],
+  "bookkeeping_snapshot": [
+    {
+      "path": "docs/features/architecture-redesign/evidence/closure-contract.md",
+      "sha256": "dd6f510c225f2a28d3a03042b1ec79094d6147b30f14a2add2739bb9e98e73b7"
+    },
+    {
+      "path": "docs/features/architecture-redesign/progress-history.md",
+      "sha256": "3d6db4a58b3837d0c1aeefe010bc05d335cd9cd8e2f2ba990628f4a4eb9b0a84"
+    },
+    {
+      "path": "docs/features/architecture-redesign/progress.md",
+      "sha256": "bac88aca91ef0d78c636d74d13a66e9367ca16d08952a871f773d2da799d4905"
+    },
+    {
+      "path": "docs/features/architecture-redesign/spec-original.md",
+      "sha256": "08e1544b0137549af19c178d4ee671c53fb767658206d0de827c5cebe60ce73a"
+    }
+  ],
+  "historical_experiment_evidence": [
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar05-cache-candidate.mjs.txt",
+      "sha256": "6914e45c90ca23faa7ac49a67b8eb63bae1af21eaf71248f958179f72536bade"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar05-cache-candidate.test.ts.txt",
+      "sha256": "0a70fb50c3cd454ef4b4d690a6421da84c01f244d085e7af105839037b5ceccd"
+    },
+    {
+      "path": "docs/features/architecture-redesign/evidence/ar05-cache.md",
+      "sha256": "6a345d7f3a494f9e9b624807cc13e47487d963448ac62ae0bf15c8863c34e095"
+    }
+  ],
+  "trusted_approval_preservation": [
+    {
+      "path": "docs/features/trusted-approval/spec-fixed.md",
+      "sha256": "f14784d483db9a79489afce3d714d0300b9eacf9584a881451dca653e1158345"
+    },
+    {
+      "path": "docs/features/trusted-approval/spec-original.md",
+      "sha256": "646a37db21df6ad9a0bd15e91a179d79188175efaa29fe20399354290951e1d2"
+    }
+  ]
+}

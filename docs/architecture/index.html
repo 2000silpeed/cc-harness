@@ -182,6 +182,13 @@
         <p class="muted">
           15개 스킬 · 독립형 방법론. 실제 제품 구현·머지·배포는 별도 실행 단계입니다.
         </p>
+        <p class="muted">
+          이 화면은 실행 흐름의 파생 뷰입니다. 단계·승인·외부 권한은
+          <a href="../harness/lifecycle.md">lifecycle 규범</a>, 자동 반복의 예산·STOP은
+          <a href="../methods/delivery-automation.md#tdd-auto-loop의-자체-승인과-객관-stop"
+            >전달 계약</a
+          >을 따릅니다.
+        </p>
       </header>
       <section id="start" aria-labelledby="start-title">
         <div class="eyebrow">00 · 시작 / 전체 사이클 진입</div>
@@ -189,6 +196,15 @@
         <p>누가 어떤 문제를 해결하는지, 어느 프로젝트에서 어디까지 진행할지 확인합니다.</p>
         <p><code>$harness-cycle</code></p>
         <p class="muted">다음 단계로 넘기는 것: 최초 요청 · 대상 경로 · 현재 단계</p>
+        <details>
+          <summary>checkpoint · RESUME · CLI 판정 경계</summary>
+          <p>
+            의미 단계의 경계에서는 승인·증거·변경 소유와 다음 행동을 checkpoint에 보존하고,
+            RESUME에서 관련 입력과 실제 검사 결과를 대조합니다. 인계 CLI의 준비 판정·claim·receipt는
+            로컬 상태 검사이며 사용자 승인이나 실행 권한을 발급하지 않습니다.
+            <a href="../harness/lifecycle.md#4-재개-가능한-기록">재개 계약</a>
+          </p>
+        </details>
       </section>
       <section id="foundation" aria-labelledby="foundation-title">
         <div class="eyebrow">01 · 기반</div>
@@ -204,10 +220,10 @@
         <p><code>$feature-planner · $design-system</code></p>
         <p class="muted">다음 단계로 넘기는 것: spec-fixed · design.md · 공통 디자인 기준</p>
         <details>
-          <summary>사람이 결정하는 지점</summary>
+          <summary>G1 · 요구사항 결정</summary>
           <p>
-            요구사항과 필요한 디자인 결정을 확정합니다. AI의 추천을 사용자 승인으로 기록하지
-            않습니다.
+            제품 목적·가치 충돌이나 중요한 의도 누락은 사용자에게 확인합니다. 필요한 동작 정책과
+            성공 조건을 갖춘 뒤 G1을 판정하고, AI의 추천을 사용자 직접 결정으로 기록하지 않습니다.
           </p>
         </details>
       </section>
@@ -219,9 +235,11 @@
         <p class="muted">다음 단계로 넘기는 것: PRD · ADR · Out of Scope · 이슈와 AC</p>
 
         <details>
-          <summary>사람이 결정하는 지점</summary>
+          <summary>G2·G3 판단과 G4 독립 감사</summary>
           <p>
-            기술안 선택 → 제외 범위 → 이슈 목록. 실제 GitHub 등록은 별도 승인 범위에서만 수행합니다.
+            구현 승인이 없으면 사용자 결정을 받습니다. 유효한 결과·구현 승인 범위에서는 G2 기술안과
+            G3 제외 범위를 근거와 한계를 기록해 판정할 수 있습니다. G4 이슈·AC·의존성은 분리된
+            검증자의 감사 뒤에 통과시킵니다. GitHub 등록은 별도 외부 권한이 필요합니다.
           </p>
         </details>
       </section>
@@ -239,6 +257,15 @@
           >
         </p>
         <p class="muted">다음 단계로 넘기는 것: 테스트 · 최소 구현 · AC 근거 · 보안 결과</p>
+
+        <details>
+          <summary>G5 계약 검토와 독립 AC 검증</summary>
+          <p>
+            G5 인터페이스·시나리오는 사용자 검토 또는 유효한 구현 승인 범위의 분리된 검토를
+            거칩니다. Green 직후에는 구현자와 다른 검증자가 AC를 확인합니다. 일반 구현 승인은 유한한
+            <code>$tdd-auto-loop</code> 위임을 뜻하지 않습니다.
+          </p>
+        </details>
 
         <details>
           <summary>반복하는 방법 선택</summary>
@@ -264,6 +291,15 @@
         <p class="muted">다음 단계로 넘기는 것: E2E 증거 · PR · CI · 승인된 머지</p>
 
         <details>
+          <summary>외부 작업은 별도 권한</summary>
+          <p>
+            브랜치·커밋·push·PR·머지·배포와 유료 호출 등은 정확한 대상과 범위의 권한을 확인합니다.
+            이슈 PR 권한에 머지는 포함되지 않습니다.
+            <a href="../harness/lifecycle.md#5-승인과-외부-작업">승인과 외부 작업</a>
+          </p>
+        </details>
+
+        <details>
           <summary>main 이후 / 배포·운영 인계</summary>
           <p>
             배포 대상·비용·데이터·백업·롤백을 정하고 승인받습니다. 실제 배포 후 smoke test와 운영
@@ -286,15 +322,15 @@
             <pre id="diagram-source">
 flowchart TD
   accTitle: 아이디어부터 검증된 프로젝트까지
-  accDescr: 기획 승인 후 이슈별 TDD를 반복하고 E2E, CI, 머지로 진행. 자동 루프는 구현 단계의 선택 모드.
+  accDescr: G1 요구사항, 유효한 승인 범위의 G2·G3 판단, G4·G5 독립 검토 후 이슈별 TDD와 E2E, 별도 권한의 PR·머지로 진행.
   idea["아이디어 · 대상 확인"] --&gt; setup["협업 · 품질 기반"]
-  setup --&gt; spec["요구사항 · 디자인"]
-  spec --&gt; plan["PRD · ADR · 이슈"]
-  plan --&gt; tdd["시나리오 · Red · Green"]
+  setup --&gt; spec["요구사항 · 디자인 / G1"]
+  spec --&gt; plan["PRD · ADR · 이슈 / G2·G3·G4"]
+  plan --&gt; tdd["시나리오 G5 · Red · Green"]
   tdd --&gt; review["AC · Refactor · 보안"]
   review -. 누락 또는 다음 이슈 .-&gt; tdd
   review --&gt; e2e["기능 E2E"]
-  e2e --&gt; delivery["PR · CI · 승인된 머지"]
+  e2e --&gt; delivery["PR · CI · 머지 / 별도 권한"]
   delivery --&gt; release["배포 · 운영 인계"]</pre>
           </details>
           <noscript><p>도식 원문과 단계별 카드로 전체 흐름을 확인할 수 있습니다.</p></noscript>
